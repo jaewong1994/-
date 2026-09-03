@@ -114,14 +114,40 @@ function scenarioPct(r,s){
   return gp(s.kor)+gp(s.math)+Math.round((gp(s.sci1)+gp(s.sci2))/2);
 }
 function fit(diff){if(diff>=8)return ['safe','안정'];if(diff>=-5)return ['fit','적정'];if(diff>=-18)return ['reach','소신'];return ['hard','상향'];}
+function scenarioChanged(r,s){
+  return ['kor','math','eng','sci1','sci2'].some(k=>Number(r?.[k]?.gr||9)!==Number(s?.[k]||9));
+}
+function admissionChance(diff,verified,useStd){
+  // 입결 컷과의 차이를 상담용 로지스틱 곡선으로 환산한다.
+  // 70% cut 자체는 합격확률이 아니므로 경쟁률·충원 미반영 오차를 범위로 표시한다.
+  const scale=useStd?7:5.5;
+  const point=Math.round(clamp(100/(1+Math.exp(-diff/scale)),2,95));
+  const spread=verified?10:16;
+  return {point,low:Math.max(1,point-spread),high:Math.min(98,point+spread),verified};
+}
+function balancedRegularRows(rows,perGroup=8){
+  const groups={hard:[],reach:[],fit:[],safe:[]};
+  rows.forEach(x=>groups[fit(x.diff)[0]].push(x));
+  return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
+}
 function renderRegular(){
   const r=latest(); if(!r)return `<div class="csl-empty">학생이 6월 또는 9월 성적을 입력하면 대학 라인이 표시됩니다.</div>`;
   const std=scenarioStd(r,state.scenario),pct=scenarioPct(r,state.scenario);
   const rows=UNI.filter(u=>state.arts?artRx.test(`${u.n} ${u.d}`):!artRx.test(`${u.n} ${u.d}`)).map(u=>{
     const useStd=u.ind==='표준'||u.ind==='표+백', mine=useStd?std:pct, cut=useStd?u.std:u.pct;
     return {u,diff:mine-(cut||0),mine,cut,useStd};
-  }).filter(x=>x.cut&&x.diff>=-28).sort((a,b)=>(b.cut-a.cut)||(b.diff-a.diff)).slice(0,30);
-  return `<div class="csl-note">${state.arts?'예체능':'일반'} 정시 라인 · 시나리오 환산 ${Math.round(std)}점. 등급 조정은 평균적인 등급 간 표준점수 차이를 적용한 상담용 시뮬레이션이며 확정 성적이 아닙니다.</div><div class="csl-result-list">${rows.map(x=>{const f=fit(x.diff);return `<article class="csl-result"><div><div class="csl-result-name">${esc(x.u.n)}</div><div class="csl-result-dept">${esc(x.u.d)} · ${esc(x.u.g)}군 · ${esc(x.u.s)}</div><div class="csl-rule">${esc(x.u.sk||'대학별 환산 규칙 확인 필요')} · 반영 국 ${x.u.kw||0}% / 수 ${x.u.mw||0}% / 영 ${x.u.ew||0}% / 탐 ${x.u.sw||0}%${state.arts?' · 실기 반영비율·종목은 최종 모집요강 재확인':''}</div></div><div class="csl-result-side"><div class="csl-fit ${f[0]}">${f[1]}</div><div class="csl-number">${x.diff>=0?'+':''}${Math.round(x.diff)}</div><div class="csl-meta">${x.useStd?'표준':'백분위'} 기준</div></div></article>`}).join('')||'<div class="csl-empty">조건에 맞는 대학이 없습니다.</div>'}</div>`;
+  }).filter(x=>x.cut).sort((a,b)=>(b.cut-a.cut)||(b.diff-a.diff));
+  const verified=!!(r.official||r.sourceMode==='external')&&!scenarioChanged(r,state.scenario);
+  const groups=balancedRegularRows(rows);
+  const cards=groups.map(group=>{
+    const label={hard:'상향',reach:'소신',fit:'적정',safe:'안정'}[group.key];
+    const list=group.rows.length?`<div class="csl-result-list">${group.rows.map(x=>{
+      const f=fit(x.diff),chance=admissionChance(x.diff,verified,x.useStd);
+      return `<article class="csl-result"><div><div class="csl-result-name">${esc(x.u.n)}</div><div class="csl-result-dept">${esc(x.u.d)} · ${esc(x.u.g)}군 · ${esc(x.u.s)}</div><div class="csl-rule">${esc(x.u.sk||'대학별 환산 규칙 확인 필요')} · 반영 국 ${x.u.kw||0}% / 수 ${x.u.mw||0}% / 영 ${x.u.ew||0}% / 탐 ${x.u.sw||0}%${state.arts?' · 실기 반영비율·종목은 최종 모집요강 재확인':''}</div></div><div class="csl-result-side"><div class="csl-fit ${f[0]}">${f[1]}</div><div class="csl-number">${x.diff>=0?'+':''}${Math.round(x.diff)}</div><div class="csl-meta">${x.useStd?'표준':'백분위'} 기준</div><div class="csl-chance"><strong>추정 합격률 약 ${chance.point}%</strong><span>${chance.low}–${chance.high}% 범위</span><i><b style="width:${chance.point}%"></b></i></div></div></article>`;
+    }).join('')}</div>`:`<div class="csl-empty csl-fit-empty">현재 점수에서 ${label} 구간에 해당하는 대학 후보가 없습니다.</div>`;
+    return `<section class="csl-fit-group"><div class="csl-fit-group-head"><span class="csl-fit ${group.key}">${label}</span><strong>${group.rows.length}개 추천</strong><span>전체 후보 ${group.total}개 중 상위 대학</span></div>${list}</section>`;
+  }).join('');
+  return `<div class="csl-note">${state.arts?'예체능':'일반'} 정시 라인 · 시나리오 환산 ${Math.round(std)}점. 상향·소신·적정·안정별로 상위 대학을 최대 8개씩 표시합니다. 합격률은 입결 컷 대비 점수 차이를 환산한 상담 추정치이며 ${verified?'확인 점수 기준':'추정 점수·목표 시나리오 기준'}입니다. 경쟁률·충원·선택과목 유불리 때문에 실제 결과는 범위를 벗어날 수 있습니다. <a href="https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2022&unvCd=0000020" target="_blank" rel="noopener">어디가 70% cut 정의</a></div>${cards||'<div class="csl-empty">조건에 맞는 대학이 없습니다.</div>'}`;
 }
 function parseMinimum(text){
   const t=String(text||'').replace(/\s/g,''); if(!t||t==='없음'||/미적용/.test(t))return {kind:'none'};
