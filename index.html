@@ -361,6 +361,7 @@ button{min-height:34px;}
 .vw-ov-msg{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:12.5px;color:var(--t2);line-height:1.8;}
 </style>
 <link rel="stylesheet" href="./mobile-ui.css">
+<link rel="stylesheet" href="./counseling.css">
 </head>
 <body>
 
@@ -1052,11 +1053,14 @@ function saveScore(nextPage) {
     eng:{raw:parseInt(document.getElementById('eng_raw').value)||0,gr:cache.eng.g},
     sci1:{name:document.getElementById('sci1_name').value,raw:parseInt(document.getElementById('sci1_raw').value)||0,std:cache.sci1.s,pct:cache.sci1.p,gr:cache.sci1.g},
     sci2:{name:document.getElementById('sci2_name').value,raw:parseInt(document.getElementById('sci2_raw').value)||0,std:cache.sci2.s,pct:cache.sci2.p,gr:cache.sci2.g},
-    hist:{raw:parseInt(document.getElementById('hist_raw').value)||0,gr:cache.hist.g}
+    hist:{raw:parseInt(document.getElementById('hist_raw').value)||0,gr:cache.hist.g},
+    wrongItems: window._mockWrongItems || {},
+    sourceMode: officialScoreMode ? 'external' : ((window._mockWrongItems&&Object.keys(window._mockWrongItems).length)?'wrong_items':'estimated')
   };
   scores.push(rec);
   scores.sort((a,b)=>{const o=['6월 모평','7월 학평','9월 모평','수능'];return o.indexOf(a.examType)-o.indexOf(b.examType);});
   localStorage.setItem('epsilon_scores',JSON.stringify(scores));
+  if(window.syncMockScoreRecord) window.syncMockScoreRecord(rec);
   showToast('✅ 성적이 저장되었습니다');
   renderScore(); renderTrend(); renderUni();
   renderStrategy();
@@ -1183,7 +1187,7 @@ function renderTrend(){
     ]},options:{...opt,scales:{...opt.scales,y:{...opt.scales.y,min:0,max:100}}}});
   },80);
 }
-function delScore(id){if(!confirm('이 성적을 삭제할까요?'))return;scores=scores.filter(s=>s.id!==id);localStorage.setItem('epsilon_scores',JSON.stringify(scores));renderScore();renderTrend();renderUni();if(document.getElementById('pg-strategy').classList.contains('on'))renderStrategy();showToast('삭제되었습니다');}
+function delScore(id){if(!confirm('이 성적을 삭제할까요?'))return;const removed=scores.find(s=>s.id===id||s.cloudId===id);scores=scores.filter(s=>s.id!==id&&s.cloudId!==id);localStorage.setItem('epsilon_scores',JSON.stringify(scores));if(window.deleteCloudMockScore&&removed)window.deleteCloudMockScore(removed);renderScore();renderTrend();renderUni();if(document.getElementById('pg-strategy').classList.contains('on'))renderStrategy();showToast('삭제되었습니다');}
 
 // ===== RENDER GRADE CUTS =====
 function setCutExam(ek){ selCutExam=ek; renderGradeCuts(); }
@@ -2212,7 +2216,7 @@ function renderStrategy(){
         <button class="score-del-btn" onclick="delScore(${s.id})">삭제</button>
       </div>`;
     }).join('')}
-    ${scores.length>1?`<button onclick="if(confirm('모든 성적을 삭제할까요?')){scores=[];localStorage.setItem('epsilon_scores',JSON.stringify(scores));renderScore();renderTrend();renderUni();renderStrategy();showToast('전체 삭제 완료');}" style="width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1px solid #fecaca;background:var(--red-light);color:var(--red);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🗑️ 전체 삭제</button>`:''}
+    ${scores.length>1?`<button onclick="deleteAllMockScores()" style="width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1px solid #fecaca;background:var(--red-light);color:var(--red);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">🗑️ 전체 삭제</button>`:''}
   </div>`;
 
   // 레벨 차트
@@ -2374,6 +2378,7 @@ async function renderWTest(){
     return;
   }
   _wprofile = prof;
+  if(window.loadMyMockScores) await window.loadMyMockScores();
   if(_wprofile.role==='director'){
     // 원장: 계정관리 + 상담 탭 노출
     const adminCat=document.querySelector('.cat[data-cat="admin"]');
@@ -6395,5 +6400,6 @@ window.addEventListener('load',()=>{
 });
 
 </script>
+<script src="./counseling.js"></script>
 </body>
 </html>
