@@ -172,5 +172,49 @@
     Object.values(groups).forEach(group=>group.sort((a,b)=>(Number(b.strategicRank)||0)-(Number(a.strategicRank)||0)||(b.diff-a.diff)));
     return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
   }
-  return {version:'2026.09-v5',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows};
+  function earlyKey(e){return [e?.u,e?.adm,e?.cat].map(v=>String(v||'').trim()).join('|');}
+  function parseEarlyMinimum(entry){
+    const min=String(entry?.min??entry??'').trim(),note=typeof entry==='object'?String(entry?.note||'').trim():'';
+    if(typeof entry==='object'&&!min)return {kind:'none',text:'없음'};
+    const raw=`${min} ${note}`.trim(),t=raw.replace(/\s/g,'');
+    if(!t)return {kind:'none',text:'없음'};
+    const sumMatches=[...t.matchAll(/(\d)개(?:영역)?(?:등급)?합(\d{1,2})/g),...t.matchAll(/(?<!개)(\d)합(\d{1,2})/g)];
+    const unique=[...new Map(sumMatches.map(m=>[`${m[1]}|${m[2]}`,m])).values()];
+    // 학과별 예외, 범위, 복수 조합은 하나의 자동 판정으로 단정하지 않는다.
+    const sumTokenCount=(t.match(/합\d{1,2}/g)||[]).length;
+    if(unique.length>1||(/[~～]/.test(t)&&unique.length)||(/없음|폐지/.test(t)&&unique.length)||sumTokenCount>unique.length)return {kind:'review',text:raw,reason:'모집단위별 조건'};
+    if(unique.length===1){
+      const m=unique[0],count=Number(m[1]),limit=Number(m[2]);
+      if(count>=1&&count<=4&&limit>=count&&limit<=36)return {kind:'sum',count,limit,text:raw};
+    }
+    const each=t.match(/(\d)개(?:영역)?.*?(\d)등급(?:이내)?/);
+    if(each)return {kind:'each',count:Number(each[1]),limit:Number(each[2]),text:raw};
+    if(/(?:수능|수능최저|최저학력기준).{0,8}(?:없음|미적용)/.test(t)||t==='없음'||note==='없음')return {kind:'none',text:'없음'};
+    if(!/등급|합\d/.test(t)&&/서류|면접|학생부|교과|실기|단계|일괄|종합평가|추천/.test(t))return {kind:'none',text:'없음'};
+    return {kind:'review',text:raw,reason:'문장형 조건'};
+  }
+  function earlyAssessment(entry,scenario,rank=99){
+    const rule=parseEarlyMinimum(entry),grades=[scenario?.kor,scenario?.math,scenario?.eng,Math.min(Number(scenario?.sci1)||9,Number(scenario?.sci2)||9)].map(x=>clamp(Number(x)||9,1,9)).sort((a,b)=>a-b);
+    if(rule.kind==='none')return {status:'none',fit:'hard',label:'최저 없음',rule,rank,efficiency:0};
+    if(rule.kind==='review')return {status:'review',fit:'hard',label:'요강 확인',rule,rank,efficiency:0};
+    const achieved=rule.kind==='sum'?grades.slice(0,rule.count).reduce((a,b)=>a+b,0):grades.filter(x=>x<=rule.limit).length;
+    const met=rule.kind==='sum'?achieved<=rule.limit:achieved>=rule.count;
+    const margin=rule.kind==='sum'?rule.limit-achieved:achieved-rule.count;
+    const averageLimit=rule.kind==='sum'?rule.limit/rule.count:rule.limit;
+    const difficulty=clamp(Math.round(100-(averageLimit-1)*22+rule.count*3),0,100);
+    const prestige=clamp(Math.round(108-(Number(rank)||99)*26),0,100);
+    const closeness=met?clamp(Math.round(100-Math.max(0,margin)*28),0,100):0;
+    const efficiency=Math.round(difficulty*.55+prestige*.35+closeness*.10);
+    return {status:met?'met':'unmet',fit:met?'safe':'reach',label:met?'최저 충족':'최저 미충족',rule,rank,achieved,margin,difficulty,prestige,closeness,efficiency};
+  }
+  function rankEarlyAdmissions(entries,scenario,rankMap={}){
+    const rows=(entries||[]).map((e,index)=>({e,index,key:earlyKey(e),rank:Number(rankMap[e?.u])||99,assessment:earlyAssessment(e,scenario,Number(rankMap[e?.u])||99)}));
+    const byName=(a,b)=>(a.e?.adm||'').localeCompare(b.e?.adm||'ko');
+    return {
+      met:rows.filter(x=>x.assessment.status==='met').sort((a,b)=>b.assessment.efficiency-a.assessment.efficiency||a.rank-b.rank||byName(a,b)),
+      none:rows.filter(x=>x.assessment.status==='none').sort((a,b)=>a.rank-b.rank||(Number(a.e?.lo)||99)-(Number(b.e?.lo)||99)||byName(a,b)),
+      other:rows.filter(x=>x.assessment.status==='review'||x.assessment.status==='unmet').sort((a,b)=>(a.assessment.status==='review'?0:1)-(b.assessment.status==='review'?0:1)||a.rank-b.rank||byName(a,b))
+    };
+  }
+  return {version:'2026.09-v6',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows,earlyKey,parseEarlyMinimum,earlyAssessment,rankEarlyAdmissions};
 });

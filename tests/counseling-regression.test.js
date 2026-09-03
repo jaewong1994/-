@@ -76,4 +76,23 @@ const ranked=engine.balancedRows([{diff:4,strategicRank:100},{diff:4,strategicRa
 assert.equal(ranked[0].strategicRank,120,'같은 판정 구간에서는 전략순위가 높은 대학이 먼저여야 함');
 assert.ok(engine.selectivityScore({pct:299,fx:'국수영탐',sc:2})>engine.selectivityScore({pct:189,fx:'수영탐',sc:2}),'서로 다른 반영영역 수를 정규화해도 최상위 대학선이 역전되면 안 됨');
 
+assert.deepEqual(engine.parseEarlyMinimum({min:'국수탐(1) 중 2개 합 4',note:'서류 100%'}),{kind:'sum',count:2,limit:4,text:'국수탐(1) 중 2개 합 4 서류 100%'});
+assert.equal(engine.parseEarlyMinimum({min:'서류 70% + 면접 30%',note:'없음'}).kind,'none','수능최저가 없는 면접 전형은 별도 분류해야 함');
+assert.equal(engine.parseEarlyMinimum({min:'없음/단, 체교(2개 합6), 디자인(3합7)',note:''}).kind,'review','학과별 예외를 하나의 최저로 단정하면 안 됨');
+assert.equal(engine.parseEarlyMinimum({min:'2개 합7/야간 합8',note:''}).kind,'review','주야간별 조건을 하나의 최저로 단정하면 안 됨');
+const earlyScenario={kor:1,math:2,eng:3,sci1:2,sci2:4};
+const hardMin=engine.earlyAssessment({min:'3개 합5'},earlyScenario,1.8);
+const easyMin=engine.earlyAssessment({min:'2개 합5'},earlyScenario,1.8);
+assert.equal(hardMin.status,'met');
+assert.ok(hardMin.difficulty>easyMin.difficulty,'충족 가능한 최저 중 더 까다로운 조합의 난도가 높아야 함');
+const earlyRanked=engine.rankEarlyAdmissions([
+  {u:'상위대',adm:'교과',cat:'인문',min:'2개 합4',note:'',lo:1.8},
+  {u:'중위대',adm:'교과',cat:'인문',min:'3개 합5',note:'',lo:2.1},
+  {u:'면접대',adm:'종합',cat:'인문',min:'서류 70% + 면접 30%',note:'없음',lo:2.0},
+  {u:'확인대',adm:'교과',cat:'인문',min:'없음/단, 특정학과 2개 합6',note:'',lo:2.4}
+],earlyScenario,{상위대:1.5,중위대:2.2,면접대:2,확인대:3});
+assert.equal(earlyRanked.met[0].e.u,'중위대','난도·대학·충족여유 가중치가 더 효율적인 충족 전형을 우선해야 함');
+assert.equal(earlyRanked.none[0].e.u,'면접대','수능최저 없는 전형은 별도 목록이어야 함');
+assert.equal(earlyRanked.other[0].e.u,'확인대','복합 조건은 요강 확인 목록이어야 함');
+
 console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, ${strategic} strategic, chance ${chances.join('→')}`);
