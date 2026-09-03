@@ -11,7 +11,8 @@
   const socialRx=/생활과윤리|윤리와사상|한국지리|세계지리|동아시아사|세계사|경제|정치와법|사회문화/;
   const scienceRx=/물리|화학|생명과학|지구과학/;
 
-  function fit(diff){if(diff>=8)return ['safe','안정'];if(diff>=-5)return ['fit','적정'];if(diff>=-18)return ['reach','소신'];return ['hard','상향'];}
+  // The reference is a historical 70% enrolled-student cut, not a pass line.
+  function fit(diff){if(diff>=12)return ['safe','안정'];if(diff>=3)return ['fit','적정'];if(diff>=-10)return ['reach','소신'];return ['hard','상향'];}
   function scenarioChanged(r,s){return ['kor','math','eng','sci1','sci2'].some(k=>Number(r?.[k]?.gr||9)!==Number(s?.[k]||9));}
   function shiftedSubject(base,key,targetGrade){
     const src=base||{},current=Number(src.gr)||9,target=clamp(Number(targetGrade)||9,1,9);
@@ -67,9 +68,46 @@
     const quality=(u.ind==='등급점수화'||!u.sk)?'low':(u.et==='o'?'medium':'high');
     return Object.assign({compatible:true,valid:true,useStd,quality},best);
   }
-  function admissionChance(diff,{verified=false,useStd=true,quality='medium'}={}){
-    const scale=useStd?7:5.5,point=Math.round(clamp(100/(1+Math.exp(-diff/scale)),2,95));
+  function selectionProfile(u){
+    const university=String(u?.n||''),dept=String(u?.d||''),requirements=[];
+    let finalAvailable=true,nonScoreShare=0,stageLabel='최종',sourceUrl='',sourceLabel='';
+    const add=(kind,text)=>{if(text&&!requirements.some(x=>x.text===text))requirements.push({kind,text});};
+    if(university.includes('서울대')){
+      sourceUrl='https://admission.snu.ac.kr/materials/guide_movie/admission_guide';sourceLabel='서울대 2027 전형안내';
+      if(/지역균형/.test(dept)){
+        nonScoreShare=40;finalAvailable=false;stageLabel='수능 성적 부분';
+        add('record','수능 60% + 교과평가 40% · 교과평가 입력 전 최종 판정 보류');
+      }else{
+        nonScoreShare=20;finalAvailable=false;stageLabel='1단계 수능선';
+        add('stage','1단계 수능 100%로 2배수 선발');
+        add('record','2단계: 1단계 성적 80% + 교과평가 20% · 최종 판정 보류');
+      }
+      if(/교육과|교육학과|사범대/.test(dept))add('interview','교직적성·인성면접: 가산점 및 결격 판단');
+      if(/수의|의예|의과|치의/.test(dept))add('interview','적성·인성면접: 결격 여부 판단');
+    }else if(university.includes('고려대')){
+      sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000069';sourceLabel='대입정보포털 2027 고려대';
+      if(/교과우수/.test(dept)){
+        nonScoreShare=20;finalAvailable=false;stageLabel='수능 성적 부분';
+        add('record','수능 80% + 학생부(교과) 20% · 학생부 입력 전 최종 판정 보류');
+      }
+      if(/의예|의과|의학/.test(dept)){finalAvailable=false;add('interview','적성·인성면접 시행');}
+      if(/체육교육|디자인조형/.test(dept)){
+        nonScoreShare=Math.max(nonScoreShare,30);finalAvailable=false;stageLabel='수능 성적 부분';
+        add('practical','수능 70% + 실기 30% · 실기 입력 전 최종 판정 보류');
+      }
+      if(/사이버국방/.test(dept)){
+        nonScoreShare=Math.max(nonScoreShare,20);finalAvailable=false;stageLabel='수능 성적 부분';
+        add('practical','수능 80% + 실기 20% · 추가 전형요소 확인 필요');
+      }
+    }
+    if(u?.gm)add('bonus',`가산·감점: ${u.gm}`);
+    if(u?.tk)add('notice',u.tk);
+    return {finalAvailable,nonScoreShare,stageLabel,requirements,sourceUrl,sourceLabel};
+  }
+  function admissionChance(diff,{verified=false,useStd=true,quality='medium',finalAvailable=true,nonScoreShare=0}={}){
+    const scale=useStd?7:5.5,point=Math.round(clamp(100/(1+Math.exp(-(diff-3)/scale)),2,93));
     let spread=verified?10:16;if(quality==='medium')spread+=2;if(quality==='low')spread+=5;
+    if(!finalAvailable)spread+=Math.max(5,Math.round(nonScoreShare/5));
     spread=Math.min(spread,24);
     return {point,low:Math.max(1,point-spread),high:Math.min(98,point+spread),confidence:spread<=11?'높음':spread<=18?'보통':'낮음'};
   }
@@ -77,5 +115,5 @@
     const groups={hard:[],reach:[],fit:[],safe:[]};rows.forEach(x=>groups[fit(x.diff)[0]].push(x));
     return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
   }
-  return {version:'2026.09-v2',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,scoreUniversity,admissionChance,balancedRows};
+  return {version:'2026.09-v3',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,scoreUniversity,selectionProfile,admissionChance,balancedRows};
 });
