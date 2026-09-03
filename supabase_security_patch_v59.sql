@@ -26,7 +26,7 @@ security definer
 set search_path = public
 as $$
 declare
-  actor_role user_role;
+  actor_role text;
 begin
   if auth.uid() is null then
     return new;
