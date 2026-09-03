@@ -30,6 +30,8 @@ assert.equal(engine.selectionProfile({n:'연세대',d:'경제학부'}).nonScoreS
 assert.equal(engine.selectionProfile({n:'연세대',d:'의예'}).requirements.some(x=>x.kind==='interview'),true);
 assert.equal(engine.selectionProfile({n:'한양대',d:'기계공학부'}).nonScoreShare,10);
 assert.equal(engine.selectionProfile({n:'중앙대',d:'경영학부'}).nonScoreShare,10);
+assert.equal(engine.selectionProfile({n:'성균관대',d:'수학교육'}).regularAvailable,false);
+assert.equal(engine.scoreUniversity({n:'성균관대',d:'수학교육'},{}).unavailable,true,'2027 성균관대 사범계열은 정시 수능 후보에서 제외해야 함');
 
 const base={mathSub:'미적분',kor:{gr:4,std:108,pct:64},math:{gr:4,std:110,pct:66},eng:{gr:3},sci1:{name:'물리',gr:4,std:56,pct:65},sci2:{name:'화학',gr:4,std:55,pct:63}};
 const mathStrong=Object.assign({},base,{kor:{gr:3,std:120,pct:80},math:{gr:1,std:140,pct:98}});

@@ -77,6 +77,8 @@
     return pctRef?pctRef*3/count:stdRef*.72*3/count;
   }
   function scoreUniversity(u,r){
+    const selection=selectionProfile(u);
+    if(!selection.regularAvailable)return {compatible:false,unavailable:true,reason:selection.unavailableReason};
     if(!compatible(u,r))return {compatible:false};
     const useStd=u.ind==='표준'||u.ind==='표+백',stdKey=useStd?'std':'pct',stdI=useStd?'stdI':'pctI',stdE=useStd?'stdE':'pctE';
     const options=[];
@@ -97,7 +99,7 @@
   }
   function selectionProfile(u){
     const university=String(u?.n||''),dept=String(u?.d||''),requirements=[];
-    let finalAvailable=true,nonScoreShare=0,stageLabel='최종',sourceUrl='',sourceLabel='';
+    let finalAvailable=true,regularAvailable=true,unavailableReason='',nonScoreShare=0,stageLabel='최종',sourceUrl='',sourceLabel='';
     const add=(kind,text)=>{if(text&&!requirements.some(x=>x.text===text))requirements.push({kind,text});};
     if(university==='서울대'){
       sourceUrl='https://admission.snu.ac.kr/materials/guide_movie/admission_guide';sourceLabel='서울대 2027 전형안내';
@@ -142,6 +144,10 @@
       nonScoreShare=10;finalAvailable=false;stageLabel='수능 성적 부분';
       add('record','수능 90% + 비교과(출결) 10% · 출결 입력 전 최종 판정 보류');
       if(/체육교육/.test(dept))add('record','체육교육과: 수능 80% + 서류 20%');
+    }else if(university==='성균관대'&&/한문교육|컴퓨터교육|수학교육|^교육$/.test(dept)){
+      sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000133';sourceLabel='대입정보포털 2027 성균관대';
+      regularAvailable=false;finalAvailable=false;unavailableReason='2027학년도 사범계열은 학생부종합전형 100% 선발';
+      add('record',unavailableReason);
     }
     const note=String(u?.tk||'');
     if(/면접/.test(note)){finalAvailable=false;add('interview','면접 전형요소 있음 · 세부 배점과 결격 기준 확인');}
@@ -152,7 +158,7 @@
     }
     if(u?.gm)add('bonus',`가산·감점: ${u.gm}`);
     if(note)add('notice',note);
-    return {finalAvailable,nonScoreShare,stageLabel,requirements,sourceUrl,sourceLabel};
+    return {finalAvailable,regularAvailable,unavailableReason,nonScoreShare,stageLabel,requirements,sourceUrl,sourceLabel};
   }
   function admissionChance(diff,{verified=false,useStd=true,quality='medium',finalAvailable=true,nonScoreShare=0}={}){
     const scale=useStd?7:5.5,point=Math.round(clamp(100/(1+Math.exp(-(diff-3)/scale)),2,93));
@@ -166,5 +172,5 @@
     Object.values(groups).forEach(group=>group.sort((a,b)=>(Number(b.strategicRank)||0)-(Number(a.strategicRank)||0)||(b.diff-a.diff)));
     return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
   }
-  return {version:'2026.09-v4',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows};
+  return {version:'2026.09-v5',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows};
 });
