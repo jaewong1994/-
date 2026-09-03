@@ -38,10 +38,15 @@ function calcRawFromWrong(subject){
   const lost=wrong.reduce((sum,n)=>sum+(pts[n-1]||0),0), raw=100-lost;
   const input=document.getElementById(target); if(input){input.value=raw;autoCalc(subject);}
   window._mockWrongItems=window._mockWrongItems||{};
-  window._mockWrongItems[subject]={items:wrong,lost,raw,pointSource:'2027 평가원 정답표'};
+  window._mockWrongItems[subject]={items:wrong,lost,raw,examType:selExam,sub:subject==='kor'?selKorSub:selMathSub,pointSource:'2027 평가원 정답표'};
   if(live) live.textContent=`${wrong.length}문항 · ${lost}점 감점 → 원점수 ${raw}점`;
 }
 window.calcRawFromWrong=calcRawFromWrong;
+window.getCurrentWrongItems=function(){
+  const src=window._mockWrongItems||{},out={};
+  ['kor','math'].forEach(k=>{const x=src[k];if(x&&x.examType===selExam&&(k!=='kor'||x.sub===selKorSub))out[k]=x;});
+  return out;
+};
 
 function injectWrongInput(){
   const page=document.getElementById('pg-input'); if(!page||document.getElementById('csl-wrong-entry'))return;

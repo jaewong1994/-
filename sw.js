@@ -1,4 +1,4 @@
-const CACHE_NAME='epsilon-app-v61-1';
+const CACHE_NAME='epsilon-app-v61-2';
 const APP_SHELL=['./','./index.html','./mobile-ui.css','./counseling.css','./counseling.js','./manifest.webmanifest','./offline.html','./icons/app-icon-192.png','./icons/app-icon-512.png','./icons/app-icon-maskable-512.png'];
 
 self.addEventListener('install',event=>{

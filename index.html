@@ -681,7 +681,7 @@ button{min-height:34px;}
 
   <label style="display:flex;align-items:flex-start;gap:8px;padding:11px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:10px;color:var(--t2);line-height:1.6;cursor:pointer;">
     <input id="official-score-mode" type="checkbox" onchange="toggleOfficialScoreMode(this.checked)" style="margin-top:2px;">
-    <span><strong>공식 성적통지표로 정밀하게 보기</strong><br>성적 발표 후 체크하고 표준점수·백분위를 입력하면 추정값 대신 공식값으로 배치표를 다시 계산합니다.</span>
+    <span><strong>확인한 표준점수 직접 입력</strong><br>성적표나 신뢰하는 산출 사이트의 표준점수·백분위를 입력하면 추정값 대신 입력값으로 배치표를 다시 계산합니다. 백분위를 모르면 기존 추정값을 유지하세요.</span>
   </label>
   <button class="btn btn-p" onclick="saveScore()">✅ 성적 저장하기</button>
   <button class="btn" onclick="saveScore('uni')" style="width:100%;margin-top:8px;background:var(--white);border:1px solid var(--accent);color:var(--accent);">🏫 저장하고 정시 배치표 보기</button>
@@ -953,7 +953,7 @@ function setCalcFull(subj, res, gr) {
   const pctEl=document.getElementById(subj+'_pct');
   const grEl=document.getElementById(subj+'_gv');
   const srcEl=document.getElementById(subj+'_src');
-  if(officialScoreMode && selExam==='9월 모평' && res){
+  if(officialScoreMode && res){
     cache[subj].g=gr;
     if(gr && gr>0) { grEl.textContent=gr+'등급'; grEl.className='ai-res-val '+gcCls(gr); }
     else { grEl.textContent='-'; grEl.className='ai-res-val empty'; }
@@ -986,7 +986,7 @@ function toggleOfficialScoreMode(enabled){
       if(raw&&raw.value) autoCalc(subj);
     }
   });
-  showToast(officialScoreMode?'공식 성적표 값을 입력하면 정밀 모드로 계산합니다':'가채점 추정 모드로 전환했습니다');
+  showToast(officialScoreMode?'확인한 표준점수를 입력하세요':'가채점 추정 모드로 전환했습니다');
 }
 
 function manualScoreInput(subj){
@@ -1035,14 +1035,14 @@ function saveScore(nextPage) {
   const korRaw=parseInt(document.getElementById('kor_raw').value)||0;
   const mathRaw=parseInt(document.getElementById('math_raw').value)||0;
   if(!korRaw&&!mathRaw){showToast('국어 또는 수학 원점수를 입력해주세요');return false;}
-  if(officialScoreMode&&(!cache.kor.s||!cache.kor.p||!cache.math.s||!cache.math.p)){
-    showToast('국어·수학 공식 표준점수와 백분위를 모두 입력해주세요');
+  if(officialScoreMode&&(!cache.kor.s||!cache.math.s)){
+    showToast('국어·수학 표준점수를 입력해주세요');
     return false;
   }
   const sci1Name=document.getElementById('sci1_name').value;
   const sci2Name=document.getElementById('sci2_name').value;
-  if(officialScoreMode&&((sci1Name&&(!cache.sci1.s||!cache.sci1.p))||(sci2Name&&(!cache.sci2.s||!cache.sci2.p)))){
-    showToast('선택한 탐구 과목의 공식 표준점수와 백분위를 입력해주세요');
+  if(officialScoreMode&&((sci1Name&&!cache.sci1.s)||(sci2Name&&!cache.sci2.s))){
+    showToast('선택한 탐구 과목의 표준점수를 입력해주세요');
     return false;
   }
   const rec={
@@ -1054,8 +1054,8 @@ function saveScore(nextPage) {
     sci1:{name:document.getElementById('sci1_name').value,raw:parseInt(document.getElementById('sci1_raw').value)||0,std:cache.sci1.s,pct:cache.sci1.p,gr:cache.sci1.g},
     sci2:{name:document.getElementById('sci2_name').value,raw:parseInt(document.getElementById('sci2_raw').value)||0,std:cache.sci2.s,pct:cache.sci2.p,gr:cache.sci2.g},
     hist:{raw:parseInt(document.getElementById('hist_raw').value)||0,gr:cache.hist.g},
-    wrongItems: window._mockWrongItems || {},
-    sourceMode: officialScoreMode ? 'external' : ((window._mockWrongItems&&Object.keys(window._mockWrongItems).length)?'wrong_items':'estimated')
+    wrongItems: window.getCurrentWrongItems ? window.getCurrentWrongItems() : {},
+    sourceMode: officialScoreMode ? 'external' : ((window.getCurrentWrongItems&&Object.keys(window.getCurrentWrongItems()).length)?'wrong_items':'estimated')
   };
   scores.push(rec);
   scores.sort((a,b)=>{const o=['6월 모평','7월 학평','9월 모평','수능'];return o.indexOf(a.examType)-o.indexOf(b.examType);});
