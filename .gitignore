@@ -1,0 +1,27 @@
+# Historical exports and local archives
+*.zip
+12312.html
+index1.txt
+index2.html
+index22.html
+index33.html
+index444.html
+index555.html
+index666.html
+index_v*.html
+입실론_입시연구소_v*.html
+
+# OneDrive-linked working/reference folders
+axis/
+axix/
+files/
+files2/
+viewer_upload/
+
+# Local tooling and OS files
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+node_modules/
