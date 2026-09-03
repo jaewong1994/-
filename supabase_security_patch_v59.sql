@@ -117,6 +117,7 @@ end;
 $$;
 
 revoke all on function is_director() from public;
+revoke all on function protect_profile_sensitive_fields() from public;
 revoke all on function set_my_profile(text, bigint) from public;
 grant execute on function is_director() to authenticated;
 grant execute on function set_my_profile(text, bigint) to authenticated;
