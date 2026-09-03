@@ -52,6 +52,30 @@
     if(Number(u.sr)===2&&scienceRx.test(names))return false;
     return true;
   }
+  function strategyMatch(u,r){
+    const scores={
+      국:Number(r?.kor?.pct)||pctAnchor[Number(r?.kor?.gr)||9],
+      수:Number(r?.math?.pct)||pctAnchor[Number(r?.math?.gr)||9],
+      영:pctAnchor[Number(r?.eng?.gr)||9],
+      탐:Number(u?.sc)>=2?((Number(r?.sci1?.pct)||pctAnchor[Number(r?.sci1?.gr)||9])+(Number(r?.sci2?.pct)||pctAnchor[Number(r?.sci2?.gr)||9]))/2:Math.max(Number(r?.sci1?.pct)||pctAnchor[Number(r?.sci1?.gr)||9],Number(r?.sci2?.pct)||pctAnchor[Number(r?.sci2?.gr)||9])
+    };
+    const weights={국:Number(u?.kw)||0,수:Number(u?.mw)||0,영:Number(u?.ew)||0,탐:Number(u?.sw)||0};
+    const active=Object.keys(scores).filter(k=>weights[k]>0),weightSum=active.reduce((s,k)=>s+weights[k],0);
+    const equal=active.length?active.reduce((s,k)=>s+scores[k],0)/active.length:0;
+    const weighted=weightSum?active.reduce((s,k)=>s+scores[k]*weights[k],0)/weightSum:equal;
+    const scienceCount=[r?.sci1?.name,r?.sci2?.name].filter(x=>scienceRx.test(String(x||''))).length;
+    const socialCount=[r?.sci1?.name,r?.sci2?.name].filter(x=>socialRx.test(String(x||''))).length;
+    const gm=String(u?.gm||'');
+    const bonusEligible=(/과탐/.test(gm)&&scienceCount>=(/2과목/.test(gm)?2:1))||(/사탐/.test(gm)&&socialCount>=(/2과목/.test(gm)?2:1));
+    const delta=clamp(weighted-equal,-15,15),strongest=active.slice().sort((a,b)=>scores[b]-scores[a])[0]||'';
+    const label=Math.abs(delta)<1?'균형형':delta>0?`${strongest} 강점 활용`:'반영비율 불리';
+    return {score:Math.round(delta*10)/10,bonusEligible,label};
+  }
+  function selectivityScore(u){
+    const count=areaCount(u,'exc'),pctRef=Number(u?.pctE||u?.pct||u?.pctI||0),stdRef=Number(u?.stdE||u?.std||u?.stdI||0);
+    // Percentile sums are comparable across differently sized subject sets; raw standard-score sums are not.
+    return pctRef?pctRef*3/count:stdRef*.72*3/count;
+  }
   function scoreUniversity(u,r){
     if(!compatible(u,r))return {compatible:false};
     const useStd=u.ind==='표준'||u.ind==='표+백',stdKey=useStd?'std':'pct',stdI=useStd?'stdI':'pctI',stdE=useStd?'stdE':'pctE';
@@ -66,13 +90,16 @@
     options.forEach(x=>{x.rawDiff=x.score-x.ref;x.diff=x.rawDiff*3/x.count;});
     const best=options.sort((a,b)=>b.diff-a.diff)[0];
     const quality=(u.ind==='등급점수화'||!u.sk)?'low':(u.et==='o'?'medium':'high');
-    return Object.assign({compatible:true,valid:true,useStd,quality},best);
+    const match=strategyMatch(u,r),selectivity=selectivityScore(u);
+    // Within each fit band, selectivity dominates; score fit and subject affinity only break near-ties.
+    const rawSelectivity=Number(u?.stdE||u?.std||u?.stdI||0);
+    return Object.assign({compatible:true,valid:true,useStd,quality,match,selectivity,strategicRank:selectivity+rawSelectivity/10000+best.diff/1000000+match.score/10000000+(match.bonusEligible?0.00001:0)},best);
   }
   function selectionProfile(u){
     const university=String(u?.n||''),dept=String(u?.d||''),requirements=[];
     let finalAvailable=true,nonScoreShare=0,stageLabel='최종',sourceUrl='',sourceLabel='';
     const add=(kind,text)=>{if(text&&!requirements.some(x=>x.text===text))requirements.push({kind,text});};
-    if(university.includes('서울대')){
+    if(university==='서울대'){
       sourceUrl='https://admission.snu.ac.kr/materials/guide_movie/admission_guide';sourceLabel='서울대 2027 전형안내';
       if(/지역균형/.test(dept)){
         nonScoreShare=40;finalAvailable=false;stageLabel='수능 성적 부분';
@@ -84,7 +111,7 @@
       }
       if(/교육과|교육학과|사범대/.test(dept))add('interview','교직적성·인성면접: 가산점 및 결격 판단');
       if(/수의|의예|의과|치의/.test(dept))add('interview','적성·인성면접: 결격 여부 판단');
-    }else if(university.includes('고려대')){
+    }else if(university==='고려대'){
       sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000069';sourceLabel='대입정보포털 2027 고려대';
       if(/교과우수/.test(dept)){
         nonScoreShare=20;finalAvailable=false;stageLabel='수능 성적 부분';
@@ -99,9 +126,32 @@
         nonScoreShare=Math.max(nonScoreShare,20);finalAvailable=false;stageLabel='수능 성적 부분';
         add('practical','수능 80% + 실기 20% · 추가 전형요소 확인 필요');
       }
+    }else if(university==='연세대'){
+      sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000149';sourceLabel='대입정보포털 2027 연세대';
+      nonScoreShare=5;finalAvailable=false;stageLabel='수능 성적 부분';
+      add('record','수능 95% + 학생부 5%(교과·출결) · 학생부 입력 전 최종 판정 보류');
+      if(/의예|국제|언더우드/.test(dept))add('interview','단계별 면접평가 반영 · 모집단위별 선발배수 확인');
+    }else if(university==='한양대'){
+      sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000203';sourceLabel='대입정보포털 2027 한양대';
+      nonScoreShare=10;finalAvailable=false;stageLabel='수능 성적 부분';
+      add('record','수능 90% + 학생부종합평가 10% · 학생부 입력 전 최종 판정 보류');
+      if(/연출|스탭|연기/.test(dept))add('practical','수능 55% + 실기 45%');
+      if(/스포츠사이언스/.test(dept))add('practical','수능 70% + 실기 30%');
+    }else if(university==='중앙대'){
+      sourceUrl='https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2027&unvCd=0000175';sourceLabel='대입정보포털 2027 중앙대';
+      nonScoreShare=10;finalAvailable=false;stageLabel='수능 성적 부분';
+      add('record','수능 90% + 비교과(출결) 10% · 출결 입력 전 최종 판정 보류');
+      if(/체육교육/.test(dept))add('record','체육교육과: 수능 80% + 서류 20%');
+    }
+    const note=String(u?.tk||'');
+    if(/면접/.test(note)){finalAvailable=false;add('interview','면접 전형요소 있음 · 세부 배점과 결격 기준 확인');}
+    if(/실기/.test(note)){finalAvailable=false;add('practical','실기 전형요소 있음 · 종목과 배점 확인');}
+    if(/학교생활기록부|학생부종합평가|비교과\(출결\)/.test(note)&&/반영|평가|감점/.test(note)){
+      finalAvailable=false;nonScoreShare=Math.max(nonScoreShare,5);stageLabel=stageLabel==='최종'?'수능 성적 부분':stageLabel;
+      add('record','학생부·출결 반영 있음 · 입력 전 최종 판정 보류');
     }
     if(u?.gm)add('bonus',`가산·감점: ${u.gm}`);
-    if(u?.tk)add('notice',u.tk);
+    if(note)add('notice',note);
     return {finalAvailable,nonScoreShare,stageLabel,requirements,sourceUrl,sourceLabel};
   }
   function admissionChance(diff,{verified=false,useStd=true,quality='medium',finalAvailable=true,nonScoreShare=0}={}){
@@ -113,7 +163,8 @@
   }
   function balancedRows(rows,perGroup=8){
     const groups={hard:[],reach:[],fit:[],safe:[]};rows.forEach(x=>groups[fit(x.diff)[0]].push(x));
+    Object.values(groups).forEach(group=>group.sort((a,b)=>(Number(b.strategicRank)||0)-(Number(a.strategicRank)||0)||(b.diff-a.diff)));
     return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
   }
-  return {version:'2026.09-v3',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,scoreUniversity,selectionProfile,admissionChance,balancedRows};
+  return {version:'2026.09-v4',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows};
 });

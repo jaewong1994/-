@@ -25,8 +25,19 @@ const ku=engine.selectionProfile({n:'고려대',d:'신소재공학부(교과우�
 assert.equal(ku.nonScoreShare,20);
 assert.ok(ku.requirements.some(x=>x.text.includes('학생부(교과) 20%')));
 assert.equal(engine.selectionProfile({n:'고려대',d:'신소재공학부'}).finalAvailable,true);
+assert.equal(engine.selectionProfile({n:'남서울대',d:'간호학과'}).finalAvailable,true,'남서울대를 서울대로 오인하면 안 됨');
+assert.equal(engine.selectionProfile({n:'연세대',d:'경제학부'}).nonScoreShare,5);
+assert.equal(engine.selectionProfile({n:'연세대',d:'의예'}).requirements.some(x=>x.kind==='interview'),true);
+assert.equal(engine.selectionProfile({n:'한양대',d:'기계공학부'}).nonScoreShare,10);
+assert.equal(engine.selectionProfile({n:'중앙대',d:'경영학부'}).nonScoreShare,10);
 
 const base={mathSub:'미적분',kor:{gr:4,std:108,pct:64},math:{gr:4,std:110,pct:66},eng:{gr:3},sci1:{name:'물리',gr:4,std:56,pct:65},sci2:{name:'화학',gr:4,std:55,pct:63}};
+const mathStrong=Object.assign({},base,{kor:{gr:3,std:120,pct:80},math:{gr:1,std:140,pct:98}});
+const mathHeavy={kw:20,mw:50,ew:10,sw:20,sc:2};
+const korHeavy={kw:50,mw:20,ew:10,sw:20,sc:2};
+assert.ok(engine.strategyMatch(mathHeavy,mathStrong).score>engine.strategyMatch(korHeavy,mathStrong).score,'수학 강점 학생은 수학 고반영 대학의 궁합이 더 높아야 함');
+const scienceBonus=engine.strategyMatch({kw:25,mw:35,ew:10,sw:30,sc:2,gm:'과탐 2과목 선택 시 3% 가산'},mathStrong);
+assert.equal(scienceBonus.bonusEligible,true,'과탐 2과목 가산조건을 탐지해야 함');
 const improved=engine.scenarioRecord(base,{kor:3,math:3,eng:3,sci1:3,sci2:3});
 const worsened=engine.scenarioRecord(base,{kor:5,math:5,eng:4,sci1:5,sci2:5});
 assert.ok(engine.scenarioSummaryStd(improved,{kor:3,math:3,eng:3,sci1:3,sci2:3})>engine.scenarioSummaryStd(worsened,{kor:5,math:5,eng:4,sci1:5,sci2:5}));
@@ -39,20 +50,28 @@ const universities=JSON.parse(uniLine.slice(12,-1));
 assert.ok(universities.length>=4000,'정시 데이터가 4,000개 이상이어야 함');
 let valid=0;
 let monotonic=0;
+let strategic=0;
 for(const u of universities){
   const result=engine.scoreUniversity(u,improved);
   const lower=engine.scoreUniversity(u,worsened);
   if(result.compatible&&result.valid){
     assert.ok(Number.isFinite(result.diff));valid++;
+    assert.ok(Number.isFinite(result.strategicRank));
+    assert.ok(Number.isFinite(result.match.score));strategic++;
     if(lower.compatible&&lower.valid){assert.ok(result.diff>=lower.diff-1e-9,`${u.n} ${u.d}: 성적 향상 시 비교점수가 하락함`);monotonic++;}
   }
 }
 assert.ok(valid>=3500,'대부분의 대학에 유효한 비교점수가 계산되어야 함');
 assert.ok(monotonic>=3500,'대학별 시나리오 단조성 검사가 충분해야 함');
+assert.equal(strategic,valid,'모든 산출 대학에 전략 궁합 점수가 있어야 함');
 
 const sample=[-30,-11,-4,3,12,20].map((diff,i)=>({diff,cut:500-i}));
 const groups=engine.balancedRows(sample,1);
 assert.deepEqual(groups.map(x=>x.key),['hard','reach','fit','safe']);
 assert.ok(groups.every(x=>x.rows.length<=1));
 
-console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, chance ${chances.join('→')}`);
+const ranked=engine.balancedRows([{diff:4,strategicRank:100},{diff:4,strategicRank:120}],2).find(x=>x.key==='fit').rows;
+assert.equal(ranked[0].strategicRank,120,'같은 판정 구간에서는 전략순위가 높은 대학이 먼저여야 함');
+assert.ok(engine.selectivityScore({pct:299,fx:'국수영탐',sc:2})>engine.selectivityScore({pct:189,fx:'수영탐',sc:2}),'서로 다른 반영영역 수를 정규화해도 최상위 대학선이 역전되면 안 됨');
+
+console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, ${strategic} strategic, chance ${chances.join('→')}`);
