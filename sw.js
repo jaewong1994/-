@@ -1,5 +1,5 @@
-const CACHE_NAME='epsilon-app-v63-1';
-const APP_SHELL=['./','./index.html','./mobile-ui.css','./counseling.css','./counseling.js','./manifest.webmanifest','./offline.html','./icons/app-icon-192.png','./icons/app-icon-512.png','./icons/app-icon-maskable-512.png'];
+const CACHE_NAME='epsilon-app-v63-2';
+const APP_SHELL=['./','./index.html','./mobile-ui.css','./counseling.css','./counseling-engine.js','./counseling.js','./manifest.webmanifest','./offline.html','./icons/app-icon-192.png','./icons/app-icon-512.png','./icons/app-icon-maskable-512.png'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));
