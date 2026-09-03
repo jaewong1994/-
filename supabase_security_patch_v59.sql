@@ -43,7 +43,8 @@ begin
   end if;
 
   if actor_role = 'student' then
-    if new.class_id is distinct from old.class_id
+    if (new.class_id is distinct from old.class_id
+        and coalesce(current_setting('app.profile_setup', true), '') <> 'on')
        or new.teacher_id is distinct from old.teacher_id
        or new.student_no is distinct from old.student_no
        or new.initial_password is distinct from old.initial_password then
@@ -88,7 +89,7 @@ begin
   if not found then
     raise exception '프로필을 찾을 수 없습니다';
   end if;
-  if current_profile.role <> 'student' then
+  if current_profile.role is distinct from 'student' then
     raise exception '학생 계정만 최초 설정을 사용할 수 있습니다';
   end if;
   if nullif(btrim(current_profile.name), '') is not null then
@@ -104,6 +105,9 @@ begin
      and p_class_id is distinct from current_profile.class_id then
     raise exception '배정된 반은 변경할 수 없습니다';
   end if;
+
+  -- 이 트랜잭션 안의 검증된 최초 설정에서만 class_id 변경을 허용한다.
+  perform set_config('app.profile_setup', 'on', true);
 
   update profiles
      set name = btrim(p_name),
