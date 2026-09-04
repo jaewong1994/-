@@ -118,7 +118,8 @@ assert.equal(earlyRanked.other[0].e.u,'확인대','복합 조건은 요강 확�
 const counselingSource=fs.readFileSync(path.join(__dirname,'..','counseling.js'),'utf8');
 assert.match(counselingSource,/baseExam/,'6월·9월 추천 기준 시험 상태가 있어야 함');
 assert.match(counselingSource,/응시 선택과목/,'상담 카드에 학생의 응시 선택과목을 표시해야 함');
-assert.match(counselingSource,/readScoresLocal\(_wuser\.id\)/,'로컬 성적은 로그인 계정별 저장소에서 읽어야 함');
+assert.match(counselingSource,/readScoresLocal\(owner\)/,'로컬 성적은 요청 시작 시점 계정별 저장소에서 읽어야 함');
+assert.match(counselingSource,/_wuser\?\.id!==owner/,'계정 전환 후 이전 성적 응답을 버려야 함');
 assert.match(html,/epsilon_scores:\$\{userId\}/,'로컬 성적 키는 계정 ID로 분리돼야 함');
 
 console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, ${strategic} strategic, chance ${chances.join('→')}`);

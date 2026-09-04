@@ -363,7 +363,8 @@ button{min-height:34px;}
 <link rel="stylesheet" href="./mobile-ui.css">
 <link rel="stylesheet" href="./counseling.css">
 </head>
-<body>
+<body class="auth-pending">
+<section id="auth-gate" role="main"><div class="auth-card"><h1>입실론 학생관리</h1><p id="auth-status" role="status">로그인 상태를 확인하고 있습니다.</p><form id="auth-form" hidden><label>이메일<input id="auth-email" type="email" autocomplete="username" required></label><label>비밀번호<input id="auth-password" type="password" autocomplete="current-password" required></label><button type="submit">로그인</button></form><button type="button" id="auth-retry" hidden>다시 확인</button></div></section>
 
 <div class="hdr">
   <div class="hdr-top">
@@ -1567,12 +1568,13 @@ function onSearch(v){uniQ=v;clearTimeout(window._st);window._st=setTimeout(rende
 // ===== NAV =====
 // 상위 카테고리 전환
 function showCat(cat){
+  if(window.AppSession&&!AppSession.canOpen(cat))return;
   document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('on', c.dataset.cat===cat));
   syncMobileNav(cat);
   const subtabs=document.getElementById('subtabs');
   if(cat==='ipsi'){
     subtabs.style.display='flex';
-    showPage('susi');
+    showPage('uni');
   } else {
     subtabs.style.display='none';
     showPage(cat); // wtest / collection / dday
@@ -1581,6 +1583,7 @@ function showCat(cat){
 
 const IPSI_TABS={susi:0,score:1,trend:2,cut:3,uni:4,input:5,strategy:6};
 function showPage(n){
+  if(window.AppSession&&!AppSession.canOpen(n))return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   const pg=document.getElementById('pg-'+n);
   if(pg) pg.classList.add('on');
@@ -5412,11 +5415,7 @@ async function pcBoot(){
     const sb=sbReady(); if(!sb) return;
     const { data:{ session } } = await sb.auth.getSession();
     if(!session) return;
-    _wuser=session.user;
-    if(!_wprofile){
-      const { data:prof } = await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
-      if(prof) _wprofile=prof;
-    }
+    if(_wuser?.id!==session.user.id)return;
     // 3) 서버 배경 설정 동기화
     const { data:pref } = await sb.from('pc_prefs').select('bg_card_id,bg_scope,bg_pos').eq('user_id',session.user.id).maybeSingle();
     if(pref && pref.bg_card_id && pref.bg_scope){
@@ -5443,7 +5442,7 @@ async function pcBoot(){
     const _rd=renderDday;
     window.renderDday=async function(){ await _rd.apply(this,arguments); try{applyPhotoBg('dday');}catch(e){} };
   }
-  pcBoot();
+  // Session bootstrap runs once in app-session.js after profile resolution.
 })();
 
 
@@ -6423,5 +6422,6 @@ window.addEventListener('load',()=>{
 </script>
 <script src="./counseling-engine.js"></script>
 <script src="./counseling.js"></script>
+<script src="./app-session.js"></script>
 </body>
 </html>
