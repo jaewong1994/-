@@ -6,7 +6,7 @@ const esc=v=>String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;'
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const order={'6월 모평':1,'7월 학평':2,'9월 모평':3,'수능':4};
 const artRx=/체육|스포츠|운동|레저|골프|태권|미술|디자인|회화|조소|공예|애니|웹툰|음악|성악|피아노|관현악|무용|연극|영화/;
-const state={students:[],classes:{},studentId:'',studentName:'',records:[],plan:null,mode:'regular',arts:false,scenario:null,markedEarly:[],earlyLimit:8,markSaving:false,openToken:0};
+const state={students:[],classes:{},studentId:'',studentName:'',records:[],plan:null,mode:'regular',arts:false,scenario:null,baseExam:'',markedEarly:[],earlyLimit:8,markSaving:false,openToken:0};
 
 // 2027학년도 평가원 정답표 배점. 국어 공통 1~34 + 선택 35~45.
 const KOR_COMMON={
@@ -75,15 +75,15 @@ window.syncMockScoreRecord=async function(rec){
 window.loadMyMockScores=async function(){
   try{
     const sb=sbReady(); if(!sb||!_wuser)return;
+    const accountLocal=typeof readScoresLocal==='function'?readScoresLocal(_wuser.id):[];
+    scores=accountLocal.slice();
     const {data,error}=await sb.from('mock_scores').select('id,score_data,updated_at').eq('student_id',_wuser.id).order('updated_at');
-    if(error)return;
+    if(error){renderScore();renderTrend();renderUni();renderStrategy();return;}
     const cloud=(data||[]).map(x=>Object.assign({},x.score_data,{cloudId:x.id}));
-    if(cloud.length){
-      const map=new Map(scores.map(x=>[`${x.year}|${x.examType}`,x])); cloud.forEach(x=>map.set(`${x.year}|${x.examType}`,x));
-      scores=[...map.values()].sort((a,b)=>(order[a.examType]||9)-(order[b.examType]||9));
-      localStorage.setItem('epsilon_scores',JSON.stringify(scores)); renderScore();renderTrend();renderUni();renderStrategy();
-    }
-    for(const local of scores.filter(x=>!cloud.some(c=>c.examType===x.examType&&c.year===x.year))) window.syncMockScoreRecord(local);
+    const map=new Map(accountLocal.map(x=>[`${x.year}|${x.examType}`,x])); cloud.forEach(x=>map.set(`${x.year}|${x.examType}`,x));
+    scores=[...map.values()].sort((a,b)=>(order[a.examType]||9)-(order[b.examType]||9));
+    if(typeof saveScoresLocal==='function')saveScoresLocal();renderScore();renderTrend();renderUni();renderStrategy();
+    for(const local of accountLocal.filter(x=>!cloud.some(c=>c.examType===x.examType&&c.year===x.year))) window.syncMockScoreRecord(local);
   }catch(e){console.warn(e);}
 };
 
@@ -93,16 +93,16 @@ window.deleteCloudMockScore=async function(rec){
 window.deleteAllMockScores=async function(){
   if(!confirm('모든 성적을 기기와 상담 서버에서 삭제할까요?'))return;
   const sb=sbReady();if(sb&&_wuser)await sb.from('mock_scores').delete().eq('student_id',_wuser.id);
-  scores=[];localStorage.setItem('epsilon_scores','[]');renderScore();renderTrend();renderUni();renderStrategy();showToast('전체 성적을 삭제했습니다');
+  scores=[];if(typeof saveScoresLocal==='function')saveScoresLocal();renderScore();renderTrend();renderUni();renderStrategy();showToast('전체 성적을 삭제했습니다');
 };
 
 function gradeOptions(v){return Array.from({length:9},(_,i)=>`<option value="${i+1}" ${Number(v)===i+1?'selected':''}>${i+1}등급</option>`).join('');}
 function scoreCard(r){
   if(!r)return `<div class="csl-exam"><div class="csl-empty">아직 입력된 성적이 없습니다.</div></div>`;
-  const tag=r.official||r.sourceMode==='external'?'확인 점수':'추정 점수';
-  return `<article class="csl-exam"><div class="csl-exam-top"><div class="csl-exam-name">${esc(r.examType)}</div><span class="csl-badge ${tag==='확인 점수'?'official':'estimate'}">${tag}</span></div><div class="csl-subjects">${[['국어',r.kor],['수학',r.math],['영어',r.eng],['탐구1',r.sci1],['탐구2',r.sci2]].map(([n,s])=>`<div class="csl-subject"><span>${n}</span><strong>${s&&s.gr||'-'}</strong></div>`).join('')}</div></article>`;
+  const tag=r.official||r.sourceMode==='external'?'확인 점수':'추정 점수',active=state.baseExam===r.examType,encoded=encodeURIComponent(r.examType).replace(/'/g,'%27');
+  return `<article class="csl-exam ${active?'selected':''}"><div class="csl-exam-top"><div class="csl-exam-name">${esc(r.examType)}</div><div class="csl-exam-badges"><span class="csl-badge ${tag==='확인 점수'?'official':'estimate'}">${tag}</span>${active?'<span class="csl-badge base">추천 기준</span>':''}</div></div><div class="csl-exam-options"><strong>응시 선택과목</strong><span>국어 ${esc(r.korSub||'미입력')} · 수학 ${esc(r.mathSub||'미입력')}</span><span>탐구 ${esc(r.sci1?.name||'미입력')} / ${esc(r.sci2?.name||'미입력')}</span></div><div class="csl-subjects">${[['국어',r.kor],['수학',r.math],['영어',r.eng],['탐구1',r.sci1],['탐구2',r.sci2]].map(([n,s])=>`<div class="csl-subject"><span>${n}</span><strong>${s&&s.gr||'-'}</strong></div>`).join('')}</div><button type="button" class="csl-exam-select ${active?'on':''}" aria-pressed="${active}" onclick="cslBaseExam(decodeURIComponent('${encoded}'))"><i class="ti ti-${active?'check':'circle'}" aria-hidden="true"></i>${active?'현재 추천 기준':'이 시험을 추천 기준으로'}</button></article>`;
 }
-function latest(){return state.records.slice().sort((a,b)=>(order[b.examType]||0)-(order[a.examType]||0))[0]||null;}
+function latest(){const counselingRecords=state.records.filter(x=>x.examType==='6월 모평'||x.examType==='9월 모평');return counselingRecords.find(x=>x.examType===state.baseExam)||counselingRecords.slice().sort((a,b)=>(order[b.examType]||0)-(order[a.examType]||0))[0]||null;}
 function scenarioFrom(r){return {kor:r?.kor?.gr||5,math:r?.math?.gr||5,eng:r?.eng?.gr||5,sci1:r?.sci1?.gr||5,sci2:r?.sci2?.gr||5};}
 function scenarioStd(r,s){return r?engine.scenarioSummaryStd(r,s):0;}
 function scenarioPct(r,s){return r?engine.scenarioSummaryPct(r,s):0;}
@@ -161,8 +161,13 @@ window.cslScenario=(k,v)=>{state.scenario[k]=Number(v);refreshResults();};
 window.cslMode=(m)=>{state.mode=m;document.querySelectorAll('.csl-tab[data-mode]').forEach(x=>x.classList.toggle('on',x.dataset.mode===m));refreshResults();};
 window.cslArts=(v)=>{state.arts=v==='1';refreshResults();};
 window.cslLoadMoreEarly=()=>{state.earlyLimit+=8;refreshResults();};
+window.cslBaseExam=async function(examType){
+  if(state.baseExam===examType||!state.records.some(x=>x.examType===examType))return;
+  state.baseExam=examType;state.scenario=scenarioFrom(latest());state.earlyLimit=8;renderWorkspace();
+  const ok=await persistPlan(!!state.plan?.published,true);showToast(ok?`${examType} 성적을 추천 기준으로 저장했습니다`:'추천 기준 저장에 실패했습니다');
+};
 
-function planData(){return Object.assign({},state.plan?.plan_data||{},{scenario:state.scenario,mode:state.mode,arts:state.arts,updatedFrom:latest()?.examType||null,markedEarly:state.markedEarly.slice(0,3)});}
+function planData(){return Object.assign({},state.plan?.plan_data||{},{scenario:state.scenario,mode:state.mode,arts:state.arts,baseExam:state.baseExam,updatedFrom:latest()?.examType||null,markedEarly:state.markedEarly.slice(0,3)});}
 async function persistPlan(published,quiet=false){
   const sb=sbReady(),targetId=state.studentId;if(!sb||!targetId)return false;
   const note=document.getElementById('csl-note')?.value.trim()??state.plan?.counselor_note??'';
@@ -188,14 +193,16 @@ async function openStudent(id,name){
   const token=++state.openToken;state.studentId=id;state.studentName=name||(state.students.find(s=>s.id===id)?.name||'이름 미설정');document.querySelectorAll('.csl-student').forEach(x=>x.classList.toggle('on',x.dataset.id===id));
   const sb=sbReady(); const [sr,pr]=await Promise.all([sb.from('mock_scores').select('*').eq('student_id',id).order('updated_at'),sb.from('consultation_plans').select('*').eq('student_id',id).maybeSingle()]);
   if(token!==state.openToken)return;
-  state.records=(sr.data||[]).map(x=>Object.assign({},x.score_data,{cloudId:x.id,sourceMode:x.source_mode}));state.plan=pr.data||null;state.scenario=state.plan?.plan_data?.scenario||scenarioFrom(latest());state.mode=state.plan?.plan_data?.mode==='early'?'early':'regular';state.arts=!!state.plan?.plan_data?.arts;state.markedEarly=Array.isArray(state.plan?.plan_data?.markedEarly)?state.plan.plan_data.markedEarly.slice(0,3):[];state.earlyLimit=8;
+  state.records=(sr.data||[]).map(x=>Object.assign({},x.score_data,{cloudId:x.id,sourceMode:x.source_mode}));state.plan=pr.data||null;
+  const savedExam=state.plan?.plan_data?.baseExam,counselingRecords=state.records.filter(x=>x.examType==='6월 모평'||x.examType==='9월 모평'),defaultExam=counselingRecords.slice().sort((a,b)=>(order[b.examType]||0)-(order[a.examType]||0))[0]?.examType||'';
+  state.baseExam=counselingRecords.some(x=>x.examType===savedExam)?savedExam:defaultExam;state.scenario=state.plan?.plan_data?.scenario||scenarioFrom(latest());state.mode=state.plan?.plan_data?.mode==='early'?'early':'regular';state.arts=!!state.plan?.plan_data?.arts;state.markedEarly=Array.isArray(state.plan?.plan_data?.markedEarly)?state.plan.plan_data.markedEarly.slice(0,3):[];state.earlyLimit=8;
   renderWorkspace();
 }
 window.cslOpenStudent=openStudent;
 function renderWorkspace(){
   const box=document.getElementById('csl-workspace');if(!box)return;
   const june=state.records.find(x=>x.examType==='6월 모평'),sept=state.records.find(x=>x.examType==='9월 모평');
-  box.innerHTML=`<section class="csl-panel csl-card"><div class="csl-card-head"><div><div class="csl-eyebrow">상담 학생</div><div class="csl-card-title">${esc(state.studentName)} 입시 전략</div></div><span class="csl-badge">${state.records.length}개 성적</span></div><div class="csl-score-grid">${scoreCard(june)}${scoreCard(sept)}</div></section>
+  box.innerHTML=`<section class="csl-panel csl-card"><div class="csl-card-head"><div><div class="csl-eyebrow">상담 학생</div><div class="csl-card-title">${esc(state.studentName)} 입시 전략</div><div class="csl-meta csl-card-help">응시과목을 확인하고 대학 추천에 사용할 시험을 선택하세요.</div></div><span class="csl-badge">${state.records.length}개 성적</span></div><div class="csl-score-grid">${scoreCard(june)}${scoreCard(sept)}</div></section>
   <section class="csl-panel csl-card"><div class="csl-card-head"><div class="csl-card-title">수능 목표 시나리오</div><div class="csl-meta">등급을 바꾸면 대학선이 즉시 갱신됩니다</div></div>${scenarioHtml()}</section>
   <section class="csl-panel csl-card"><div class="csl-card-head"><div class="csl-tabs"><button class="csl-tab ${state.mode==='regular'?'on':''}" data-mode="regular" onclick="cslMode('regular')">정시 우선</button><button class="csl-tab ${state.mode==='early'?'on':''}" data-mode="early" onclick="cslMode('early')">수시 최저</button></div><label class="csl-label" style="margin:0">계열 <select class="csl-select" style="width:auto;min-height:42px" onchange="cslArts(this.value)"><option value="0" ${!state.arts?'selected':''}>일반계열</option><option value="1" ${state.arts?'selected':''}>예체능·실기</option></select></label></div><div id="csl-results">${resultsHtml()}</div></section>
   <section class="csl-panel csl-card"><div class="csl-card-title">학생에게 공개할 상담 요약</div><div class="csl-note">저장만 하면 원장·강사만 볼 수 있고, ‘학생 전략 탭에 공개’를 선택해야 학생에게 표시됩니다.</div><label class="csl-label" for="csl-note" style="margin-top:12px">상담 메모</label><textarea id="csl-note" class="csl-textarea" placeholder="정시 우선 지원선, 수시 6장 구성, 수능까지 올릴 과목을 정리하세요.">${esc(state.plan?.counselor_note||'')}</textarea><div class="csl-actions"><button class="csl-btn" onclick="cslSave(false)">비공개 저장</button><button class="csl-btn primary" onclick="cslSave(true)">학생 전략 탭에 공개</button></div></section>`;
@@ -226,11 +233,18 @@ async function injectPublishedPlan(){
   if(!_wuser||_wprofile?.role!=='student')return;const cont=document.getElementById('strategy-content');if(!cont||document.getElementById('csl-published'))return;
   const sb=sbReady();const {data}=await sb.from('consultation_plans').select('counselor_note,plan_data,updated_at').eq('student_id',_wuser.id).eq('published',true).maybeSingle();if(!data)return;
   const marked=Array.isArray(data.plan_data?.markedEarly)?data.plan_data.markedEarly.slice(0,3):[];
+  const basis=data.plan_data?.baseExam?`<div class="csl-published-basis"><i class="ti ti-target-arrow" aria-hidden="true"></i> 추천 기준 ${esc(data.plan_data.baseExam)}</div>`:'';
   const choices=marked.length?`<div class="csl-published-schools"><div class="csl-published-label">선생님 추천대학</div>${marked.map((x,i)=>`<article class="csl-published-school"><span class="csl-uni-mark" aria-hidden="true">${esc(String(x.u||'대').slice(0,1))}</span><div><strong>${i+1}순위 · ${esc(x.u)}</strong><span>${esc(x.adm)} · ${esc(x.cat)}</span></div></article>`).join('')}</div>`:'';
-  const sec=document.createElement('section');sec.id='csl-published';sec.className='csl-published';sec.innerHTML=`<h3><i class="ti ti-message-2-check" aria-hidden="true"></i> 선생님 상담 전략</h3>${choices}<p>${esc(data.counselor_note||'공개된 상담 메모가 없습니다.')}</p><div class="csl-meta">최근 상담 ${new Date(data.updated_at).toLocaleDateString('ko-KR')}</div>`;cont.insertBefore(sec,cont.firstChild);
+  const sec=document.createElement('section');sec.id='csl-published';sec.className='csl-published';sec.innerHTML=`<h3><i class="ti ti-message-2-check" aria-hidden="true"></i> 선생님 상담 전략</h3>${basis}${choices}<p>${esc(data.counselor_note||'공개된 상담 메모가 없습니다.')}</p><div class="csl-meta">최근 상담 ${new Date(data.updated_at).toLocaleDateString('ko-KR')}</div>`;cont.insertBefore(sec,cont.firstChild);
 }
 const originalStrategy=window.renderStrategy;
 window.renderStrategy=function(){originalStrategy();injectPublishedPlan();};
 
 window.addEventListener('DOMContentLoaded',()=>{injectWrongInput();setTimeout(injectPublishedPlan,600);});
+window.addEventListener('load',async()=>{
+  try{
+    const sb=sbReady();if(!sb)return;const {data:{session}}=await sb.auth.getSession();if(!session)return;
+    _wuser=session.user;await window.loadMyMockScores();
+  }catch(e){console.warn(e);}
+});
 })();

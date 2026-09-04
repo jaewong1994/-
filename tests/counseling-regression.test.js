@@ -47,6 +47,8 @@ assert.equal(engine.compatible({mr:1},Object.assign({},base,{mathSub:'확률과�
 assert.equal(engine.eligibilityProfile({mr:1},Object.assign({},base,{mathSub:'확률과통계'})).status,'ineligible','필수 미적분/기하 미응시는 지원불가여야 함');
 assert.equal(engine.eligibilityProfile({sr:1,sc:2},base).status,'eligible','과탐 2과목 입력은 자연계 필수응시를 충족해야 함');
 assert.equal(engine.eligibilityProfile({sr:2,sc:2},base).status,'ineligible','과탐 응시자는 사탐 필수 모집단위에서 제외해야 함');
+assert.equal(engine.eligibilityProfile({d:'의예과'},Object.assign({},base,{mathSub:'확률과통계'})).status,'ineligible','확률과통계 응시자에게 의예과를 추천하면 안 됨');
+assert.equal(engine.eligibilityProfile({d:'의공학과'},Object.assign({},base,{mathSub:'확률과통계'})).status,'eligible','의공학과를 의약학계열로 오인하면 안 됨');
 assert.equal(engine.eligibilityProfile({sc:2},Object.assign({},base,{sci2:{}})).status,'review','탐구 2과목 반영 대학은 두 번째 선택과목 누락을 경고해야 함');
 const mathBonus=engine.bonusProfile({gm:'수학(미적분/기하) 10% 가산',sc:2},base,true,{국:108,수:110,영:115,탐:111});
 assert.equal(mathBonus.status,'applied');
@@ -87,7 +89,7 @@ assert.ok(bonusAutomatic>=1300,'대학 가산 문구의 다수를 선택과목 �
 
 const sample=[-30,-11,-4,3,12,20].map((diff,i)=>({diff,cut:500-i}));
 const groups=engine.balancedRows(sample,1);
-assert.deepEqual(groups.map(x=>x.key),['hard','reach','fit','safe']);
+assert.deepEqual(groups.map(x=>x.key),['fit','safe','reach','hard'],'상담 결과는 적정 구간을 가장 먼저 보여줘야 함');
 assert.ok(groups.every(x=>x.rows.length<=1));
 
 const ranked=engine.balancedRows([{diff:4,strategicRank:100},{diff:4,strategicRank:120}],2).find(x=>x.key==='fit').rows;
@@ -112,5 +114,11 @@ const earlyRanked=engine.rankEarlyAdmissions([
 assert.equal(earlyRanked.met[0].e.u,'중위대','난도·대학·충족여유 가중치가 더 효율적인 충족 전형을 우선해야 함');
 assert.equal(earlyRanked.none[0].e.u,'면접대','수능최저 없는 전형은 별도 목록이어야 함');
 assert.equal(earlyRanked.other[0].e.u,'확인대','복합 조건은 요강 확인 목록이어야 함');
+
+const counselingSource=fs.readFileSync(path.join(__dirname,'..','counseling.js'),'utf8');
+assert.match(counselingSource,/baseExam/,'6월·9월 추천 기준 시험 상태가 있어야 함');
+assert.match(counselingSource,/응시 선택과목/,'상담 카드에 학생의 응시 선택과목을 표시해야 함');
+assert.match(counselingSource,/readScoresLocal\(_wuser\.id\)/,'로컬 성적은 로그인 계정별 저장소에서 읽어야 함');
+assert.match(html,/epsilon_scores:\$\{userId\}/,'로컬 성적 키는 계정 ID로 분리돼야 함');
 
 console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, ${strategic} strategic, chance ${chances.join('→')}`);

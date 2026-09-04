@@ -54,6 +54,10 @@
       if(!mathSub)review.push('수학 선택과목 입력 필요');
       else if(mathSub==='확률과통계')blocked.push('필수 수학(미적분/기하) 미응시');
     }
+    if(mathSub==='확률과통계'&&/(?:의예|의과|의학(?!공)|치의|한의|수의|약학|제약)/.test(String(u?.d||''))){
+      blocked.push('의약학계열 보수 추천 기준: 미적분/기하 미응시');
+      requirements.push('의약학계열은 미적분/기하 응시 기준으로 추천');
+    }
     if(Number(u?.sc)>=2){
       requirements.push('탐구 2과목 반영');
       if(names.filter(Boolean).length<2)review.push('탐구 선택과목 2개 입력 필요');
@@ -223,7 +227,7 @@
   function balancedRows(rows,perGroup=8){
     const groups={hard:[],reach:[],fit:[],safe:[]};rows.forEach(x=>groups[fit(x.diff)[0]].push(x));
     Object.values(groups).forEach(group=>group.sort((a,b)=>(Number(b.strategicRank)||0)-(Number(a.strategicRank)||0)||(b.diff-a.diff)));
-    return ['hard','reach','fit','safe'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
+    return ['fit','safe','reach','hard'].map(key=>({key,rows:groups[key].slice(0,perGroup),total:groups[key].length}));
   }
   function earlyKey(e){return [e?.u,e?.adm,e?.cat].map(v=>String(v||'').trim()).join('|');}
   function parseEarlyMinimum(entry){
@@ -269,5 +273,5 @@
       other:rows.filter(x=>x.assessment.status==='review'||x.assessment.status==='unmet').sort((a,b)=>(a.assessment.status==='review'?0:1)-(b.assessment.status==='review'?0:1)||a.rank-b.rank||byName(a,b))
     };
   }
-  return {version:'2026.09-v7',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,eligibilityProfile,bonusProfile,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows,earlyKey,parseEarlyMinimum,earlyAssessment,rankEarlyAdmissions};
+  return {version:'2026.09-v8',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,eligibilityProfile,bonusProfile,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows,earlyKey,parseEarlyMinimum,earlyAssessment,rankEarlyAdmissions};
 });

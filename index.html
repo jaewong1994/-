@@ -795,7 +795,10 @@ const EXAM_CUT_KEY = {'6월 모평':'26_6','7월 학평':'26_7','9월 모평':'2
 const ENG_CUTS  = [[90,1],[80,2],[70,3],[60,4],[50,5],[40,6],[30,7],[20,8],[0,9]];
 const HIST_CUTS = [[40,1],[35,2],[30,3],[25,4],[20,5],[15,6],[10,7],[5,8],[0,9]];
 
-let scores = JSON.parse(localStorage.getItem('epsilon_scores') || '[]');
+function scoreLocalKey(userId){ return userId ? `epsilon_scores:${userId}` : 'epsilon_scores:guest'; }
+function readScoresLocal(userId){ try{return JSON.parse(localStorage.getItem(scoreLocalKey(userId))||'[]');}catch(e){return [];} }
+function saveScoresLocal(){ const userId=(typeof _wuser!=='undefined'&&_wuser&&_wuser.id)||'';localStorage.setItem(scoreLocalKey(userId),JSON.stringify(scores)); }
+let scores = readScoresLocal('');
 let uniFS='전체', uniFG='전체', uniFR='전체', uniQ='', uniFC=true, uniFE='제외';
 let tChart=null, pChart=null;
 let selExam='9월 모평', selKorSub='화법과작문', selMathSub='확률과통계';
@@ -1059,7 +1062,7 @@ function saveScore(nextPage) {
   };
   scores.push(rec);
   scores.sort((a,b)=>{const o=['6월 모평','7월 학평','9월 모평','수능'];return o.indexOf(a.examType)-o.indexOf(b.examType);});
-  localStorage.setItem('epsilon_scores',JSON.stringify(scores));
+  saveScoresLocal();
   if(window.syncMockScoreRecord) window.syncMockScoreRecord(rec);
   showToast('✅ 성적이 저장되었습니다');
   renderScore(); renderTrend(); renderUni();
@@ -1187,7 +1190,7 @@ function renderTrend(){
     ]},options:{...opt,scales:{...opt.scales,y:{...opt.scales.y,min:0,max:100}}}});
   },80);
 }
-function delScore(id){if(!confirm('이 성적을 삭제할까요?'))return;const removed=scores.find(s=>s.id===id||s.cloudId===id);scores=scores.filter(s=>s.id!==id&&s.cloudId!==id);localStorage.setItem('epsilon_scores',JSON.stringify(scores));if(window.deleteCloudMockScore&&removed)window.deleteCloudMockScore(removed);renderScore();renderTrend();renderUni();if(document.getElementById('pg-strategy').classList.contains('on'))renderStrategy();showToast('삭제되었습니다');}
+function delScore(id){if(!confirm('이 성적을 삭제할까요?'))return;const removed=scores.find(s=>s.id===id||s.cloudId===id);scores=scores.filter(s=>s.id!==id&&s.cloudId!==id);saveScoresLocal();if(window.deleteCloudMockScore&&removed)window.deleteCloudMockScore(removed);renderScore();renderTrend();renderUni();if(document.getElementById('pg-strategy').classList.contains('on'))renderStrategy();showToast('삭제되었습니다');}
 
 // ===== RENDER GRADE CUTS =====
 function setCutExam(ek){ selCutExam=ek; renderGradeCuts(); }
@@ -2561,6 +2564,8 @@ async function wLogout(){
   const sb=sbReady(); if(!sb)return;
   await sb.auth.signOut();
   _wuser=null; _wprofile=null;
+  scores=readScoresLocal('');
+  renderScore();renderTrend();renderUni();renderStrategy();
   vwClose(); vwCacheClear();
   // 상담 탭 숨김
   const counselCat=document.querySelector('.cat[data-cat="counsel"]');
