@@ -33,7 +33,7 @@ assert.equal(engine.selectionProfile({n:'중앙대',d:'경영학부'}).nonScoreS
 assert.equal(engine.selectionProfile({n:'성균관대',d:'수학교육'}).regularAvailable,false);
 assert.equal(engine.scoreUniversity({n:'성균관대',d:'수학교육'},{}).unavailable,true,'2027 성균관대 사범계열은 정시 수능 후보에서 제외해야 함');
 
-const base={mathSub:'미적분',kor:{gr:4,std:108,pct:64},math:{gr:4,std:110,pct:66},eng:{gr:3},sci1:{name:'물리',gr:4,std:56,pct:65},sci2:{name:'화학',gr:4,std:55,pct:63}};
+const base={mathSub:'미적분',kor:{gr:4,std:108,pct:64},math:{gr:4,std:110,pct:66},eng:{gr:3},sci1:{name:'물리학Ⅰ',gr:4,std:56,pct:65},sci2:{name:'화학Ⅱ',gr:4,std:55,pct:63},hist:{raw:38,gr:3}};
 const mathStrong=Object.assign({},base,{kor:{gr:3,std:120,pct:80},math:{gr:1,std:140,pct:98}});
 const mathHeavy={kw:20,mw:50,ew:10,sw:20,sc:2};
 const korHeavy={kw:50,mw:20,ew:10,sw:20,sc:2};
@@ -44,6 +44,21 @@ const improved=engine.scenarioRecord(base,{kor:3,math:3,eng:3,sci1:3,sci2:3});
 const worsened=engine.scenarioRecord(base,{kor:5,math:5,eng:4,sci1:5,sci2:5});
 assert.ok(engine.scenarioSummaryStd(improved,{kor:3,math:3,eng:3,sci1:3,sci2:3})>engine.scenarioSummaryStd(worsened,{kor:5,math:5,eng:4,sci1:5,sci2:5}));
 assert.equal(engine.compatible({mr:1},Object.assign({},base,{mathSub:'확률과통계'})),false);
+assert.equal(engine.eligibilityProfile({mr:1},Object.assign({},base,{mathSub:'확률과통계'})).status,'ineligible','필수 미적분/기하 미응시는 지원불가여야 함');
+assert.equal(engine.eligibilityProfile({sr:1,sc:2},base).status,'eligible','과탐 2과목 입력은 자연계 필수응시를 충족해야 함');
+assert.equal(engine.eligibilityProfile({sr:2,sc:2},base).status,'ineligible','과탐 응시자는 사탐 필수 모집단위에서 제외해야 함');
+assert.equal(engine.eligibilityProfile({sc:2},Object.assign({},base,{sci2:{}})).status,'review','탐구 2과목 반영 대학은 두 번째 선택과목 누락을 경고해야 함');
+const mathBonus=engine.bonusProfile({gm:'수학(미적분/기하) 10% 가산',sc:2},base,true,{국:108,수:110,영:115,탐:111});
+assert.equal(mathBonus.status,'applied');
+assert.equal(Math.round(mathBonus.adjustment),11,'미적분 가산은 학생 수학점수에 실제 반영돼야 함');
+const inquiryBonus=engine.bonusProfile({gm:'과탐 I+II 또는 II+II선택 시 2과목 모두 5% 가산',sc:2},base,true,{국:108,수:110,영:115,탐:111});
+assert.equal(inquiryBonus.status,'applied','과탐 I+II 조건을 저장된 탐구명으로 판정해야 함');
+assert.equal(engine.bonusProfile({gm:'과탐 I+II 또는 II+II선택 시 2과목 모두 5% 가산',sc:2},Object.assign({},base,{sci2:{name:'화학Ⅰ'}}),true,{국:108,수:110,영:115,탐:111}).status,'not-applicable','과탐 II 미응시는 I+II 가산에서 제외해야 함');
+assert.equal(engine.bonusProfile({gm:'과탐 10% 가산(단, 상위1과목만 가산)',sc:2},base,true,{국:108,수:110,영:115,탐:111}).status,'review','상위 과목 복합 산식은 임의 계산하면 안 됨');
+const noBonusScore=engine.scoreUniversity({n:'테스트대',d:'공학',ind:'표준',fx:'국수탐',std:300,sc:2,hk:'응시'},base);
+const withBonusScore=engine.scoreUniversity({n:'테스트대',d:'공학',ind:'표준',fx:'국수탐',std:300,sc:2,hk:'응시',gm:'수학(미적분/기하) 10% 가산'},base);
+assert.ok(withBonusScore.score>noBonusScore.score&&withBonusScore.bonusPoints>0,'선택과목 가산은 대학 비교점수를 높여야 함');
+assert.equal(engine.scoreUniversity({n:'한글역사대',d:'일반',ind:'표준',fx:'국수영탐한',stdE:300,sc:2,hk:'합산'},base).count,3,'한국사는 구조화된 환산표 없이 0점 영역으로 평균에 넣으면 안 됨');
 
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 const uniLine=html.split(/\r?\n/).find(line=>line.startsWith('const UNI = '));
@@ -53,6 +68,7 @@ assert.ok(universities.length>=4000,'정시 데이터가 4,000개 이상이어�
 let valid=0;
 let monotonic=0;
 let strategic=0;
+let bonusAutomatic=0;
 for(const u of universities){
   const result=engine.scoreUniversity(u,improved);
   const lower=engine.scoreUniversity(u,worsened);
@@ -60,12 +76,14 @@ for(const u of universities){
     assert.ok(Number.isFinite(result.diff));valid++;
     assert.ok(Number.isFinite(result.strategicRank));
     assert.ok(Number.isFinite(result.match.score));strategic++;
+    if(result.bonus&&(result.bonus.status==='applied'||result.bonus.status==='not-applicable'))bonusAutomatic++;
     if(lower.compatible&&lower.valid){assert.ok(result.diff>=lower.diff-1e-9,`${u.n} ${u.d}: 성적 향상 시 비교점수가 하락함`);monotonic++;}
   }
 }
 assert.ok(valid>=3500,'대부분의 대학에 유효한 비교점수가 계산되어야 함');
 assert.ok(monotonic>=3500,'대학별 시나리오 단조성 검사가 충분해야 함');
 assert.equal(strategic,valid,'모든 산출 대학에 전략 궁합 점수가 있어야 함');
+assert.ok(bonusAutomatic>=1300,'대학 가산 문구의 다수를 선택과목 데이터로 자동 판정해야 함');
 
 const sample=[-30,-11,-4,3,12,20].map((diff,i)=>({diff,cut:500-i}));
 const groups=engine.balancedRows(sample,1);

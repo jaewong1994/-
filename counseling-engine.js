@@ -34,23 +34,74 @@
     const s1=useStd?(r.sci1?.std||0):(r.sci1?.pct||0),s2=useStd?(r.sci2?.std||0):(r.sci2?.pct||0);
     return {국:useStd?(r.kor?.std||0):(r.kor?.pct||0),수:useStd?(r.math?.std||0):(r.math?.pct||0),영:engApprox(r.eng?.gr,useStd),탐:Number(u.sc)>=2?(useStd?s1+s2:Math.round((s1+s2)/2)):s1};
   }
-  function areaScore(u,r,useStd,engMode){
-    const score=subjectScores(u,r,useStd),value=c=>score[c]||0;let total=0;
-    for(const c of u.fx||''){if(c!=='영'||engMode==='inc')total+=value(c);}
-    for(const group of u.ch||[]){const pool=[...String(group[0]||'')].filter(c=>c!=='영'||engMode==='inc').map(value).sort((a,b)=>b-a);for(let i=0;i<Number(group[1]||0)&&i<pool.length;i++)total+=pool[i];}
+  function areaScore(u,r,useStd,engMode,provided){
+    const score=provided||subjectScores(u,r,useStd),value=c=>score[c]||0;let total=0;
+    for(const c of u.fx||''){if(c!=='한'&&(c!=='영'||engMode==='inc'))total+=value(c);}
+    for(const group of u.ch||[]){const pool=[...String(group[0]||'')].filter(c=>c!=='한'&&(c!=='영'||engMode==='inc')).map(value).sort((a,b)=>b-a);for(let i=0;i<Number(group[1]||0)&&i<pool.length;i++)total+=pool[i];}
     return total;
   }
   function areaCount(u,engMode){
-    let count=[...String(u.fx||'')].filter(c=>c!=='영'||engMode==='inc').length;
-    for(const group of u.ch||[]){const pool=[...String(group[0]||'')].filter(c=>c!=='영'||engMode==='inc').length;count+=Math.min(Number(group[1]||0),pool);}
+    let count=[...String(u.fx||'')].filter(c=>c!=='한'&&(c!=='영'||engMode==='inc')).length;
+    for(const group of u.ch||[]){const pool=[...String(group[0]||'')].filter(c=>c!=='한'&&(c!=='영'||engMode==='inc')).length;count+=Math.min(Number(group[1]||0),pool);}
     return Math.max(1,count);
   }
-  function compatible(u,r){
-    if(u.mr&&r.mathSub==='확률과통계')return false;
-    const names=`${r.sci1?.name||''} ${r.sci2?.name||''}`;
-    if(Number(u.sr)===1&&socialRx.test(names))return false;
-    if(Number(u.sr)===2&&scienceRx.test(names))return false;
-    return true;
+  function eligibilityProfile(u,r){
+    const blocked=[],review=[],requirements=[],mathSub=String(r?.mathSub||'');
+    const inquiry=[r?.sci1,r?.sci2],names=inquiry.map(x=>String(x?.name||''));
+    const scienceCount=names.filter(x=>scienceRx.test(x)).length,socialCount=names.filter(x=>socialRx.test(x)).length;
+    if(Number(u?.mr)){
+      requirements.push('수학 미적분 또는 기하 필수');
+      if(!mathSub)review.push('수학 선택과목 입력 필요');
+      else if(mathSub==='확률과통계')blocked.push('필수 수학(미적분/기하) 미응시');
+    }
+    if(Number(u?.sc)>=2){
+      requirements.push('탐구 2과목 반영');
+      if(names.filter(Boolean).length<2)review.push('탐구 선택과목 2개 입력 필요');
+    }
+    if(Number(u?.sr)===1){
+      requirements.push('과학탐구 응시 필수');
+      if(names.filter(Boolean).length<Math.min(2,Number(u?.sc)||1))review.push('과학탐구 선택과목 입력 필요');
+      else if(socialCount>0||scienceCount<Math.min(2,Number(u?.sc)||1))blocked.push('필수 과학탐구 과목 미응시');
+    }
+    if(Number(u?.sr)===2){
+      requirements.push('사회탐구 응시 필수');
+      if(names.filter(Boolean).length<Math.min(2,Number(u?.sc)||1))review.push('사회탐구 선택과목 입력 필요');
+      else if(scienceCount>0||socialCount<Math.min(2,Number(u?.sc)||1))blocked.push('필수 사회탐구 과목 미응시');
+    }
+    const required=[...String(u?.fx||''),...(u?.ch||[]).flatMap(g=>[...String(g?.[0]||'')])];
+    const missing={국:!Number(r?.kor?.std||r?.kor?.pct||r?.kor?.gr),수:!Number(r?.math?.std||r?.math?.pct||r?.math?.gr),영:!Number(r?.eng?.gr),탐:!Number(r?.sci1?.std||r?.sci1?.pct||r?.sci1?.gr)};
+    Object.keys(missing).forEach(k=>{if(required.includes(k)&&missing[k])review.push(`${k} 영역 성적 입력 필요`);});
+    if(String(u?.hk||'')&&!Number(r?.hist?.gr))review.push('한국사 응시·등급 입력 필요');
+    if(String(u?.hk||'').includes('응시'))requirements.push('한국사 필수 응시');
+    if(String(u?.hk||'').match(/가산|합산/))requirements.push(`한국사 ${u.hk} 환산표 적용 확인 필요`);
+    const status=blocked.length?'ineligible':review.length?'review':'eligible';
+    return {status,blocked:[...new Set(blocked)],review:[...new Set(review)],requirements:[...new Set(requirements)],scienceCount,socialCount};
+  }
+  function compatible(u,r){return eligibilityProfile(u,r).status!=='ineligible';}
+  function bonusProfile(u,r,useStd,base){
+    const text=String(u?.gm||'').trim(),score=Object.assign({},base),applied=[],student=[];
+    if(!text)return {status:'none',text,score,applied,student,adjustment:0};
+    const names=[String(r?.sci1?.name||''),String(r?.sci2?.name||'')],scienceCount=names.filter(x=>scienceRx.test(x)).length,socialCount=names.filter(x=>socialRx.test(x)).length;
+    const mathSub=String(r?.mathSub||''),hasScienceII=names.some(x=>scienceRx.test(x)&&/(?:Ⅱ|II|2)\s*$/.test(x));
+    const complex=/총점|상위\s*1|낮은|우수|별도\s*산식|생활과윤리|윤리와사상|물리학?\s*[ⅠI]|화학\s*[ⅠI]|생명과학\s*[ⅠI]|지구과학\s*[ⅠI]|서로\s*다른|과탐\s*[ⅠI]\s*\d/.test(text);
+    if(complex)return {status:'review',text,score,applied,student,adjustment:0,reason:'대학별 세부 환산식 확인 필요'};
+    const before=Object.assign({},score);
+    const math=text.match(/수학(?:\((미적분\/기하|미적분|기하|확률과통계)\))?(?:(?!수학)[^,%])*?(\d+(?:\.\d+)?)%\s*(가산|감산)/);
+    if(math){
+      const selector=math[1]||'',rate=Number(math[2])*(math[3]==='감산'?-1:1);
+      const selected=!selector||(selector==='미적분/기하'?/미적분|기하/.test(mathSub):mathSub===selector);
+      const condition=!/수학≥국어/.test(text)||(Number(r?.math?.pct||r?.math?.std||0)>=Number(r?.kor?.pct||r?.kor?.std||0));
+      if(selected&&condition){score.수+=score.수*rate/100;applied.push(`${mathSub||'수학'} ${rate>=0?'+':''}${rate}%`);student.push(mathSub||'수학');}
+    }
+    const inquiry=text.match(/(과탐|사탐)(?:\s*2과목\s*선택\s*시)?[^,%]*?(\d+(?:\.\d+)?)%\s*(가산|감산)/);
+    if(inquiry){
+      const type=inquiry[1],count=type==='과탐'?scienceCount:socialCount,needsTwo=/2과목|I\+II|Ⅱ\+Ⅱ|II\+II/.test(text),levelOk=!/I\+II|Ⅰ\+Ⅱ|II\+II|Ⅱ\+Ⅱ/.test(text)||hasScienceII;
+      if(count>=(needsTwo?2:1)&&levelOk){const rate=Number(inquiry[2])*(inquiry[3]==='감산'?-1:1);score.탐+=score.탐*rate/100;applied.push(`${type} ${rate>=0?'+':''}${rate}%`);student.push(...names.filter(x=>type==='과탐'?scienceRx.test(x):socialRx.test(x)));}
+    }
+    const perSubject=text.match(/(과탐|사탐)\s*1과목당\s*(\d+(?:\.\d+)?)점\s*(가산|감산)?/);
+    if(perSubject){const type=perSubject[1],count=type==='과탐'?scienceCount:socialCount,points=Number(perSubject[2])*(perSubject[3]==='감산'?-1:1);if(count){score.탐+=points*(Number(u?.sc)>=2&&useStd?count:1);applied.push(`${type} ${count}과목 · ${points>=0?'+':''}${points}점씩`);student.push(...names.filter(x=>type==='과탐'?scienceRx.test(x):socialRx.test(x)));}}
+    const adjustment=(score.수-before.수)+(score.탐-before.탐),recognized=!!(math||inquiry||perSubject);
+    return {status:recognized?(applied.length?'applied':'not-applicable'):'review',text,score,applied:[...new Set(applied)],student:[...new Set(student)],adjustment,reason:recognized?'선택과목 조건 불충족':'자동 해석할 수 없는 가산식'};
   }
   function strategyMatch(u,r){
     const scores={
@@ -79,23 +130,25 @@
   function scoreUniversity(u,r){
     const selection=selectionProfile(u);
     if(!selection.regularAvailable)return {compatible:false,unavailable:true,reason:selection.unavailableReason};
-    if(!compatible(u,r))return {compatible:false};
+    const eligibility=eligibilityProfile(u,r);
+    if(eligibility.status==='ineligible')return {compatible:false,ineligible:true,eligibility,reason:eligibility.blocked.join(' · ')};
     const useStd=u.ind==='표준'||u.ind==='표+백',stdKey=useStd?'std':'pct',stdI=useStd?'stdI':'pctI',stdE=useStd?'stdE':'pctE';
+    const baseSubjects=subjectScores(u,r,useStd),bonus=bonusProfile(u,r,useStd,baseSubjects);
     const options=[];
-    const excRef=Number(u[stdE]||u[stdKey]||0),excScore=areaScore(u,r,useStd,'exc');
-    if(excRef)options.push({mode:'영어 제외',score:excScore,ref:excRef,count:areaCount(u,'exc')});
+    const excRef=Number(u[stdE]||u[stdKey]||0),excBase=areaScore(u,r,useStd,'exc',baseSubjects),excScore=areaScore(u,r,useStd,'exc',bonus.score);
+    if(excRef)options.push({mode:'영어 제외',score:excScore,baseScore:excBase,ref:excRef,count:areaCount(u,'exc')});
     if(u.et==='o'&&Number(u[stdI])&&Number(u[stdE])){
-      const incRef=Number(u[stdI]),incRaw=areaScore(u,r,useStd,'inc'),incScore=Math.round(incRaw*(incRef/Number(u[stdE])));
-      options.push({mode:'영어 포함',score:incScore,ref:incRef,count:areaCount(u,'inc')});
+      const incRef=Number(u[stdI]),ratio=incRef/Number(u[stdE]),incRaw=areaScore(u,r,useStd,'inc',bonus.score),incBase=areaScore(u,r,useStd,'inc',baseSubjects),incScore=Math.round(incRaw*ratio);
+      options.push({mode:'영어 포함',score:incScore,baseScore:Math.round(incBase*ratio),ref:incRef,count:areaCount(u,'inc')});
     }
-    if(!options.length)return {compatible:true,valid:false,useStd};
-    options.forEach(x=>{x.rawDiff=x.score-x.ref;x.diff=x.rawDiff*3/x.count;});
+    if(!options.length)return {compatible:true,valid:false,useStd,eligibility,bonus};
+    options.forEach(x=>{x.rawDiff=x.score-x.ref;x.diff=x.rawDiff*3/x.count;x.bonusPoints=x.score-x.baseScore;});
     const best=options.sort((a,b)=>b.diff-a.diff)[0];
-    const quality=(u.ind==='등급점수화'||!u.sk)?'low':(u.et==='o'?'medium':'high');
+    const quality=(u.ind==='등급점수화'||!u.sk||bonus.status==='review')?'low':(u.et==='o'?'medium':'high');
     const match=strategyMatch(u,r),selectivity=selectivityScore(u);
     // Within each fit band, selectivity dominates; score fit and subject affinity only break near-ties.
     const rawSelectivity=Number(u?.stdE||u?.std||u?.stdI||0);
-    return Object.assign({compatible:true,valid:true,useStd,quality,match,selectivity,strategicRank:selectivity+rawSelectivity/10000+best.diff/1000000+match.score/10000000+(match.bonusEligible?0.00001:0)},best);
+    return Object.assign({compatible:true,valid:true,useStd,quality,match,selectivity,eligibility,bonus,strategicRank:selectivity+rawSelectivity/10000+best.diff/1000000+match.score/10000000+(bonus.status==='applied'?0.00001:0)},best);
   }
   function selectionProfile(u){
     const university=String(u?.n||''),dept=String(u?.d||''),requirements=[];
@@ -216,5 +269,5 @@
       other:rows.filter(x=>x.assessment.status==='review'||x.assessment.status==='unmet').sort((a,b)=>(a.assessment.status==='review'?0:1)-(b.assessment.status==='review'?0:1)||a.rank-b.rank||byName(a,b))
     };
   }
-  return {version:'2026.09-v6',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows,earlyKey,parseEarlyMinimum,earlyAssessment,rankEarlyAdmissions};
+  return {version:'2026.09-v7',fit,scenarioChanged,scenarioRecord,scenarioSummaryStd,scenarioSummaryPct,compatible,eligibilityProfile,bonusProfile,strategyMatch,selectivityScore,scoreUniversity,selectionProfile,admissionChance,balancedRows,earlyKey,parseEarlyMinimum,earlyAssessment,rankEarlyAdmissions};
 });
