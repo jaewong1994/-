@@ -7,12 +7,13 @@ const root=path.join(__dirname,'..');
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.setContent('<div id="uni-content"></div><div id="csl-workspace"></div>');
  await page.addStyleTag({path:path.join(root,'counseling.css')});
+ await page.addScriptTag({path:path.join(root,'counseling-engine.js')});
  await page.evaluate(()=>{
  window._wuser={id:'student-a'};window._wprofile={role:'student'};
  window.scores=[{examType:'9월 모평',kor:{gr:2},math:{gr:2},eng:{gr:2},sci1:{gr:2},sci2:{gr:2},mathSub:'확률과통계'}];
- window.UNI=Array.from({length:12},(_,i)=>({n:'테스트대',d:i===11?'간호학과':'경영학과 '+i,kw:i===11?30:40,mw:40,ew:10,sw:10,sk:'조건 없음'}));
+ window.UNI=Array.from({length:12},(_,i)=>({n:'테스트대',s:i===11?'자연':'인문',d:i===11?'간호학과':'경영학과 '+i,kw:i===11?30:40,mw:40,ew:10,sw:10,sk:'조건 없음'}));
  window.SUSI=[];window.renderStrategy=()=>{};
- window.CounselingEngine={scenarioSummaryStd:()=>390,scenarioSummaryPct:()=>280,scenarioRecord:r=>r,scenarioChanged:()=>false,
+ window.CounselingEngine={...window.CounselingEngine,scenarioSummaryStd:()=>390,scenarioSummaryPct:()=>280,scenarioRecord:r=>r,scenarioChanged:()=>false,
  scoreUniversity:u=>({compatible:true,valid:true,ref:380,score:390,diff:10,match:{score:0,label:'보통'},eligibility:{status:'eligible'},bonus:{status:'none'}}),
  balancedRows:rows=>[{key:'fit',rows,total:rows.length}],fit:()=>['fit','적정'],selectionProfile:()=>({requirements:[],finalAvailable:true}),admissionChance:()=>({point:60,low:40,high:80,confidence:'낮음'})};
  });
@@ -26,6 +27,11 @@ const root=path.join(__dirname,'..');
  assert.equal(await page.locator('details article').count(),1,'major filter applies');
  await search.fill('경영');assert.equal(await search.evaluate(el=>document.activeElement===el),true);
  assert.equal(await page.locator('details article').count(),11);
+ await search.fill('');await page.locator('select[onchange="personalTrack(this.value)"]').selectOption('자연');
+ assert.equal(await page.locator('details article').count(),1,'natural track isolates natural majors');
+ await page.locator('select[onchange="personalTrack(this.value)"]').selectOption('인문');
+ assert.equal(await page.locator('details article').count(),11,'humanities track isolates humanities majors');
+ await page.locator('select[onchange="personalSort(this.value)"]').selectOption('close');
  await page.locator('summary').click();assert.equal(await page.locator('details').getAttribute('open'),'');
  await page.setViewportSize({width:1024,height:768});
  await page.evaluate(()=>{_wuser={id:'student-b'};scores=[];renderUni();});

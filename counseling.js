@@ -6,8 +6,9 @@ const esc=v=>String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;'
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const order={'6월 모평':1,'7월 학평':2,'9월 모평':3,'수능':4};
 const artRx=/체육|스포츠|운동|레저|골프|태권|미술|디자인|회화|조소|공예|애니|웹툰|음악|성악|피아노|관현악|무용|연극|영화/;
-const newState=()=>({students:[],classes:{},studentId:'',studentName:'',records:[],plan:null,mode:'regular',arts:false,scenario:null,baseExam:'',markedEarly:[],earlyLimit:8,regularLimit:8,schoolQuery:'',majorQuery:'',markSaving:false,openToken:0});
+const newState=()=>({students:[],classes:{},studentId:'',studentName:'',records:[],plan:null,mode:'regular',track:'all',sort:'balanced',arts:false,scenario:null,baseExam:'',markedEarly:[],earlyLimit:8,regularLimit:16,schoolQuery:'',majorQuery:'',markSaving:false,openToken:0});
 const staffState=newState(),personalState=newState();let state=staffState;
+staffState.track=personalState.track='all';staffState.sort=personalState.sort='balanced';
 const matches=(school,major)=>String(school||'').toLowerCase().includes(state.schoolQuery.toLowerCase().trim())&&String(major||'').toLowerCase().includes(state.majorQuery.toLowerCase().trim());
 
 // 2027학년도 평가원 정답표 배점. 국어 공통 1~34 + 선택 35~45.
@@ -116,7 +117,7 @@ function renderRegular(){
   const r=latest(); if(!r)return `<div class="csl-empty">학생이 6월 또는 9월 성적을 입력하면 대학 라인이 표시됩니다.</div>`;
   const std=scenarioStd(r,state.scenario),pct=scenarioPct(r,state.scenario);
   const target=engine.scenarioRecord(r,state.scenario);
-  const candidates=UNI.filter(u=>matches(u.n,u.d)&&(state.arts?artRx.test(`${u.n} ${u.d}`):!artRx.test(`${u.n} ${u.d}`)));
+  const candidates=UNI.map(u=>engine.currentRules(u)).filter(u=>engine.matchesTrack(u.s,state.track)&&matches(u.n,u.d)&&(state.arts?artRx.test(`${u.n} ${u.d}`):!artRx.test(`${u.n} ${u.d}`)));
   const evaluated=candidates.map(u=>({u,score:engine.scoreUniversity(u,target)}));
   const rows=evaluated.map(({u,score})=>score.compatible&&score.valid?Object.assign({u,cut:score.ref,mine:score.score},score):null).filter(Boolean).sort((a,b)=>(b.cut-a.cut)||(b.diff-a.diff));
   const blocked=evaluated.filter(x=>x.score.ineligible).length,review=rows.filter(x=>x.eligibility?.status==='review').length;
@@ -125,14 +126,14 @@ function renderRegular(){
   const groups=engine.balancedRows(rows,rows.length);
   const cards=groups.map(group=>{
     const label={hard:'상향',reach:'소신',fit:'적정',safe:'안정'}[group.key];
-    const schools=new Map();group.rows.forEach(x=>{if(!schools.has(x.u.n))schools.set(x.u.n,[]);schools.get(x.u.n).push(x);});
+    const schools=new Map(engine.rankSchools(group.rows,group.key,state.sort));
     const list=group.rows.length?`<div class="csl-school-list">${[...schools.entries()].slice(0,state.regularLimit).map(([name,units])=>{
       const shared=(key,suffix='')=>units.every(x=>x.u[key]===units[0].u[key])?esc(units[0].u[key]??'미확인')+suffix:'모집단위별 상이';
       return `<details class="csl-school" data-school="${esc(group.key+':'+name)}"><summary><strong>${esc(name)}</strong><span>${units.length}개 모집단위 · 펼쳐보기</span><div class="csl-school-shared">국어 ${shared('kw','%')} / 수학 ${shared('mw','%')} / 영어 ${shared('ew','%')} / 탐구 ${shared('sw','%')}<br>응시·반영 조건: ${shared('sk')}</div></summary><div class="csl-result-list">${units.map(x=>{
       const f=fit(x.diff),profile=engine.selectionProfile(x.u),chance=engine.admissionChance(x.diff,{verified,useStd:x.useStd,quality:x.quality,finalAvailable:profile.finalAvailable,nonScoreShare:profile.nonScoreShare});
       const requirements=profile.requirements.length?`<div class="csl-requirements"><strong>추가 전형요소</strong>${profile.requirements.map(r=>`<div class="csl-req ${r.kind}">${esc(r.text)}</div>`).join('')}${profile.sourceUrl?`<a href="${profile.sourceUrl}" target="_blank" rel="noopener">${esc(profile.sourceLabel)} 확인</a>`:''}</div>`:'';
       const matchTone=x.match.score>1?'good':x.match.score<-1?'bad':'neutral';
-      const matchSignal=`<div class="csl-match ${matchTone}"><strong>성적 궁합</strong> ${esc(x.match.label)}${x.match.score?` ${x.match.score>0?'+':''}${x.match.score}`:''}</div>`;
+      const matchSignal=`<div class="csl-match ${matchTone}"><strong>성적 궁합</strong> ${esc(x.match.label)}${x.match.score?` ${x.match.score>0?'+':''}${x.match.score}`:''}</div>${x.u.ruleYear?`<div class="csl-meta">${x.u.ruleYear} 시행계획 반영 · <a href="${esc(x.u.ruleSource)}" target="_blank" rel="noopener">전형 근거</a></div>`:''}${x.bonus?.status==='review'?`<div class="csl-note">${esc(x.bonus.reason||'환산식 확인 필요')}${x.bonus.applied?.length?` · 부분 반영: ${esc(x.bonus.applied.join(' / '))} (+${Math.round(x.bonusPoints*10)/10})`:''}</div>`:''}`;
       const bonusSignal=x.bonus?.status==='applied'?`<div class="csl-bonus applied"><strong>선택과목 가산 반영</strong><span>${esc(x.bonus.applied.join(' · '))} · 비교점수 ${x.bonusPoints>=0?'+':''}${Math.round(x.bonusPoints*10)/10}</span></div>`:x.bonus?.status==='review'?`<div class="csl-bonus review"><strong>가산식 확인 필요</strong><span>${esc(x.bonus.text)}</span></div>`:'';
       const eligibilitySignal=x.eligibility?.status==='review'?`<div class="csl-eligibility review"><strong>지원자격 확인 필요</strong><span>${esc(x.eligibility.review.join(' · '))}</span></div>`:`<div class="csl-eligibility eligible"><strong>선택과목 조건 충족</strong><span>${esc((x.eligibility?.requirements||[]).join(' · ')||'별도 필수 선택과목 없음')}</span></div>`;
       const held=x.eligibility?.status==='review'||!profile.finalAvailable;
@@ -143,7 +144,7 @@ function renderRegular(){
     return `<section class="csl-fit-group"><div class="csl-fit-group-head"><span class="csl-fit ${group.key}">${label}</span><strong>${group.rows.length}개 추천</strong><span>전체 후보 ${group.total}개 중 상위 대학</span></div>${list}</section>`;
   }).join('');
   const selection=`수학 ${target.mathSub||'미입력'} · 탐구 ${target.sci1?.name||'미입력'} / ${target.sci2?.name||'미입력'}`;
-  return `<div class="csl-selection-summary"><div><strong>입력 선택과목</strong><span>${esc(selection)}</span></div><div class="csl-selection-stats"><span class="applied">가산 반영 ${bonusApplied}</span><span class="review">가산식 확인 ${bonusReview}</span><span class="blocked">필수과목 불일치 제외 ${blocked}</span>${review?`<span class="review">응시조건 확인 ${review}</span>`:''}</div></div><div class="csl-note">${state.arts?'예체능':'일반'} 정시 라인 · 시나리오 표준합 ${Math.round(std)}점 / 백분위합 ${Math.round(pct)}점. 저장된 수학·탐구 선택과목으로 필수응시 여부를 먼저 판정한 뒤, 자동 해석 가능한 대학별 가산점을 비교점수에 반영합니다. 대학 고유 환산표나 복합 조건이 필요한 가산식은 점수를 임의 계산하지 않고 확인 대상으로 표시합니다. 상향·소신·적정·안정 안에서는 대학선을 최우선으로 두고 점수 여유와 영역별 반영비율 궁합으로 비슷한 대학을 정렬합니다. 판정은 2025 입결 70% 컷보다 양의 여유점수가 있어야 ‘적정’이 되도록 보수화했습니다. ${verified?'확인 점수 기준':'추정 점수·목표 시나리오 기준'}이며 경쟁률·충원·당해 지원 이동은 미반영입니다. <a href="https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2022&unvCd=0000020" target="_blank" rel="noopener">어디가 70% cut 정의</a></div>${cards||'<div class="csl-empty">조건에 맞는 대학이 없습니다.</div>'}`;
+  return `<div class="csl-selection-summary"><div><strong>입력 선택과목</strong><span>${esc(selection)}</span></div><div class="csl-selection-stats"><span class="applied">가산 반영 ${bonusApplied}</span><span class="review">가산식 확인 ${bonusReview}</span><span class="blocked">필수과목 불일치 제외 ${blocked}</span>${review?`<span class="review">응시조건 확인 ${review}</span>`:''}</div></div><div class="csl-note">${state.arts?'예체능':'일반'} 정시 라인 · 시나리오 표준합 ${Math.round(std)}점 / 백분위합 ${Math.round(pct)}점. 저장된 수학·탐구 선택과목으로 필수응시 여부를 먼저 판정한 뒤, 자동 해석 가능한 대학별 가산점을 비교점수에 반영합니다. 대학 고유 환산표나 복합 조건이 필요한 가산식은 점수를 임의 계산하지 않고 확인 대상으로 표시합니다. 각 판정 구간에서 선택한 정렬 기준에 따라 대학을 묶어 보여줍니다. 기본 균형 추천은 점수 근접도와 입결순을 교대로 사용하며 합격 가능성을 임의로 올리지 않습니다. 판정은 2025 입결 70% 컷보다 양의 여유점수가 있어야 ‘적정’이 되도록 보수화했습니다. ${verified?'확인 점수 기준':'추정 점수·목표 시나리오 기준'}이며 경쟁률·충원·당해 지원 이동은 미반영입니다. <a href="https://www.adiga.kr/ucp/uvt/uni/univDetailSelection.do?menuId=PCUVTINF2000&searchSyr=2022&unvCd=0000020" target="_blank" rel="noopener">어디가 70% cut 정의</a></div>${cards||'<div class="csl-empty">조건에 맞는 대학이 없습니다.</div>'}`;
 }
 function isMarked(key){return state.markedEarly.some(x=>x.key===key);}
 function earlyCard(x){
@@ -159,7 +160,7 @@ function renderEarly(){
   if(!latest())return '<div class="csl-empty">6월 또는 9월 성적을 입력한 후 수시 최저를 비교할 수 있습니다.</div>';
   const rank=typeof _susiSchoolRankMap==='function'?_susiSchoolRankMap():{},all=typeof SUSI==='undefined'?[]:SUSI;
   const entries=state.arts?all.filter(e=>artRx.test(`${e.cat||''} ${e.adm||''} ${(e.majors||[]).map(m=>m.m).join(' ')}`)):all.filter(e=>!artRx.test(`${e.cat||''} ${e.adm||''}`));
-  const groups=engine.rankEarlyAdmissions(entries.filter(e=>matches(e.u,(e.majors||[]).map(m=>m.m).join(' ')+' '+(e.cat||''))),state.scenario,rank);
+  const groups=engine.rankEarlyAdmissions(entries.filter(e=>engine.matchesTrack(e.cat,state.track)&&matches(e.u,(e.majors||[]).map(m=>m.m).join(' ')+' '+(e.cat||''))),state.scenario,rank);
   const hasMore=[groups.met,groups.none,groups.other].some(x=>x.length>state.earlyLimit);
   return `<div class="csl-early-summary"><div><strong>학생별 추천대학</strong><span>상담 전략에 남길 전형을 최대 3개 선택하세요.</span></div><b>${state.markedEarly.length}/3</b></div><div class="csl-note">충족 추천은 최저 난도 55%·대학 수준 35%·충족 여유 10%로 계산합니다. 같은 성적에서 더 까다로운 최저를 통과하면서 대학선이 높은 전형이 먼저 보입니다. 학과별 예외·복수 조합은 자동 판정하지 않고 ‘요강 확인’으로 분리합니다.</div>${earlyGroup('최저 충족 추천','현재 목표등급으로 충족 가능한 전형을 지원 효율순으로 정렬했습니다.',groups.met,'met')}${earlyGroup('수능최저 없는 전형','수능최저 대신 서류·면접·학생부·실기 등 전형요소를 별도로 확인하세요.',groups.none,'none')}${earlyGroup('미충족·요강 확인','문장형·학과별 조건 또는 현재 목표등급으로 미충족인 전형입니다.',groups.other,'review')}${hasMore?`<button type="button" class="csl-load-more" onclick="cslLoadMoreEarly()"><i class="ti ti-plus" aria-hidden="true"></i> 추천대학 더 불러오기</button>`:''}`;
 }
@@ -167,7 +168,11 @@ function scenarioHtml(){const s=state.scenario||scenarioFrom(latest());state.sce
 function resultsHtml(){return state.mode==='early'?renderEarly():renderRegular();}
 function refreshResults(){const el=document.getElementById(state===personalState?'personal-results':'csl-results');if(el){const opened=new Set([...el.querySelectorAll('details[open]')].map(x=>x.dataset.school));el.innerHTML=personalize(resultsHtml());el.querySelectorAll('details').forEach(x=>{x.open=opened.has(x.dataset.school);});}}
 window.cslMoreRegular=()=>{state.regularLimit+=8;refreshResults();};
-window.cslQuery=(key,value)=>{if(!['schoolQuery','majorQuery'].includes(key))return;state[key]=value;state.regularLimit=8;state.earlyLimit=8;refreshResults();};
+window.cslQuery=(key,value)=>{if(!['schoolQuery','majorQuery'].includes(key))return;state[key]=value;state.regularLimit=16;state.earlyLimit=8;refreshResults();};
+window.cslTrack=value=>{state.track=['인문','자연'].includes(value)?value:'all';state.regularLimit=16;state.earlyLimit=8;refreshResults();};
+window.cslSort=value=>{state.sort=['level','close'].includes(value)?value:'balanced';state.regularLimit=16;refreshResults();};
+const basicSearchHtml=searchHtml;
+searchHtml=function(){return `<div class="csl-searches"><label>지원 계열<select class="csl-select" onchange="cslTrack(this.value)">${[['all','인문·자연 전체'],['인문','인문·사회·상경'],['자연','자연·이공']].map(([v,n])=>`<option value="${v}" ${(state.track||'all')===v?'selected':''}>${n}</option>`).join('')}</select></label><label>정시 추천 순서<select class="csl-select" onchange="cslSort(this.value)">${[['balanced','균형 추천 (점수 근접 + 대학선)'],['close','점수 근접순'],['level','입결 높은 순']].map(([v,n])=>`<option value="${v}" ${(state.sort||'balanced')===v?'selected':''}>${n}</option>`).join('')}</select></label></div><p class="csl-meta">계열 공통 모집단위는 함께 표시합니다. 계열 선택은 검색 조건이며 실제 응시과목은 바꾸지 않습니다. 균형 추천은 점수 근접 대학 2곳과 입결순 대학 1곳을 번갈아 보여줍니다. 가산점은 공식 대학 환산총점이 아닌 상담용 비교점수에 반영됩니다.</p>`+basicSearchHtml();};
 function searchHtml(){return `<div class="csl-searches"><label>대학 검색<input class="csl-input" type="search" value="${esc(state.schoolQuery)}" placeholder="예: 연세대" oninput="if(!event.isComposing)cslQuery('schoolQuery',this.value)" oncompositionend="cslQuery('schoolQuery',this.value)"></label><label>전공 검색<input class="csl-input" type="search" value="${esc(state.majorQuery)}" placeholder="예: 경영, 간호" oninput="if(!event.isComposing)cslQuery('majorQuery',this.value)" oncompositionend="cslQuery('majorQuery',this.value)"></label></div>`;}
 window.cslScenario=(k,v)=>{state.scenario[k]=Number(v);refreshResults();};
 window.cslMode=(m)=>{state.mode=m;const root=document.getElementById(state===personalState?'uni-content':'csl-workspace');root?.querySelectorAll('.csl-tab').forEach(x=>{const selected=x.textContent.includes(m==='early'?'수시':'정시');x.classList.toggle('on',selected);x.setAttribute('aria-pressed',selected);});refreshResults();};
@@ -182,7 +187,7 @@ window.cslBaseExam=async function(examType){
   const ok=await persistPlan(!!state.plan?.published,true);showToast(ok?`${examType} 성적을 추천 기준으로 저장했습니다`:'추천 기준 저장에 실패했습니다');
 };
 
-function planData(){return Object.assign({},state.plan?.plan_data||{},{scenario:state.scenario,mode:state.mode,arts:state.arts,baseExam:state.baseExam,updatedFrom:latest()?.examType||null,markedEarly:state.markedEarly.slice(0,3)});}
+function planData(){return Object.assign({},state.plan?.plan_data||{},{scenario:state.scenario,mode:state.mode,arts:state.arts,track:state.track||'all',sort:state.sort||'balanced',baseExam:state.baseExam,updatedFrom:latest()?.examType||null,markedEarly:state.markedEarly.slice(0,3)});}
 async function persistPlan(published,quiet=false){
   if(state===personalState||!['teacher','director'].includes(_wprofile?.role))return false;
   const sb=sbReady(),targetId=state.studentId;if(!sb||!targetId)return false;
@@ -216,7 +221,8 @@ async function openStudent(id,name){
   state.records=(sr.data||[]).map(x=>Object.assign({},x.score_data,{cloudId:x.id,sourceMode:x.source_mode}));state.plan=pr.data||null;
   const savedExam=state.plan?.plan_data?.baseExam,counselingRecords=state.records.filter(x=>x.examType==='6월 모평'||x.examType==='9월 모평'),defaultExam=counselingRecords.slice().sort((a,b)=>(order[b.examType]||0)-(order[a.examType]||0))[0]?.examType||'';
   state.baseExam=counselingRecords.some(x=>x.examType===savedExam)?savedExam:defaultExam;state.scenario=state.plan?.plan_data?.scenario||scenarioFrom(latest());state.mode=state.plan?.plan_data?.mode==='early'?'early':'regular';state.arts=!!state.plan?.plan_data?.arts;state.markedEarly=Array.isArray(state.plan?.plan_data?.markedEarly)?state.plan.plan_data.markedEarly.slice(0,3):[];state.earlyLimit=8;
-  renderWorkspace();
+  state.track=state.plan?.plan_data?.track||'all';state.sort=state.plan?.plan_data?.sort||'balanced';
+  state.regularLimit=16;renderWorkspace();
 }
 window.cslOpenStudent=openStudent;
 function renderWorkspace(){
@@ -234,8 +240,8 @@ window.cslSave=async function(published){
   if(ok)showToast(published?'학생 전략 탭에 공개했습니다':'비공개로 저장했습니다');
 };
 // Keep independent student/staff scenarios. Personal exploration never writes a counseling plan.
-function personalize(html){return state===personalState?html.replace(/csl(Scenario|Mode|Arts|LoadMoreEarly|MoreRegular|BaseExam|Query)\(/g,'personal$1(').replace(/id="csl-g-/g,'id="personal-g-').replace(/for="csl-g-/g,'for="personal-g-'):html;}
-['Scenario','Mode','Arts','LoadMoreEarly','MoreRegular','BaseExam','Query'].forEach(name=>{window['personal'+name]=(...args)=>{const prior=state;state=personalState;try{return window['csl'+name](...args);}finally{state=prior;}};});
+function personalize(html){return state===personalState?html.replace(/csl(Scenario|Mode|Arts|LoadMoreEarly|MoreRegular|BaseExam|Query|Track|Sort)\(/g,'personal$1(').replace(/id="csl-g-/g,'id="personal-g-').replace(/for="csl-g-/g,'for="personal-g-'):html;}
+['Scenario','Mode','Arts','LoadMoreEarly','MoreRegular','BaseExam','Query','Track','Sort'].forEach(name=>{window['personal'+name]=(...args)=>{const prior=state;state=personalState;try{return window['csl'+name](...args);}finally{state=prior;}};});
 function renderPersonal(){
   const box=document.getElementById('uni-content');if(!box)return;
   box.classList.add('csl-personal');
