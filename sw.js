@@ -1,4 +1,4 @@
-const CACHE_NAME='epsilon-app-v68';
+const CACHE_NAME='epsilon-app-v69';
 const APP_SHELL=['./','./index.html','./mobile-ui.css','./counseling.css','./counseling-engine.js','./counseling.js','./manifest.webmanifest','./offline.html','./icons/app-icon-192.png','./icons/app-icon-512.png','./icons/app-icon-maskable-512.png'];
 
 self.addEventListener('install',event=>{
@@ -16,20 +16,14 @@ self.addEventListener('fetch',event=>{
   const url=new URL(request.url);
   if(url.origin!==self.location.origin)return;
 
-  if(request.mode==='navigate'){
-    event.respondWith(fetch(request).then(response=>{
-      const copy=response.clone();
-      caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
-      return response;
-    }).catch(()=>caches.match('./index.html').then(response=>response||caches.match('./offline.html'))));
-    return;
-  }
-
-  event.respondWith(caches.match(request).then(cached=>cached||fetch(request).then(response=>{
+  event.respondWith(fetch(request).then(response=>{
     if(response&&response.ok){
       const copy=response.clone();
-      caches.open(CACHE_NAME).then(cache=>cache.put(request,copy));
+      caches.open(CACHE_NAME).then(cache=>{
+        cache.put(request,copy);
+        if(request.mode==='navigate') cache.put('./index.html',response.clone());
+      });
     }
     return response;
-  })));
+  }).catch(()=>caches.match(request).then(cached=>cached||caches.match('./index.html').then(page=>page||caches.match('./offline.html')))));
 });

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>입실론 입시연구소</title>
 <meta name="theme-color" content="#1d4ed8">
+<meta name="epsilon-build" content="v69">
 <meta name="description" content="입실론 입시연구소 학생관리, 모의고사 성적과 정시 배치표를 한 곳에서 확인하세요.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3850,24 +3851,8 @@ async function insertManagedTest(payload){
 async function loadManagedTests(){
   const sb=sbReady();
   const rpc=await sb.rpc('list_managed_tests');
-  if(!rpc.error && Array.isArray(rpc.data) && (rpc.data.length || !isDirectorRole())) return rpc;
-  const ordered=()=>sb.from('tests').select('id,title,total,exam_date,closed,created_by').order('exam_date',{ascending:false}).order('id',{ascending:false});
-  let q=ordered();
-  if(!isDirectorRole()) q=q.eq('created_by', _wuser.id);
-  const withOwner=await q;
-  if(!withOwner.error) return withOwner;
-  if(missingCreatedByCol(withOwner.error)){
-    return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
-  }
-  if(isDirectorRole()){
-    const all=await ordered();
-    if(!all.error) return all;
-    if(missingCreatedByCol(all.error)){
-      return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
-    }
-    return all;
-  }
-  return withOwner;
+  if(!rpc.error && Array.isArray(rpc.data) && rpc.data.length) return rpc;
+  return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
 }
 
 async function renderWTeacher(){
@@ -6551,7 +6536,7 @@ window.addEventListener('keydown',event=>{
 });
 window.addEventListener('load',()=>{
   if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=69').then(reg=>reg.update()).catch(()=>{});
   }
 });
 
