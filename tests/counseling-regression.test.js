@@ -128,6 +128,9 @@ assert.match(html,/전체 등수 추이/,'테스트 상담에 등수 추이가 �
 assert.match(html,/획득 메달/,'테스트 상담에 메달이 있어야 함');
 assert.match(html,/created_by:_wuser.id/,'새 테스트는 생성 강사에게 귀속돼야 함');
 assert.match(html,/function list_managed_tests|rpc\('list_managed_tests'\)/,'원장·강사 테스트 목록은 소유자를 포함해 불러와야 함');
+assert.match(html,/missingCreatedByCol/,'created_by 컬럼이 없어도 원장은 전체 테스트를 불러와야 함');
+assert.match(html,/function wWrongStats/,'등수 화면에서 오답 통계를 열 수 있어야 함');
+assert.match(html,/틀린 문항/,'등수 화면에 학생별 틀린 문항이 있어야 함');
 assert.match(html,/staff-owner/,'테스트 제목 옆에 생성 강사 이름이 보여야 함');
 assert.match(html,/button\.staff-tool\{[^}]*border-radius:20px/,'강사 도구 버튼은 상단 알약 메뉴와 같은 모양이어야 함');
 assert.match(html,/function isDirectorRole/,'원장 권한 판별이 있어야 함');

@@ -3835,13 +3835,39 @@ function ownerBadge(name){
   if(!label) return '';
   return `<span class="staff-owner" title="${escHtml(label)}">${escHtml(label)}</span>`;
 }
+function missingCreatedByCol(err){
+  return /created_by/i.test(String(err?.message||err?.details||err?.hint||''));
+}
+async function insertManagedTest(payload){
+  const sb=sbReady();
+  let { error } = await sb.from('tests').insert(payload);
+  if(error && missingCreatedByCol(error)){
+    const rest={...payload}; delete rest.created_by;
+    ({ error } = await sb.from('tests').insert(rest));
+  }
+  return error;
+}
 async function loadManagedTests(){
   const sb=sbReady();
   const rpc=await sb.rpc('list_managed_tests');
-  if(!rpc.error && Array.isArray(rpc.data)) return rpc;
-  let q=sb.from('tests').select('id,title,total,exam_date,closed,created_by').order('exam_date',{ascending:false}).order('id',{ascending:false});
+  if(!rpc.error && Array.isArray(rpc.data) && (rpc.data.length || !isDirectorRole())) return rpc;
+  const ordered=()=>sb.from('tests').select('id,title,total,exam_date,closed,created_by').order('exam_date',{ascending:false}).order('id',{ascending:false});
+  let q=ordered();
   if(!isDirectorRole()) q=q.eq('created_by', _wuser.id);
-  return q;
+  const withOwner=await q;
+  if(!withOwner.error) return withOwner;
+  if(missingCreatedByCol(withOwner.error)){
+    return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
+  }
+  if(isDirectorRole()){
+    const all=await ordered();
+    if(!all.error) return all;
+    if(missingCreatedByCol(all.error)){
+      return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
+    }
+    return all;
+  }
+  return withOwner;
 }
 
 async function renderWTeacher(){
@@ -3933,7 +3959,7 @@ async function wCopyTest(testId, title){
     levels:src.levels, total:src.total, closed:false, exam_date:today,
     created_by:_wuser.id
   };
-  const { error:e2 } = await sb.from('tests').insert(ins);
+  const e2 = await insertManagedTest(ins);
   if(e2){ alert('복사 실패: '+e2.message); return; }
   showToast('복사되었습니다');
   renderWTeacher();
@@ -4583,7 +4609,7 @@ async function wSaveTest(){
   document.querySelectorAll('.nt-pt').forEach(el=>points[parseInt(el.dataset.pt)]=parseInt(el.value)||0);
   const levels=window._ntLevels||new Array(total).fill('');
   msg.style.color='var(--t3)'; msg.textContent='저장 중...';
-  const { error } = await sb.from('tests').insert({title, answers, types, points, levels, total, created_by:_wuser.id});
+  const error = await insertManagedTest({title, answers, types, points, levels, total, created_by:_wuser.id});
   if(error){ msg.style.color='var(--red)'; msg.textContent='저장 실패: '+error.message; return; }
   renderWTeacher();
 }
@@ -4593,14 +4619,14 @@ async function wViewRank(testId, title){
   const sb=sbReady();
   const d=document.getElementById('w-teacher-detail');
   d.innerHTML = `<div class="stg-card"><div style="text-align:center;font-size:12px;color:var(--t3);">불러오는 중...</div></div>`;
-  // 마감 상태
-  const { data:tinfo } = await sb.from('tests').select('closed,total').eq('id',testId).single();
+  const { data:tinfo } = await sb.from('tests').select('closed,total,answers,types').eq('id',testId).single();
   const closed = tinfo && tinfo.closed;
   const _isMock = tinfo && Number(tinfo.total)===30;
-  // 제출 + 프로필 조인
-  const { data:subs } = await sb.from('submissions').select('user_id,score,correct_count,created_at').eq('test_id',testId).order('score',{ascending:false});
-  const { data:profs } = await sb.from('profiles').select('id,name,student_no');
+  const { data:subs } = await sb.from('submissions').select('user_id,score,correct_count,created_at,answers').eq('test_id',testId).order('score',{ascending:false});
+  const { data:profs } = await sb.from('profiles').select('id,name,student_no,class_id');
+  const { data:classes } = await sb.from('classes').select('id,name');
   const pmap={}; (profs||[]).forEach(p=>pmap[p.id]=p);
+  const cmap={}; (classes||[]).forEach(c=>cmap[c.id]=c.name);
 
   if(!subs||!subs.length){
     d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${title} · 등수</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">아직 제출한 학생이 없습니다.</div></div>`;
@@ -4614,11 +4640,14 @@ async function wViewRank(testId, title){
     const p=pmap[s.user_id]||{};
     const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
     const perfect = (s.score===maxScore && maxScore>0) ? ' 💎' : '';
+    const wrong = tinfo ? wWrongIdxs(tinfo, s.answers) : [];
+    const wrongLabel = wrong.length ? wrong.map(i=>i+1).join(', ') : '만점';
     rows += `<tr>
       <td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;text-align:center;">${medal}</td>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${p.name||'(이름없음)'}${perfect}<div style="font-size:9px;color:var(--t3);">${p.student_no||''}</div></td>
+      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${escHtml(p.name||'(이름없음)')}${perfect}<div style="font-size:9px;color:var(--t3);">${escHtml(p.student_no||'')}${cmap[p.class_id]?' · '+escHtml(cmap[p.class_id]):''}</div></td>
       <td style="padding:8px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);text-align:center;">${s.score}</td>
       <td style="padding:8px;border-bottom:1px solid var(--border);font-size:11px;color:var(--t2);text-align:center;">${s.correct_count}개</td>
+      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:10px;color:${wrong.length?'var(--red)':'var(--a3)'};">${escHtml(wrongLabel)}</td>
       <td style="padding:6px;border-bottom:1px solid var(--border);text-align:center;"><button onclick="wEditAnswers(${testId},'${s.user_id}','${(p.name||'').replace(/'/g,"")}','${(title||'').replace(/'/g,"")}')" style="padding:5px 8px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:6px;font-size:10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">수정</button></td>
     </tr>`;
   });
@@ -4637,6 +4666,7 @@ async function wViewRank(testId, title){
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;text-align:left;border-bottom:2px solid var(--border);">이름</th>
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;border-bottom:2px solid var(--border);">점수</th>
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;border-bottom:2px solid var(--border);">정답</th>
+        <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;text-align:left;border-bottom:2px solid var(--border);">틀린 문항</th>
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;border-bottom:2px solid var(--border);">관리</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -5512,16 +5542,68 @@ function _wsKeyStyle(qno){
   return kt; // {tier,label,color,bg,bd} or null
 }
 
+function wWrongIdxs(test, answers){
+  const key=test.answers||[];
+  const types=test.types||[];
+  const total=Number(test.total)||key.length||0;
+  const ans=Array.isArray(answers)?answers:[];
+  const wrong=[];
+  for(let i=0;i<total;i++){
+    const ok = typeof mockIsCorrect==='function'
+      ? mockIsCorrect(types[i], key[i], ans[i])
+      : (String(ans[i]==null?'':ans[i]).trim()!=='' && String(key[i]==null?'':key[i]).trim()===String(ans[i]==null?'':ans[i]).trim());
+    if(!ok) wrong.push(i);
+  }
+  return wrong;
+}
+async function wLoadWrongMatrixLocal(testId){
+  const sb=sbReady();
+  const { data:test, error:te } = await sb.from('tests').select('total,answers,types').eq('id',testId).single();
+  if(te || !test) return { error: te||{message:'테스트를 찾을 수 없습니다.'} };
+  const { data:subs, error:se } = await sb.from('submissions').select('user_id,score,answers').eq('test_id',testId);
+  if(se) return { error: se };
+  const { data:profs } = await sb.from('profiles').select('id,name,student_no,class_id');
+  const { data:classes } = await sb.from('classes').select('id,name');
+  const pmap={}; (profs||[]).forEach(p=>pmap[p.id]=p);
+  const cmap={}; (classes||[]).forEach(c=>cmap[c.id]=c.name);
+  return {
+    total:test.total||0,
+    data:(subs||[]).map(s=>{
+      const p=pmap[s.user_id]||{};
+      return {
+        user_id:s.user_id,
+        name:p.name||'(이름없음)',
+        student_no:p.student_no||'',
+        class_name:cmap[p.class_id]||'미배정',
+        score:s.score,
+        wrong_idxs:wWrongIdxs(test, s.answers)
+      };
+    })
+  };
+}
+
 // ---------- (선생님/원장) 시험별 오답 통계 ----------
 async function wWrongStats(testId, title){
   const sb=sbReady();
   const d=document.getElementById('w-teacher-detail') || document.getElementById('wtest-content');
   d.innerHTML = `<div class="stg-card"><div style="text-align:center;color:var(--t3);font-size:12px;padding:20px;">오답 통계 불러오는 중...</div></div>`;
-  const { data:test } = await sb.from('tests').select('total').eq('id',testId).single();
-  const total=(test&&test.total)||0;
-  const { data:matrix, error } = await sb.rpc('test_wrong_matrix', { p_test_id: testId });
+  let total=0, matrix=null, error=null;
+  const rpc=await sb.rpc('test_wrong_matrix', { p_test_id: testId });
+  if(!rpc.error && Array.isArray(rpc.data)){
+    matrix=rpc.data;
+    const { data:test } = await sb.from('tests').select('total').eq('id',testId).single();
+    total=(test&&test.total)||0;
+  } else {
+    const local=await wLoadWrongMatrixLocal(testId);
+    if(local.error){
+      error=rpc.error||local.error;
+    } else {
+      matrix=local.data;
+      total=local.total||0;
+    }
+  }
   if(error || !matrix){
-    d.innerHTML=`<div class="stg-card"><div style="font-size:12px;color:var(--red);text-align:center;padding:16px;">${(error&&error.message)||'통계를 불러올 수 없습니다.'}<br><span style="font-size:10px;color:var(--t3);">오답통계 SQL을 먼저 실행했는지 확인하세요.</span></div></div>`;
+    d.innerHTML=`<div class="stg-card"><div style="font-size:12px;color:var(--red);text-align:center;padding:16px;">${escHtml((error&&error.message)||'통계를 불러올 수 없습니다.')}<br><span style="font-size:10px;color:var(--t3);">등수 화면의 제출 기록을 읽지 못했습니다.</span></div></div>`;
     return;
   }
   window._wrongMatrix = { testId, title, total, rows:matrix };
