@@ -130,6 +130,8 @@ assert.match(html,/created_by:_wuser.id/,'새 테스트는 생성 강사에게 �
 assert.match(html,/function list_managed_tests|rpc\('list_managed_tests'\)/,'원장·강사 테스트 목록은 소유자를 포함해 불러와야 함');
 assert.match(html,/select\('id,title,total,exam_date,closed'\)/,'테스트 목록은 created_by 컬럼 없이 전체 시험을 불러와야 함');
 assert.match(html,/function wWrongStats/,'등수 화면에서 오답 통계를 열 수 있어야 함');
+assert.match(html,/오답분석 리포트/,'등수 화면에서 오답분석 리포트로 넘어갈 수 있어야 함');
+assert.match(html,/function loadTestSubmissions|staff_test_submissions/,'등수는 강사·원장이 전체 제출을 읽어야 함');
 assert.match(html,/틀린 문항/,'등수 화면에 학생별 틀린 문항이 있어야 함');
 assert.match(html,/staff-owner/,'테스트 제목 옆에 생성 강사 이름이 보여야 함');
 assert.match(html,/button\.staff-tool\{[^}]*border-radius:20px/,'강사 도구 버튼은 상단 알약 메뉴와 같은 모양이어야 함');

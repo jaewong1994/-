@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>입실론 입시연구소</title>
 <meta name="theme-color" content="#1d4ed8">
-<meta name="epsilon-build" content="v69">
+<meta name="epsilon-build" content="v70">
 <meta name="description" content="입실론 입시연구소 학생관리, 모의고사 성적과 정시 배치표를 한 곳에서 확인하세요.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3854,6 +3854,25 @@ async function loadManagedTests(){
   if(!rpc.error && Array.isArray(rpc.data) && rpc.data.length) return rpc;
   return sb.from('tests').select('id,title,total,exam_date,closed').order('exam_date',{ascending:false}).order('id',{ascending:false});
 }
+async function loadTestSubmissions(testId){
+  const sb=sbReady();
+  const rpc=await sb.rpc('staff_test_submissions', { p_test_id: testId });
+  if(!rpc.error && Array.isArray(rpc.data)) return rpc;
+  const cols=[
+    'user_id,score,correct_count,answers,created_at',
+    'user_id,score,correct_count,answers,submitted_at',
+    'user_id,score,correct_count,answers',
+    'user_id,score,correct_count,created_at',
+    'user_id,score,correct_count'
+  ];
+  let last={ data:null, error:rpc.error||{message:'제출 기록을 불러오지 못했습니다.'} };
+  for(const col of cols){
+    const q=await sb.from('submissions').select(col).eq('test_id',testId).order('score',{ascending:false}).range(0,1999);
+    if(!q.error) return q;
+    last=q;
+  }
+  return last;
+}
 
 async function renderWTeacher(){
   const cont=document.getElementById('wtest-content');
@@ -4603,18 +4622,28 @@ async function wSaveTest(){
 async function wViewRank(testId, title){
   const sb=sbReady();
   const d=document.getElementById('w-teacher-detail');
+  const jsTitle=(title||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const statsBtn=`<button type="button" class="staff-add" onclick="wWrongStats(${testId},'${jsTitle}')" style="margin-left:0;width:100%;justify-content:center;margin-top:12px;">오답분석 리포트</button>`;
   d.innerHTML = `<div class="stg-card"><div style="text-align:center;font-size:12px;color:var(--t3);">불러오는 중...</div></div>`;
-  const { data:tinfo } = await sb.from('tests').select('closed,total,answers,types').eq('id',testId).single();
+  const { data:tinfo, error:tErr } = await sb.from('tests').select('closed,total,answers,types').eq('id',testId).single();
   const closed = tinfo && tinfo.closed;
   const _isMock = tinfo && Number(tinfo.total)===30;
-  const { data:subs } = await sb.from('submissions').select('user_id,score,correct_count,created_at,answers').eq('test_id',testId).order('score',{ascending:false});
+  const { data:subs, error:sErr } = await loadTestSubmissions(testId);
   const { data:profs } = await sb.from('profiles').select('id,name,student_no,class_id');
   const { data:classes } = await sb.from('classes').select('id,name');
   const pmap={}; (profs||[]).forEach(p=>pmap[p.id]=p);
   const cmap={}; (classes||[]).forEach(c=>cmap[c.id]=c.name);
 
+  if(tErr){
+    d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${escHtml(title)} · 등수</div></div><div class="staff-empty">테스트를 불러오지 못했습니다.<br>${escHtml(tErr.message)}</div>${statsBtn}</div>`;
+    return;
+  }
+  if(sErr){
+    d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${escHtml(title)} · 등수</div></div><div class="staff-empty">등수를 불러오지 못했습니다.<br>${escHtml(sErr.message)}</div>${statsBtn}</div>`;
+    return;
+  }
   if(!subs||!subs.length){
-    d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${title} · 등수</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">아직 제출한 학생이 없습니다.</div></div>`;
+    d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${escHtml(title)} · 등수</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">아직 제출한 학생이 없습니다.</div>${statsBtn}</div>`;
     return;
   }
   let rows=''; let rank=0; let prevScore=null; let realRank=0;
@@ -4656,7 +4685,7 @@ async function wViewRank(testId, title){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <button onclick="wWrongStats(${testId},'${(title||'').replace(/'/g,'')}')" style="width:100%;margin-top:12px;padding:11px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📊 오답 통계 (반별·개인별)</button>
+    <button type="button" class="staff-add" onclick="wWrongStats(${testId},'${jsTitle}')" style="margin-left:0;width:100%;justify-content:center;margin-top:12px;">오답분석 리포트</button>
     ${closeBtn}
   </div>`;
 }
@@ -6536,7 +6565,7 @@ window.addEventListener('keydown',event=>{
 });
 window.addEventListener('load',()=>{
   if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
-    navigator.serviceWorker.register('./sw.js?v=69').then(reg=>reg.update()).catch(()=>{});
+    navigator.serviceWorker.register('./sw.js?v=70').then(reg=>reg.update()).catch(()=>{});
   }
 });
 
