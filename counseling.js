@@ -266,13 +266,13 @@ window.cslFilter=function(q){const v=String(q||'').toLowerCase();const list=stat
 window.renderCounsel=async function(){
   const cont=document.getElementById('counsel-content');if(!cont)return;const sb=sbReady();
   if(!sb){cont.innerHTML='<div class="csl-empty">Supabase 연결이 필요합니다.</div>';return;}
-  const {data:{session}}=await sb.auth.getSession();if(!session){cont.innerHTML='<div class="csl-empty">테스트 탭에서 로그인한 뒤 상담을 이용하세요.</div>';return;}
+  const {data:{session}}=await sb.auth.getSession();if(!session){cont.innerHTML='<div class="csl-empty">테스트 탭에서 로그인한 뒤 입시상담을 이용하세요.</div>';return;}
   if(!_wprofile){const {data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();_wprofile=p;_wuser=session.user;}
-  if(!['teacher','director'].includes(_wprofile?.role)){cont.innerHTML='<div class="csl-empty">원장·강사 전용 상담 화면입니다.</div>';return;}
-  cont.innerHTML='<div class="csl-empty">상담 자료를 불러오는 중입니다.</div>';
+  if(!['teacher','director'].includes(_wprofile?.role)){cont.innerHTML='<div class="csl-empty">원장·강사 전용 입시상담 화면입니다.</div>';return;}
+  cont.innerHTML='<div class="csl-empty">입시상담 자료를 불러오는 중입니다.</div>';
   const [ps,cs]=await Promise.all([sb.from('profiles').select('id,name,student_no,class_id').eq('role','student').order('name'),sb.from('classes').select('id,name').order('id')]);
   state.students=ps.data||[];state.classes={};(cs.data||[]).forEach(c=>state.classes[c.id]=c.name);
-  cont.innerHTML=`<div class="csl-shell"><header class="csl-top"><div><div class="csl-eyebrow">Admissions counseling</div><h1 class="csl-title">6·9월 모평 기반 대면상담</h1></div><p class="csl-help">정시 가능 대학선을 먼저 보고, 수시 수능최저 조합과 예체능 실기전형을 따로 검토합니다. 모든 결과는 상담용 추정치이며 최종 모집요강 확인이 필요합니다.</p></header><div class="csl-layout"><aside class="csl-panel csl-sidebar"><label class="csl-label" for="csl-search">학생 찾기</label><input id="csl-search" class="csl-input" placeholder="이름·반·학생번호" oninput="cslFilter(this.value)"><div id="csl-students" class="csl-student-list">${studentListHtml(state.students)}</div></aside><main id="csl-workspace" class="csl-main"><div class="csl-panel csl-empty">왼쪽에서 상담할 학생을 선택하세요.</div></main></div></div>`;
+  cont.innerHTML=`<div class="csl-shell"><header class="csl-top"><div><div class="csl-eyebrow">Admissions counseling</div><h1 class="csl-title">입시상담</h1></div><p class="csl-help">6·9월 모평 기반 정시 대학선과 수시 최저를 검토합니다. 내가 만든 테스트의 등수·응시 기록은 시험상담 메뉴에서 따로 봅니다. 모든 입시 결과는 상담용 추정치입니다.</p></header><div class="csl-layout"><aside class="csl-panel csl-sidebar"><label class="csl-label" for="csl-search">학생 찾기</label><input id="csl-search" class="csl-input" placeholder="이름·반·학생번호" oninput="cslFilter(this.value)"><div id="csl-students" class="csl-student-list">${studentListHtml(state.students)}</div></aside><main id="csl-workspace" class="csl-main"><div class="csl-panel csl-empty">왼쪽에서 입시상담할 학생을 선택하세요.</div></main></div></div>`;
   if(state.students.length)openStudent(state.students[0].id,state.students[0].name||'이름 미설정');
 };
 

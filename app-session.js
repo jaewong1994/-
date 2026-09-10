@@ -2,13 +2,15 @@
 'use strict';
 let revision=0,ready=false,activeId=null;
 const gate=document.getElementById('auth-gate'),form=document.getElementById('auth-form'),status=document.getElementById('auth-status'),retry=document.getElementById('auth-retry');
+const staffMenus='[data-cat="counsel"],[data-cat="exam-counsel"],[data-session-menu="counsel"],[data-session-menu="exam-counsel"]';
 function lock(message,login=false){ready=false;document.body.classList.add('auth-pending');gate.hidden=false;status.textContent=message;form.hidden=!login;retry.hidden=login;}
 function menus(){
   const role=_wprofile?.role;
-  document.querySelectorAll('[data-cat="counsel"],[data-session-menu="counsel"]').forEach(el=>el.style.display=['teacher','director'].includes(role)?'':'none');
+  document.querySelectorAll(staffMenus).forEach(el=>el.style.display=['teacher','director'].includes(role)?'':'none');
   document.querySelectorAll('[data-cat="admin"],[data-session-menu="admin"]').forEach(el=>el.style.display=role==='director'?'':'none');
 }
-window.AppSession={canOpen(page){return ready&&(page!=='admin'||_wprofile?.role==='director')&&(page!=='counsel'||['teacher','director'].includes(_wprofile?.role));}};
+function staffPage(page){return page==='counsel'||page==='exam-counsel';}
+window.AppSession={canOpen(page){return ready&&(page!=='admin'||_wprofile?.role==='director')&&(!staffPage(page)||['teacher','director'].includes(_wprofile?.role));}};
 async function restore(session){
   if(ready&&session?.user.id===activeId)return;
   const token=++revision;ready=false;activeId=null;_wuser=null;_wprofile=null;scores=[];menus();
@@ -34,11 +36,11 @@ form.addEventListener('submit',async event=>{
 retry.addEventListener('click',boot);
 window.wLogout=async function(){
   const {error}=await sbReady().auth.signOut();if(error){showToast('로그아웃에 실패했습니다. 다시 시도해주세요.');return;}
-  await restore(null);document.querySelectorAll('#counsel-content,#uni-content,#strategy-content').forEach(x=>x.replaceChildren());
+  await restore(null);document.querySelectorAll('#counsel-content,#exam-counsel-content,#uni-content,#strategy-content').forEach(x=>x.replaceChildren());
   if(typeof vwCacheClear==='function')vwCacheClear();
 };
 const sheet=document.querySelector('#mobile-more-sheet .app-sheet');
-if(sheet){const actions=document.createElement('div');actions.className='session-actions';actions.innerHTML='<button type="button" data-session-menu="counsel" onclick="closeMobileMore();showCat(\'counsel\')">상담</button><button type="button" data-session-menu="admin" onclick="closeMobileMore();showCat(\'admin\')">계정 관리</button><button type="button" onclick="closeMobileMore();wLogout()">로그아웃</button>';sheet.append(actions);}
+if(sheet){const actions=document.createElement('div');actions.className='session-actions';actions.innerHTML='<button type="button" data-session-menu="counsel" onclick="closeMobileMore();showCat(\'counsel\')">입시상담</button><button type="button" data-session-menu="exam-counsel" onclick="closeMobileMore();showCat(\'exam-counsel\')">시험상담</button><button type="button" data-session-menu="admin" onclick="closeMobileMore();showCat(\'admin\')">계정 관리</button><button type="button" onclick="closeMobileMore();wLogout()">로그아웃</button>';sheet.append(actions);}
 document.querySelectorAll('.cat').forEach(el=>{el.setAttribute('role','button');el.tabIndex=0;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});});
 const sb=sbReady();if(sb)sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')setTimeout(()=>restore(session),0);});
 boot();
