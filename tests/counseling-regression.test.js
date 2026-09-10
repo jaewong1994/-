@@ -121,8 +121,11 @@ assert.match(counselingSource,/응시 선택과목/,'상담 카드에 학생의 
 assert.match(counselingSource,/readScoresLocal\(owner\)/,'로컬 성적은 요청 시작 시점 계정별 저장소에서 읽어야 함');
 assert.match(counselingSource,/_wuser\?\.id!==owner/,'계정 전환 후 이전 성적 응답을 버려야 함');
 assert.match(html,/epsilon_scores:\$\{userId\}/,'로컬 성적 키는 계정 ID로 분리돼야 함');
-assert.match(html,/data-cat="exam-counsel"/,'시험상담 메뉴가 입시상담과 분리돼야 함');
-assert.match(html,/function renderExamCounsel/,'시험상담 화면 함수가 있어야 함');
+assert.match(html,/data-cat="exam-counsel"/,'테스트 상담 메뉴가 입시상담과 분리돼야 함');
+assert.match(html,/function renderExamCounsel/,'테스트 상담 화면 함수가 있어야 함');
+assert.match(html,/학생 상담 리포트/,'테스트 상담은 정시상담 이전 학생 리포트여야 함');
+assert.match(html,/전체 등수 추이/,'테스트 상담에 등수 추이가 있어야 함');
+assert.match(html,/획득 메달/,'테스트 상담에 메달이 있어야 함');
 assert.match(html,/created_by:_wuser.id/,'새 테스트는 생성 강사에게 귀속돼야 함');
 assert.match(html,/function list_managed_tests|rpc\('list_managed_tests'\)/,'원장·강사 테스트 목록은 소유자를 포함해 불러와야 함');
 assert.match(html,/staff-owner/,'테스트 제목 옆에 생성 강사 이름이 보여야 함');

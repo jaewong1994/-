@@ -409,7 +409,7 @@ button{min-height:34px;}
     <div class="cat" data-cat="viewer" onclick="showCat('viewer')">📚 자료실</div>
     <div class="cat" data-cat="collection" onclick="showCat('collection')">🏅 컬렉션</div>
     <div class="cat" data-cat="counsel" onclick="showCat('counsel')" style="display:none;">입시상담</div>
-    <div class="cat" data-cat="exam-counsel" onclick="showCat('exam-counsel')" style="display:none;">시험상담</div>
+    <div class="cat" data-cat="exam-counsel" onclick="showCat('exam-counsel')" style="display:none;">테스트 상담</div>
     <div class="cat" data-cat="admin" onclick="showCat('admin')" style="display:none;">계정관리</div>
   </div>
   <div class="tabs" id="subtabs" style="display:none;">
@@ -759,7 +759,7 @@ button{min-height:34px;}
   <div id="counsel-content"></div>
 </div>
 
-<!-- ===== 시험상담 (강사·원장 전용, 본인 생성 테스트) ===== -->
+<!-- ===== 테스트 상담 (강사·원장 전용, 정시상담 이전 리포트) ===== -->
 <div id="pg-exam-counsel" class="page">
   <div id="exam-counsel-content"></div>
 </div>
@@ -1617,7 +1617,7 @@ function showPage(n){
   const pg=document.getElementById('pg-'+n);
   if(pg) pg.classList.add('on');
   const inner=document.querySelector('.inner');
-  if(inner) inner.classList.toggle('counsel-wide',n==='counsel'||n==='exam-counsel');
+  if(inner) inner.classList.toggle('counsel-wide',n==='counsel');
   // 하위 탭 하이라이트 (입시 카테고리일 때만)
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   if(n in IPSI_TABS){
@@ -3828,7 +3828,7 @@ function staffRoleLabel(){
 }
 function staffToolbar(active){
   const item=(id,fn,icon,label)=>`<button type="button" class="staff-tool${active===id?' on':''}" onclick="${fn}" ${active===id?'aria-current="page"':''}><i class="ti ${icon}" aria-hidden="true"></i><span>${label}</span></button>`;
-  return `<div class="staff-toolbar" role="toolbar" aria-label="관리 메뉴">${item('tests','renderWTeacher()','ti-clipboard-list','테스트')}${item('classes','wManageClasses()','ti-users','반·학생')}${item('counsel',"showCat('counsel')",'ti-school','입시상담')}${item('exam',"showCat('exam-counsel')",'ti-chart-bar','시험상담')}${item('poka','wPhotoAdmin()','ti-cards','포카')}</div>`;
+  return `<div class="staff-toolbar" role="toolbar" aria-label="관리 메뉴">${item('tests','renderWTeacher()','ti-clipboard-list','테스트')}${item('classes','wManageClasses()','ti-users','반·학생')}${item('counsel',"showCat('counsel')",'ti-school','입시상담')}${item('exam',"showCat('exam-counsel')",'ti-chart-bar','테스트 상담')}${item('poka','wPhotoAdmin()','ti-cards','포카')}</div>`;
 }
 function ownerBadge(name){
   const label=String(name||'').trim();
@@ -4266,68 +4266,60 @@ async function wAssignClass(testId, className, turnOn){
   showToast(turnOn?'반 전체 지정됨':'반 전체 해제됨');
 }
 
-// ===== 시험상담 (강사·원장 전용, 본인이 만든 테스트의 응시·등수) =====
+// ===== 테스트 상담 (정시상담 이전 학생 리포트: 점수·메달·등수추이) =====
 async function renderExamCounsel(){
   const cont=document.getElementById('exam-counsel-content');
   if(!cont) return;
   const sb=sbReady();
-  if(!sb){ cont.innerHTML=`<div class="csl-empty">서버 연결이 필요합니다.</div>`; return; }
+  if(!sb){ cont.innerHTML=`<div class="stg-card"><div style="font-size:12px;color:var(--t2);">연결이 필요합니다.</div></div>`; return; }
   const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ cont.innerHTML=`<div class="csl-empty">테스트 탭에서 로그인한 뒤 시험상담을 이용하세요.</div>`; return; }
+  if(!session){ cont.innerHTML=`<div class="stg-card"><div style="font-size:12px;color:var(--t3);text-align:center;padding:20px;">로그인이 필요합니다. (테스트 탭에서 로그인)</div></div>`; return; }
   if(!_wprofile){ const { data:prof } = await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle(); _wprofile=prof; _wuser=session.user; }
   if(!_wprofile || (_wprofile.role!=='teacher' && _wprofile.role!=='director')){
-    cont.innerHTML=`<div class="csl-empty">원장·강사 전용 시험상담 화면입니다.</div>`;
+    cont.innerHTML=`<div class="stg-card"><div style="font-size:12px;color:var(--t3);text-align:center;padding:20px;">강사·원장 전용 화면입니다.</div></div>`;
     return;
   }
 
-  cont.innerHTML=`<div class="csl-empty">학생 목록을 불러오는 중입니다.</div>`;
+  cont.innerHTML=`<div style="text-align:center;color:var(--t3);font-size:12px;padding:20px;">학생 불러오는 중...</div>`;
 
   const { data:students } = await sb.from('profiles').select('id,name,nickname,student_no,class_id,role').eq('role','student').order('class_id');
   const { data:classes } = await sb.from('classes').select('id,name').order('id');
   const clsName={}; (classes||[]).forEach(c=>clsName[c.id]=c.name);
 
-  window._repStudents = students||[];
+  if(!students || !students.length){
+    cont.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-school"></i></div><div class="stg-title">학생 상담 리포트</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:20px 0;">담당 학생이 없습니다.<br><span style="font-size:10px;">원장이 학생을 배정하면 여기에 표시됩니다.</span></div></div>`;
+    return;
+  }
+
+  window._repStudents = students;
   window._repClsName = clsName;
-  cont.innerHTML = `<div class="csl-shell exam-csl">
-    <header class="csl-top">
-      <div>
-        <div class="csl-eyebrow">Test counseling</div>
-        <h1 class="csl-title">시험상담</h1>
-      </div>
-      <p class="csl-help">${isDirectorRole()?'원장은 모든 테스트의 응시·등수를 봅니다. 입시 상담은 입시상담 메뉴에서 진행하세요.':'강사는 본인이 만든 테스트의 응시·등수만 봅니다. 입시 상담은 입시상담 메뉴에서 따로 진행하세요.'}</p>
-    </header>
-    <div class="csl-layout">
-      <aside class="csl-panel csl-sidebar">
-        <label class="csl-label" for="rep-search">학생 찾기</label>
-        <input id="rep-search" class="csl-input" placeholder="이름·반·학생번호" oninput="wRepFilter(this.value)" autocomplete="off">
-        <div id="rep-list" class="csl-student-list"></div>
-      </aside>
-      <main id="exam-csl-workspace" class="csl-main">
-        <div class="csl-panel csl-empty">${(students&&students.length)?'왼쪽에서 학생을 선택하면 응시 점수와 등수 추이가 나옵니다.':'등록된 학생이 없습니다. 원장이 학생 계정을 만들면 여기에 표시됩니다.'}</div>
-      </main>
-    </div>
-  </div>`;
-  wRepRenderList(window._repStudents);
+  cont.innerHTML = `<div class="stg-card">
+    <div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-school"></i></div><div class="stg-title">학생 상담 리포트</div><div class="stg-sub">${students.length}명</div></div>
+    <input id="rep-search" oninput="wRepFilter(this.value)" class="target-select" style="width:100%;margin-bottom:10px;" placeholder="이름·아이디로 검색" aria-label="학생 검색">
+    <div id="rep-list"></div>
+  </div>
+  <div id="rep-detail"></div>`;
+  wRepRenderList(students);
 }
 
-// 반별 그룹핑하여 학생 목록 렌더
 function wRepRenderList(list){
   const box=document.getElementById('rep-list');
   if(!box) return;
   const clsName=window._repClsName||{};
-  if(!list.length){ box.innerHTML=`<div class="csl-empty">검색된 학생이 없습니다.</div>`; return; }
+  if(!list.length){ box.innerHTML=`<div style="font-size:11px;color:var(--t3);text-align:center;padding:10px 0;">해당 학생이 없습니다.</div>`; return; }
   const groups={};
   list.forEach(s=>{ const key=s.class_id||'__none'; (groups[key]=groups[key]||[]).push(s); });
   let html='';
   Object.keys(groups).forEach(key=>{
     const label = key==='__none' ? '반 미배정' : (clsName[key]||('반 '+key));
-    html += `<div class="exam-csl-group"><div class="exam-csl-group-label">${escHtml(label)} · ${groups[key].length}명</div>`;
+    html += `<div style="margin-top:10px;"><div style="font-size:11px;font-weight:800;color:var(--accent);padding:6px 0;border-bottom:2px solid var(--accent-light);">${escHtml(label)} (${groups[key].length}명)</div>`;
     groups[key].forEach(s=>{
-      const selected=window._repOpenId===s.id?' on':'';
-      html += `<button type="button" class="csl-student${selected}" data-id="${s.id}" onclick="wOpenStudentReport('${s.id}')">
-        <span class="csl-avatar" aria-hidden="true">${escHtml((s.name||'?').slice(0,1))}</span>
-        <span><strong>${escHtml(s.name||'이름 미설정')}</strong><small>${escHtml(s.student_no||'')}${s.nickname?' · '+escHtml(s.nickname):''}</small></span>
-      </button>`;
+      html += `<div role="button" tabindex="0" onclick="wOpenStudentReport('${s.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();wOpenStudentReport('${s.id}');}" style="display:flex;align-items:center;gap:8px;padding:10px 4px;min-height:44px;border-bottom:1px solid var(--border);cursor:pointer;">
+        <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;" aria-hidden="true"><i class="ti ti-user"></i></div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;">${escHtml(s.name||'(이름미설정)')}</div>
+        <div style="font-size:9px;color:var(--t3);">${escHtml(s.student_no||'')}${s.nickname?' · @'+escHtml(s.nickname):''}</div></div>
+        <span style="font-size:11px;color:var(--accent);">상담 ›</span>
+      </div>`;
     });
     html += `</div>`;
   });
@@ -4343,47 +4335,47 @@ function wRepFilter(q){
   wRepRenderList(f);
 }
 
-// 개별 학생 상세 리포트 (점수누적 + 메달 + 등수추이)
 async function wOpenStudentReport(studentId){
   const sb=sbReady();
   const student=(window._repStudents||[]).find(s=>s.id===studentId);
-  const name=student?.name||'이름 미설정';
-  window._repOpenId=studentId;
-  wRepRenderList((document.getElementById('rep-search')?.value||'').trim()
-    ? (window._repStudents||[]).filter(s=>{
-        const q=document.getElementById('rep-search').value.trim().toLowerCase();
-        return (s.name||'').toLowerCase().includes(q)||String(s.student_no||'').toLowerCase().includes(q)||(s.nickname||'').toLowerCase().includes(q);
-      })
-    : (window._repStudents||[]));
-  const detail=document.getElementById('exam-csl-workspace')||document.getElementById('rep-detail');
+  const name=student?.name || '이름 미설정';
+  const detail=document.getElementById('rep-detail');
   if(!detail) return;
-  detail.innerHTML=`<div class="csl-panel csl-empty">${escHtml(name)}의 응시 기록을 불러오는 중입니다.</div>`;
+  detail.innerHTML=`<div class="stg-card"><div style="text-align:center;color:var(--t3);font-size:12px;padding:16px;">${escHtml(name)} 리포트 불러오는 중...</div></div>`;
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
 
   const [repRes, colRes] = await Promise.all([
     sb.rpc('student_report', { p_student: studentId }),
     sb.from('collections').select('*').eq('user_id', studentId).maybeSingle()
   ]);
   const { data, error } = repRes;
-  if(error){ detail.innerHTML=`<div class="csl-panel csl-empty">불러오기 실패: ${escHtml(error.message)}</div>`; return; }
+  if(error){ detail.innerHTML=`<div class="stg-card"><div style="color:var(--red);font-size:12px;text-align:center;padding:14px;">불러오기 실패: ${escHtml(error.message)}</div></div>`; return; }
 
   const col = colRes.data || {};
   const medals=[
-    {k:'gold',label:'금메달'},
-    {k:'silver',label:'은메달'},
-    {k:'bronze',label:'동메달'},
-    {k:'perfect',label:'만점'},
-    {k:'jun',label:'준킬러'},
-    {k:'kill',label:'킬러'},
-    {k:'god',label:'GOD'}
+    {k:'gold',label:'금메달',icon:'ti-medal'},
+    {k:'silver',label:'은메달',icon:'ti-medal-2'},
+    {k:'bronze',label:'동메달',icon:'ti-award'},
+    {k:'perfect',label:'만점',icon:'ti-diamond'},
+    {k:'jun',label:'준킬러',icon:'ti-sword'},
+    {k:'kill',label:'킬러',icon:'ti-flame'},
+    {k:'god',label:'GOD',icon:'ti-crown'}
   ];
   const medalHtml = medals.map(m=>{
     const cnt=col[m.k]||0;
-    return `<div class="exam-medal${cnt?' on':''}"><span>${escHtml(m.label)}</span><strong>${cnt}</strong></div>`;
+    return `<div style="flex:0 0 auto;text-align:center;padding:8px 10px;background:${cnt>0?'var(--accent-light)':'var(--surface)'};border:1px solid ${cnt>0?'var(--accent-mid)':'var(--border)'};border-radius:10px;min-width:54px;opacity:${cnt>0?1:0.45};">
+      <div style="font-size:18px;color:${cnt>0?'var(--accent)':'var(--t3)'};" aria-hidden="true"><i class="ti ${m.icon}"></i></div>
+      <div style="font-size:9px;color:var(--t3);margin-top:2px;">${m.label}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:800;color:${cnt>0?'var(--accent)':'var(--t3)'};">${cnt}</div>
+    </div>`;
   }).join('');
-  const medalCard = `<section class="csl-panel csl-card"><div class="csl-card-title">획득 메달</div><div class="exam-medals">${medalHtml}</div></section>`;
+  const medalCard = `<div class="stg-card">
+    <div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-medal"></i></div><div class="stg-title">획득 메달</div></div>
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;">${medalHtml}</div>
+  </div>`;
 
   if(!data || !data.length){
-    detail.innerHTML = `<section class="csl-panel csl-card"><div class="csl-card-title">${escHtml(name)}</div><p class="csl-empty">${isDirectorRole()?'이 학생이 응시한 테스트가 없습니다.':'내가 만든 테스트에 응시한 기록이 없습니다. 테스트 탭에서 대상을 배정했는지 확인하세요.'}</p></section>` + medalCard;
+    detail.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-clipboard-list"></i></div><div class="stg-title">${escHtml(name)} 리포트</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">아직 응시한 시험이 없습니다.</div></div>` + medalCard;
     return;
   }
 
@@ -4392,64 +4384,67 @@ async function wOpenStudentReport(studentId){
   const avg=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
   const maxS=Math.max(...scores);
   const last=rows[rows.length-1];
-  const rankText=r=>r.overall_rank!=null?`${r.overall_rank}/${r.overall_total}`:'—';
-  const classText=r=>r.class_rank!=null?`${r.class_rank}/${r.class_total}`:'—';
-  const showCharts=rows.length>=2;
+  const rankText=(rank,total)=>rank!=null&&total!=null?`${rank}/${total}`:'-';
 
-  let html=`<section class="csl-panel csl-card">
-    <div class="csl-card-head"><div><div class="csl-card-title">${escHtml(name)}</div><div class="csl-meta">${isDirectorRole()?'응시 테스트': '내가 만든 테스트'} ${rows.length}회</div></div></div>
-    <div class="exam-stats">
-      <div><span>평균</span><strong>${avg}</strong></div>
-      <div><span>최고</span><strong>${maxS}</strong></div>
-      <div><span>최근</span><strong>${last.score}</strong></div>
+  let html=`<div class="stg-card">
+    <div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-clipboard-list"></i></div><div class="stg-title">${escHtml(name)} 리포트</div>
+      <div class="stg-sub">총 ${rows.length}회 응시</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <div style="flex:1;background:var(--accent-light);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--t3);">평균</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:800;color:var(--accent);">${avg}</div></div>
+      <div style="flex:1;background:var(--a3-light);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--t3);">최고</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:800;color:var(--a3);">${maxS}</div></div>
+      <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--t3);">최근</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:800;">${last.score}</div></div>
     </div>
-    ${showCharts?`<div class="exam-charts"><div><h3>점수 추이</h3><div class="exam-chart"><canvas id="rep-chart-score"></canvas></div></div><div><h3>전체 등수 추이 <span>위가 1등</span></h3><div class="exam-chart"><canvas id="rep-chart-rank"></canvas></div></div></div>`:''}
-  </section>`
+    <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px;">점수 추이</div>
+    <div style="position:relative;height:160px;margin-bottom:6px;"><canvas id="rep-chart-score"></canvas></div>
+    <div style="font-size:11px;font-weight:700;color:var(--t2);margin:10px 0 4px;">전체 등수 추이 (위가 1등)</div>
+    <div style="position:relative;height:160px;"><canvas id="rep-chart-rank"></canvas></div>
+  </div>`
   + medalCard
-  + `<section class="csl-panel csl-card">
-    <div class="csl-card-title">회차별 성적</div>
-    <div class="exam-table-wrap"><table class="exam-table">
-      <caption class="sr-only">${escHtml(name)} 회차별 점수와 등수</caption>
-      <thead><tr><th scope="col">시험</th><th scope="col">점수</th><th scope="col">전체 등수</th><th scope="col">반 등수</th></tr></thead>
-      <tbody>`;
+  + `<div class="stg-card">
+    <div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-list"></i></div><div class="stg-title">회차별 성적</div></div>`;
   rows.forEach(r=>{
-    html += `<tr>
-      <th scope="row">${escHtml(r.title||'')}${r.closed?' <span class="staff-pill">마감</span>':''}<small>${escHtml(r.exam_date||'')}</small></th>
-      <td>${r.score}</td>
-      <td>${rankText(r)}</td>
-      <td>${classText(r)}</td>
-    </tr>`;
+    html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;">${escHtml(r.title||'')}${r.closed?' 마감':''}</div>
+      <div style="font-size:9px;color:var(--t3);">${escHtml(r.exam_date||'')}</div></div>
+      <div style="text-align:center;"><div style="font-size:9px;color:var(--t3);">점수</div><div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;">${r.score}</div></div>
+      <div style="text-align:center;"><div style="font-size:9px;color:var(--t3);">전체</div><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);">${rankText(r.overall_rank,r.overall_total)}</div></div>
+      ${r.class_rank!=null?`<div style="text-align:center;"><div style="font-size:9px;color:var(--t3);">반</div><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--a3);">${rankText(r.class_rank,r.class_total)}</div></div>`:''}
+    </div>`;
   });
-  html += `</tbody></table></div></section>`;
+  html += `</div>`;
   detail.innerHTML = html;
 
-  if(showCharts && window.Chart){
+  if(window.Chart){
     if(window._repChartScore) window._repChartScore.destroy();
     window._repChartScore=new Chart(document.getElementById('rep-chart-score'),{
       type:'line',
       data:{ labels:rows.map(r=>r.title), datasets:[{
-        label:'점수', data:scores, borderColor:'#1d4ed8',
-        backgroundColor:'rgba(29,78,216,.12)', borderWidth:2.5, tension:.3,
-        pointRadius:4, pointBackgroundColor:'#1d4ed8', fill:true }]},
+        label:'점수', data:scores, borderColor:'#6366f1',
+        backgroundColor:'rgba(99,102,241,.12)', borderWidth:2.5, tension:.3,
+        pointRadius:4, pointBackgroundColor:'#6366f1', fill:true }]},
       options:{ responsive:true, maintainAspectRatio:false,
         scales:{ y:{ beginAtZero:false, ticks:{font:{family:"'Space Mono',monospace"}} }, x:{ticks:{font:{size:10}}} },
         plugins:{ legend:{display:false} } }
     });
     if(window._repChartRank) window._repChartRank.destroy();
-    const rankData=rows.map(r=>r.overall_rank);
-    if(rankData.some(v=>v!=null)){
-      window._repChartRank=new Chart(document.getElementById('rep-chart-rank'),{
-        type:'line',
-        data:{ labels:rows.map(r=>r.title), datasets:[{
-          label:'전체 등수', data:rankData, borderColor:'#047857',
-          borderDash:[6,4], backgroundColor:'rgba(4,120,87,.12)', borderWidth:2.5, tension:.3,
-          pointRadius:4, pointBackgroundColor:'#047857', fill:true }]},
-        options:{ responsive:true, maintainAspectRatio:false,
-          scales:{ y:{ reverse:true, min:1, ticks:{precision:0,font:{family:"'Space Mono',monospace"}} }, x:{ticks:{font:{size:10}}} },
-          plugins:{ legend:{display:false} } }
-      });
-    }
+    window._repChartRank=new Chart(document.getElementById('rep-chart-rank'),{
+      type:'line',
+      data:{ labels:rows.map(r=>r.title), datasets:[{
+        label:'전체 등수', data:rows.map(r=>r.overall_rank), borderColor:'#10b981',
+        backgroundColor:'rgba(16,185,129,.12)', borderWidth:2.5, tension:.3,
+        pointRadius:4, pointBackgroundColor:'#10b981', fill:true }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        scales:{ y:{ reverse:true, min:1, ticks:{precision:0,font:{family:"'Space Mono',monospace"}} }, x:{ticks:{font:{size:10}}} },
+        plugins:{ legend:{display:false} } }
+    });
   }
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function wNewTest(){

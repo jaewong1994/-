@@ -40,7 +40,7 @@ window.wLogout=async function(){
   if(typeof vwCacheClear==='function')vwCacheClear();
 };
 const sheet=document.querySelector('#mobile-more-sheet .app-sheet');
-if(sheet){const actions=document.createElement('div');actions.className='session-actions';actions.innerHTML='<button type="button" data-session-menu="counsel" onclick="closeMobileMore();showCat(\'counsel\')">입시상담</button><button type="button" data-session-menu="exam-counsel" onclick="closeMobileMore();showCat(\'exam-counsel\')">시험상담</button><button type="button" data-session-menu="admin" onclick="closeMobileMore();showCat(\'admin\')">계정 관리</button><button type="button" onclick="closeMobileMore();wLogout()">로그아웃</button>';sheet.append(actions);}
+if(sheet){const actions=document.createElement('div');actions.className='session-actions';actions.innerHTML='<button type="button" data-session-menu="counsel" onclick="closeMobileMore();showCat(\'counsel\')">입시상담</button><button type="button" data-session-menu="exam-counsel" onclick="closeMobileMore();showCat(\'exam-counsel\')">테스트 상담</button><button type="button" data-session-menu="admin" onclick="closeMobileMore();showCat(\'admin\')">계정 관리</button><button type="button" onclick="closeMobileMore();wLogout()">로그아웃</button>';sheet.append(actions);}
 document.querySelectorAll('.cat').forEach(el=>{el.setAttribute('role','button');el.tabIndex=0;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});});
 const sb=sbReady();if(sb)sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')setTimeout(()=>restore(session),0);});
 boot();
