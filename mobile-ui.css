@@ -55,6 +55,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;box
 .tab{min-height:48px;padding:10px 14px;scroll-snap-align:start;font-size:13px;}
 .cats{padding-bottom:10px;}
 .cat{min-height:44px;display:inline-flex;align-items:center;}
+button.staff-tool{-webkit-appearance:none;appearance:none;min-height:44px;border-radius:20px;}
 .uni-item{padding:14px 12px;border-radius:14px;}
 .uni-name{font-size:14px;}
 .uni-dept{font-size:12px;line-height:1.45;}

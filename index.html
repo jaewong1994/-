@@ -45,6 +45,29 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .cats::-webkit-scrollbar{display:none;}
 .cat{padding:8px 16px;font-size:13px;font-weight:700;color:var(--t3);cursor:pointer;border-radius:20px;background:var(--surface);border:1px solid var(--border);white-space:nowrap;transition:all .18s;user-select:none;}
 .cat.on{color:white;background:var(--accent);border-color:var(--accent);box-shadow:0 2px 8px var(--accent-mid);}
+.staff-toolbar{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.staff-toolbar::-webkit-scrollbar{display:none;}
+button.staff-tool{-webkit-appearance:none;appearance:none;flex:0 0 auto;min-height:44px;padding:8px 16px;display:inline-flex;align-items:center;gap:6px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;color:var(--t3);background:var(--surface);border:1px solid var(--border);border-radius:20px;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s,border-color .18s,box-shadow .18s,opacity .18s;}
+button.staff-tool i{font-size:15px;line-height:1;color:currentColor;}
+button.staff-tool.on{color:#fff;background:var(--accent);border-color:var(--accent);box-shadow:0 2px 8px var(--accent-mid);}
+button.staff-tool:active{opacity:.85;}
+button.staff-tool:focus-visible{outline:3px solid var(--accent-mid);outline-offset:2px;}
+.staff-add{-webkit-appearance:none;appearance:none;margin-left:auto;padding:6px 12px;min-height:32px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.staff-add:focus-visible{outline:3px solid var(--accent-mid);outline-offset:2px;}
+.staff-row{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.staff-row-meta{flex:1 1 180px;min-width:0;}
+.staff-row-title{display:flex;align-items:center;gap:6px;min-width:0;font-size:13px;font-weight:700;word-break:keep-all;}
+.staff-row-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.staff-row-sub{font-size:10px;color:var(--t3);margin-top:2px;word-break:keep-all;}
+.staff-owner{display:inline-flex;align-items:center;flex:0 0 auto;max-width:9.5em;padding:1px 7px;border-radius:20px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.staff-row-actions{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto;}
+.staff-row-btn{-webkit-appearance:none;appearance:none;padding:6px 9px;min-height:32px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:7px;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.staff-row-btn.rank{background:var(--accent-light);color:var(--accent);border-color:var(--accent-mid);}
+.staff-row-btn.danger{background:var(--red-light);color:var(--red);border:1px solid #fecaca;}
+.staff-row-btn:focus-visible,.staff-add:focus-visible{outline:3px solid var(--accent-mid);outline-offset:2px;}
+.staff-empty{font-size:12px;color:var(--t3);text-align:center;padding:16px 0;word-break:keep-all;line-height:1.7;}
+.w-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.w-avatar i{font-size:18px;}
 .tabs{display:flex;padding:0 4px;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{padding:12px 16px;min-height:44px;display:flex;align-items:center;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .18s;user-select:none;}
@@ -3796,10 +3819,27 @@ async function wRenameStudent(studentId, oldName){
 }
 
 function escHtml(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-function isDirectorRole(){ return _wprofile?.role==='director'; }
-async function loadManagedTests(columns){
+function isDirectorRole(){
+  const role=String(_wprofile?.role||'').trim().toLowerCase();
+  return role==='director' || role==='원장';
+}
+function staffRoleLabel(){
+  return isDirectorRole()?'원장 · 관리자':'선생님 · 관리자';
+}
+function staffToolbar(active){
+  const item=(id,fn,icon,label)=>`<button type="button" class="staff-tool${active===id?' on':''}" onclick="${fn}" ${active===id?'aria-current="page"':''}><i class="ti ${icon}" aria-hidden="true"></i><span>${label}</span></button>`;
+  return `<div class="staff-toolbar" role="toolbar" aria-label="관리 메뉴">${item('tests','renderWTeacher()','ti-clipboard-list','테스트')}${item('classes','wManageClasses()','ti-users','반·학생')}${item('counsel',"showCat('counsel')",'ti-school','입시상담')}${item('exam',"showCat('exam-counsel')",'ti-chart-bar','시험상담')}${item('poka','wPhotoAdmin()','ti-cards','포카')}</div>`;
+}
+function ownerBadge(name){
+  const label=String(name||'').trim();
+  if(!label) return '';
+  return `<span class="staff-owner" title="${escHtml(label)}">${escHtml(label)}</span>`;
+}
+async function loadManagedTests(){
   const sb=sbReady();
-  let q=sb.from('tests').select(columns||'id,title,total,exam_date,closed,created_by').order('exam_date',{ascending:false});
+  const rpc=await sb.rpc('list_managed_tests');
+  if(!rpc.error && Array.isArray(rpc.data)) return rpc;
+  let q=sb.from('tests').select('id,title,total,exam_date,closed,created_by').order('exam_date',{ascending:false}).order('id',{ascending:false});
   if(!isDirectorRole()) q=q.eq('created_by', _wuser.id);
   return q;
 }
@@ -3807,55 +3847,43 @@ async function loadManagedTests(columns){
 async function renderWTeacher(){
   const cont=document.getElementById('wtest-content');
   const sb=sbReady();
-  cont.innerHTML = wHeader(_wprofile.name||'선생님','선생님 · 관리자')
-    + `<div class="staff-toolbar" role="toolbar" aria-label="강사 작업">
-        <button type="button" class="staff-tool on" onclick="renderWTeacher()"><i class="ti ti-clipboard-list" aria-hidden="true"></i><span>테스트</span></button>
-        <button type="button" class="staff-tool" onclick="wManageClasses()"><i class="ti ti-users" aria-hidden="true"></i><span>반·학생</span></button>
-        <button type="button" class="staff-tool" onclick="showCat('counsel')"><i class="ti ti-school" aria-hidden="true"></i><span>입시상담</span></button>
-        <button type="button" class="staff-tool" onclick="showCat('exam-counsel')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>시험상담</span></button>
-        <button type="button" class="staff-tool" onclick="wPhotoAdmin()"><i class="ti ti-cards" aria-hidden="true"></i><span>포카</span></button>
-       </div>`;
+  cont.innerHTML = wHeader(_wprofile.name|| (isDirectorRole()?'원장':'선생님'), staffRoleLabel()) + staffToolbar('tests');
 
-  const { data:tests } = await loadManagedTests();
+  const { data:tests, error } = await loadManagedTests();
   const ownerIds=[...new Set((tests||[]).map(t=>t.created_by).filter(Boolean))];
   const owners={};
-  if(isDirectorRole() && ownerIds.length){
+  (tests||[]).forEach(t=>{ if(t.owner_name) owners[t.created_by]=t.owner_name; });
+  if(ownerIds.some(id=>!owners[id])){
     const { data:op } = await sb.from('profiles').select('id,name').in('id',ownerIds);
-    (op||[]).forEach(p=>owners[p.id]=p.name||'이름 미설정');
+    (op||[]).forEach(p=>{ if(!owners[p.id]) owners[p.id]=p.name||'이름 미설정'; });
   }
 
   let listHtml = `<div class="stg-card">
     <div class="stg-hdr"><div class="stg-icon" aria-hidden="true"><i class="ti ti-clipboard-list"></i></div><div class="stg-title">테스트 관리</div>
-      <button type="button" class="staff-mini primary" onclick="wNewTest()">새 테스트</button>
-    </div>
-    <p class="staff-help">${isDirectorRole()?'원장은 전체 테스트를 보고, 강사는 본인이 만든 테스트만 봅니다. 기존 테스트는 민재웅T 계정에 귀속됩니다.':'본인이 만든 테스트만 표시됩니다. 다른 강사 테스트는 보이지 않습니다.'}</p>`;
-  if(tests && tests.length){
+      <button type="button" class="staff-add" onclick="wNewTest()">+ 새 테스트</button>
+    </div>`;
+  if(error){
+    listHtml += `<div class="staff-empty">테스트를 불러오지 못했습니다.<br>${escHtml(error.message)}</div>`;
+  } else if(tests && tests.length){
     for(const t of tests){
-      const owner=isDirectorRole()&&t.created_by?escHtml(owners[t.created_by]||'소유자 미확인'):'';
+      const ownerName=t.owner_name||(t.created_by?owners[t.created_by]:'');
       const safeTitle=escHtml(t.title||'제목 없음');
       const jsTitle=(t.title||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      listHtml += `<div class="staff-test-row">
-        <div class="staff-test-meta"><div class="staff-test-title">${safeTitle}${t.closed?' <span class="staff-pill">마감</span>':''}</div>
-        <div class="staff-test-sub">${escHtml(t.exam_date||'')} · ${t.total}문항${owner?' · '+owner:''}</div></div>
-        <div class="staff-test-actions">
-        <button type="button" class="staff-mini" onclick="wRenameTest(${t.id},'${jsTitle}')">이름변경</button>
-        <button type="button" class="staff-mini" onclick="wEditKey(${t.id},'${jsTitle}')">정답수정</button>
-        <button type="button" class="staff-mini" onclick="wCopyTest(${t.id},'${jsTitle}')">복사</button>
-        ${t.closed?'':`<button type="button" class="staff-mini" onclick="wAssign(${t.id},'${jsTitle}')">대상</button>`}
-        <button type="button" class="staff-mini accent" onclick="wViewRank(${t.id},'${jsTitle}')">등수</button>
-        <button type="button" class="staff-mini danger" onclick="wDeleteTest(${t.id},'${jsTitle}')">삭제</button>
+      listHtml += `<div class="staff-row">
+        <div class="staff-row-meta"><div class="staff-row-title"><span class="staff-row-name">${safeTitle}</span>${t.closed?'<span class="staff-owner">마감</span>':''}${ownerBadge(ownerName)}</div>
+        <div class="staff-row-sub">${escHtml(t.exam_date||'')} · ${t.total}문항</div></div>
+        <div class="staff-row-actions">
+        <button type="button" class="staff-row-btn" onclick="wRenameTest(${t.id},'${jsTitle}')">이름변경</button>
+        <button type="button" class="staff-row-btn" onclick="wEditKey(${t.id},'${jsTitle}')">정답수정</button>
+        <button type="button" class="staff-row-btn" onclick="wCopyTest(${t.id},'${jsTitle}')">복사</button>
+        ${t.closed?'':`<button type="button" class="staff-row-btn" onclick="wAssign(${t.id},'${jsTitle}')">대상</button>`}
+        <button type="button" class="staff-row-btn rank" onclick="wViewRank(${t.id},'${jsTitle}')">등수</button>
+        <button type="button" class="staff-row-btn danger" onclick="wDeleteTest(${t.id},'${jsTitle}')">삭제</button>
         </div>
       </div>`;
     }
   } else {
-    let extra='';
-    if(!isDirectorRole()){
-      const { data:visible } = await sb.from('tests').select('id,created_by').limit(8);
-      if(visible && visible.some(t=>!t.created_by || t.created_by!==_wuser.id)){
-        extra='<p class="staff-help">기존 테스트가 보이지 않으면 Supabase에서 <code>supabase_test_ownership_v65.sql</code>을 실행해 민재웅T에게 귀속하세요.</p>';
-      }
-    }
-    listHtml += `<div class="csl-empty">${isDirectorRole()?'등록된 테스트가 없습니다.':'아직 내가 만든 테스트가 없습니다.'}${extra}<br><button type="button" class="staff-mini primary" style="margin-top:12px" onclick="wNewTest()">새 테스트 만들기</button></div>`;
+    listHtml += `<div class="staff-empty">${isDirectorRole()?'아직 등록된 테스트가 없습니다.':'아직 내가 만든 테스트가 없습니다.'}</div>`;
   }
   listHtml += `</div><div id="w-teacher-detail"></div>`;
   cont.innerHTML += listHtml;
@@ -4096,12 +4124,9 @@ async function wSaveKey(){
 async function wManageClasses(){
   const sb=sbReady();
   const cont=document.getElementById('wtest-content');
-  cont.innerHTML = wHeader(_wprofile.name||'선생님','선생님 · 관리자')
-    + `<div style="display:flex;gap:6px;margin-bottom:12px;">
-        <button onclick="renderWTeacher()" style="flex:1;padding:9px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📋 테스트</button>
-        <button onclick="wManageClasses()" style="flex:1;padding:9px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🏫 반·학생 관리</button>
-       </div>
-       <div style="text-align:center;color:var(--t3);font-size:12px;padding:10px;">불러오는 중...</div>`;
+  cont.innerHTML = wHeader(_wprofile.name|| (isDirectorRole()?'원장':'선생님'), staffRoleLabel())
+    + staffToolbar('classes')
+    + `<div class="staff-empty">불러오는 중...</div>`;
 
   const { data:classes } = await sb.from('classes').select('id,name').order('id');
   const { data:profs } = await sb.from('profiles').select('id,name,student_no,role,class_id').eq('role','student').order('name');
@@ -4139,11 +4164,8 @@ async function wManageClasses(){
   }
   studentHtml += `</div>`;
 
-  cont.innerHTML = wHeader(_wprofile.name||'선생님','선생님 · 관리자')
-    + `<div style="display:flex;gap:6px;margin-bottom:12px;">
-        <button onclick="renderWTeacher()" style="flex:1;padding:9px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📋 테스트</button>
-        <button onclick="wManageClasses()" style="flex:1;padding:9px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🏫 반·학생 관리</button>
-       </div>` + classHtml + studentHtml;
+  cont.innerHTML = wHeader(_wprofile.name|| (isDirectorRole()?'원장':'선생님'), staffRoleLabel())
+    + staffToolbar('classes') + classHtml + studentHtml;
 }
 
 async function wAddClass(){
@@ -4270,9 +4292,9 @@ async function renderExamCounsel(){
     <header class="csl-top">
       <div>
         <div class="csl-eyebrow">Test counseling</div>
-        <h1 class="csl-title">내가 만든 테스트 상담</h1>
+        <h1 class="csl-title">시험상담</h1>
       </div>
-      <p class="csl-help">${isDirectorRole()?'원장은 전체 테스트 응시·등수를 봅니다.':'강사는 본인이 만든 테스트의 응시·등수만 봅니다. 입시 상담은 입시상담 메뉴에서 진행하세요.'}</p>
+      <p class="csl-help">${isDirectorRole()?'원장은 모든 테스트의 응시·등수를 봅니다. 입시 상담은 입시상담 메뉴에서 진행하세요.':'강사는 본인이 만든 테스트의 응시·등수만 봅니다. 입시 상담은 입시상담 메뉴에서 따로 진행하세요.'}</p>
     </header>
     <div class="csl-layout">
       <aside class="csl-panel csl-sidebar">
@@ -4361,7 +4383,7 @@ async function wOpenStudentReport(studentId){
   const medalCard = `<section class="csl-panel csl-card"><div class="csl-card-title">획득 메달</div><div class="exam-medals">${medalHtml}</div></section>`;
 
   if(!data || !data.length){
-    detail.innerHTML = `<section class="csl-panel csl-card"><div class="csl-card-title">${escHtml(name)}</div><p class="csl-empty">내가 만든 테스트에 응시한 기록이 없습니다. 테스트 탭에서 대상을 배정했는지 확인하세요.</p></section>` + medalCard;
+    detail.innerHTML = `<section class="csl-panel csl-card"><div class="csl-card-title">${escHtml(name)}</div><p class="csl-empty">${isDirectorRole()?'이 학생이 응시한 테스트가 없습니다.':'내가 만든 테스트에 응시한 기록이 없습니다. 테스트 탭에서 대상을 배정했는지 확인하세요.'}</p></section>` + medalCard;
     return;
   }
 
@@ -4375,7 +4397,7 @@ async function wOpenStudentReport(studentId){
   const showCharts=rows.length>=2;
 
   let html=`<section class="csl-panel csl-card">
-    <div class="csl-card-head"><div><div class="csl-eyebrow">시험 응시</div><div class="csl-card-title">${escHtml(name)}</div><div class="csl-meta">내가 만든 테스트 ${rows.length}회</div></div></div>
+    <div class="csl-card-head"><div><div class="csl-card-title">${escHtml(name)}</div><div class="csl-meta">${isDirectorRole()?'응시 테스트': '내가 만든 테스트'} ${rows.length}회</div></div></div>
     <div class="exam-stats">
       <div><span>평균</span><strong>${avg}</strong></div>
       <div><span>최고</span><strong>${maxS}</strong></div>
@@ -4687,11 +4709,11 @@ async function wSaveEdit(testId, uid, title){
 
 // 공통 헤더 (로그인 정보 + 로그아웃)
 function wHeader(name, roleLabel){
-  const icon = roleLabel.indexOf('원장')>=0?'👑':(roleLabel.indexOf('선생')>=0?'👩‍🏫':'🧑‍🎓');
+  const icon = roleLabel.indexOf('원장')>=0?'ti-shield-check':(roleLabel.indexOf('선생')>=0?'ti-school':'ti-user');
   return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);">
-    <div style="width:38px;height:38px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:18px;">${icon}</div>
-    <div style="flex:1;"><div style="font-size:13px;font-weight:800;">${name}</div><div style="font-size:10px;color:var(--t3);">${roleLabel}</div></div>
-    <button onclick="wLogout()" style="padding:6px 12px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:7px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">로그아웃</button>
+    <div class="w-avatar" aria-hidden="true"><i class="ti ${icon}"></i></div>
+    <div style="flex:1;"><div style="font-size:13px;font-weight:800;">${escHtml(name)}</div><div style="font-size:10px;color:var(--t3);">${escHtml(roleLabel)}</div></div>
+    <button type="button" class="staff-row-btn" onclick="wLogout()">로그아웃</button>
   </div>`;
 }
 
@@ -4996,8 +5018,9 @@ function pcCompress(file){
 async function wPhotoAdmin(){
   const sb=sbReady();
   const cont=document.getElementById('wtest-content');
-  cont.innerHTML = wHeader(_wprofile.name||'선생님','선생님 · 관리자')
-    + `<div style="text-align:center;color:var(--t3);font-size:12px;padding:20px;">불러오는 중...</div>`;
+  cont.innerHTML = wHeader(_wprofile.name|| (isDirectorRole()?'원장':'선생님'), staffRoleLabel())
+    + staffToolbar('poka')
+    + `<div class="staff-empty">불러오는 중...</div>`;
   const { data:cards, error } = await sb.from('photocards').select('id,title,rarity,image,in_pool,created_at').order('created_at',{ascending:false});
   const rarityOpts = Object.keys(PC_RARITY).map(k=>`<option value="${k}">${PC_RARITY[k].label}</option>`).join('');
 
@@ -5023,7 +5046,7 @@ async function wPhotoAdmin(){
     }).join('');
   }
 
-  cont.innerHTML = wHeader(_wprofile.name||'선생님','선생님 · 관리자') + `
+  cont.innerHTML = wHeader(_wprofile.name|| (isDirectorRole()?'원장':'선생님'), staffRoleLabel()) + staffToolbar('poka') + `
   <div class="stg-card">
     <div class="stg-hdr"><div class="stg-icon">🐾</div><div class="stg-title">팡팡포카 만들기</div></div>
     <div style="font-size:11px;color:var(--t3);margin-bottom:10px;line-height:1.6;">팡팡이 사진을 올리면 자동 압축됩니다. <b>💫 자동지급</b> 카드는 학생이 시험을 제출할 때마다 랜덤으로 1장씩 지급돼요 (이미 가진 카드는 제외).</div>
@@ -5042,8 +5065,7 @@ async function wPhotoAdmin(){
     <div class="stg-hdr"><div class="stg-icon">🗂️</div><div class="stg-title">카드 목록</div><div class="stg-sub">${(cards||[]).length}장</div></div>
     ${listHtml}
     <div id="pc-award-zone"></div>
-  </div>
-  <button onclick="renderWTeacher()" style="width:100%;margin-top:4px;padding:11px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">← 테스트 관리로</button>`;
+  </div>`;
 }
 
 async function wPcTogglePool(id, cur){

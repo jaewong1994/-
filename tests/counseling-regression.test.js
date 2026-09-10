@@ -124,6 +124,10 @@ assert.match(html,/epsilon_scores:\$\{userId\}/,'로컬 성적 키는 계정 ID�
 assert.match(html,/data-cat="exam-counsel"/,'시험상담 메뉴가 입시상담과 분리돼야 함');
 assert.match(html,/function renderExamCounsel/,'시험상담 화면 함수가 있어야 함');
 assert.match(html,/created_by:_wuser.id/,'새 테스트는 생성 강사에게 귀속돼야 함');
+assert.match(html,/function list_managed_tests|rpc\('list_managed_tests'\)/,'원장·강사 테스트 목록은 소유자를 포함해 불러와야 함');
+assert.match(html,/staff-owner/,'테스트 제목 옆에 생성 강사 이름이 보여야 함');
+assert.match(html,/button\.staff-tool\{[^}]*border-radius:20px/,'강사 도구 버튼은 상단 알약 메뉴와 같은 모양이어야 함');
+assert.match(html,/function isDirectorRole/,'원장 권한 판별이 있어야 함');
 assert.match(counselingSource,/입시상담/,'상담 화면 제목이 입시상담이어야 함');
 
 console.log(`counseling regression OK ${engine.version}: ${universities.length} majors, ${valid} scored, ${monotonic} monotonic, ${strategic} strategic, chance ${chances.join('→')}`);
