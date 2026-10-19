@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko" data-auth-mode="server-required" data-auth-config-version="73a56e7faef8e409">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>입실론 입시연구소</title>
+<meta name="theme-color" content="#1d4ed8">
+<meta name="epsilon-build" content="v70">
+<meta name="description" content="입실론 입시연구소 학생관리, 모의고사 성적과 정시 배치표를 한 곳에서 확인하세요.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="입실론">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/app-icon-192.png">
+<link rel="apple-touch-icon" href="./icons/app-icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css" rel="stylesheet">
+<script src="./vendor/chart.umd.js?release-build=15ef708d9cb640bf"></script>
+
+<script src="./src/core/config.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/access.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/server-auth.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/compatibility-client.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/auth.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/backend.js?release-build=15ef708d9cb640bf"></script>
+<link rel="stylesheet" href="./src/styles/legacy-0.css?release-build=15ef708d9cb640bf">
+<link rel="stylesheet" href="./mobile-ui.css?release-build=15ef708d9cb640bf">
+<link rel="stylesheet" href="./counseling.css?release-build=15ef708d9cb640bf">
+<link rel="stylesheet" href="./src/styles/review.css?release-build=15ef708d9cb640bf">
+<link rel="stylesheet" href="./src/styles/accounts.css?release-build=15ef708d9cb640bf">
+</head>
+<body class="auth-pending">
+<section id="auth-gate" role="main"><div class="auth-card"><h1>입실론 학생관리</h1><p id="auth-status" role="status">로그인 상태를 확인하고 있습니다.</p><form id="auth-form" hidden><label>이메일<input id="auth-email" type="email" autocomplete="username" required></label><label>비밀번호<input id="auth-password" type="password" autocomplete="current-password" required></label><button type="submit">로그인</button></form><button type="button" id="auth-retry" hidden>다시 확인</button></div></section>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo">
+      <img src="data:image/png;base64,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" alt="입실론 로고" style="height:28px;width:auto;margin-right:8px;vertical-align:middle;display:inline-block;">
+      <span class="logo-main">입실론</span>
+      <span class="logo-sub">입시연구소</span>
+    </div>
+    <div class="logo-badge">2027학년도 수능</div>
+    <button class="install-trigger" type="button" onclick="installPWA()" aria-label="입실론 앱 설치">
+      <i class="ti ti-device-mobile-down" aria-hidden="true"></i><span>앱 설치</span>
+    </button>
+  </div>
+  <div class="cats"><div class="cat" data-cat="learning" onclick="showCat('learning')">학습</div>
+    <div class="cat on" data-cat="dday" onclick="showCat('dday')">📅 D-day</div>
+    <div class="cat" data-cat="ipsi" onclick="showCat('ipsi')">🎓 입시</div>
+    <div class="cat" data-cat="wtest" onclick="showCat('wtest')">📝 테스트</div>
+    <div class="cat" data-cat="report" onclick="showCat('report')">📊 리포트</div>
+    <div class="cat" data-cat="viewer" onclick="showCat('viewer')">📚 자료실</div>
+    <div class="cat" data-cat="collection" onclick="showCat('collection')">🏅 컬렉션</div>
+    <div class="cat" data-cat="counsel" onclick="showCat('counsel')" style="display:none;">입시상담</div>
+    <div class="cat" data-cat="exam-counsel" onclick="showCat('exam-counsel')" style="display:none;">테스트 상담</div>
+    <div class="cat" data-cat="admin" onclick="showCat('admin')" style="display:none;">계정관리</div>
+  </div>
+  <div class="tabs" id="subtabs" style="display:none;">
+    <div class="tab on" onclick="showPage('susi')">🎯 수시라인</div>
+    <div class="tab" onclick="showPage('score')">📊 내 성적</div>
+    <div class="tab" onclick="showPage('trend')">📈 성적추이</div>
+    <div class="tab" onclick="showPage('cut')">📋 등급컷</div>
+    <div class="tab" onclick="showPage('uni')">🏫 정시 배치표</div>
+    <div class="tab" onclick="showPage('input')">✏️ 성적입력</div>
+    <div class="tab" onclick="showPage('strategy')">🎯 지원전략</div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="주요 메뉴">
+  <button type="button" class="mobile-nav-item on" data-mobile-cat="dday" onclick="mobileNavigate('dday')" aria-current="page">
+    <i class="ti ti-calendar-event" aria-hidden="true"></i><span>홈</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-mobile-cat="ipsi" onclick="mobileNavigate('ipsi')">
+    <i class="ti ti-school" aria-hidden="true"></i><span>입시</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-mobile-cat="wtest" onclick="mobileNavigate('wtest')">
+    <i class="ti ti-pencil-check" aria-hidden="true"></i><span>테스트</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-mobile-cat="report" onclick="mobileNavigate('report')">
+    <i class="ti ti-chart-bar" aria-hidden="true"></i><span>리포트</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-mobile-cat="more" onclick="openMobileMore()" aria-haspopup="dialog" aria-controls="mobile-more-sheet">
+    <i class="ti ti-dots" aria-hidden="true"></i><span>더보기</span>
+  </button>
+</nav>
+
+<div class="app-sheet-scrim" id="mobile-more-sheet" hidden onclick="closeMobileMore(event)">
+  <section class="app-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-more-title">
+    <div class="app-sheet-handle" aria-hidden="true"></div>
+    <div class="app-sheet-header">
+      <h2 id="mobile-more-title">더보기</h2>
+      <button type="button" class="icon-button" onclick="closeMobileMore()" aria-label="더보기 닫기"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="app-sheet-grid">
+      <button type="button" onclick="mobileNavigate('viewer')"><i class="ti ti-folders" aria-hidden="true"></i><span>자료실</span></button>
+      <button type="button" onclick="mobileNavigate('collection')"><i class="ti ti-award" aria-hidden="true"></i><span>컬렉션</span></button>
+      <button type="button" onclick="installPWA()"><i class="ti ti-device-mobile-down" aria-hidden="true"></i><span>앱 설치</span></button>
+    </div>
+  </section>
+</div>
+
+<div class="app-sheet-scrim" id="install-guide" hidden onclick="closeInstallGuide(event)">
+  <section class="app-sheet install-sheet" role="dialog" aria-modal="true" aria-labelledby="install-guide-title">
+    <div class="app-sheet-handle" aria-hidden="true"></div>
+    <div class="app-sheet-header">
+      <h2 id="install-guide-title">휴대폰에 설치하기</h2>
+      <button type="button" class="icon-button" onclick="closeInstallGuide()" aria-label="설치 안내 닫기"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div id="install-guide-body" class="install-guide-body"></div>
+  </section>
+</div>
+
+<div class="main">
+<div class="inner">
+
+<!-- ===== 수시 지원라인 ===== -->
+<div id="pg-susi" class="page">
+  <div id="susi-content">
+    <div class="empty"><div class="empty-icon">🎯</div><div class="empty-text">수시 지원라인 불러오는 중...</div></div>
+  </div>
+</div>
+
+<!-- ===== 내 성적 ===== -->
+<div id="pg-score" class="page">
+  <div id="score-content">
+    <div class="empty"><div class="empty-icon">📋</div><div class="empty-text"><strong>원점수만 입력하면</strong><br>표준점수·백분위·등급을<br>자동으로 계산해드려요</div></div>
+  </div>
+</div>
+
+<!-- ===== 성적추이 ===== -->
+<div id="pg-trend" class="page">
+  <div id="trend-content">
+    <div class="empty"><div class="empty-icon">📈</div><div class="empty-text">성적 데이터가 없습니다</div></div>
+  </div>
+</div>
+
+<!-- ===== 등급컷 ===== -->
+<div id="pg-cut" class="page">
+  <div id="cut-content"></div>
+</div>
+
+<!-- ===== 정시 배치표 ===== -->
+<div id="pg-uni" class="page">
+  <div id="uni-content">
+    <div class="empty"><div class="empty-icon">🏫</div><div class="empty-text">9월 모평 성적을 입력하면<br>정시 배치표를 보여드려요</div></div>
+  </div>
+</div>
+
+<!-- ===== 성적 입력 ===== -->
+<div id="pg-input" class="page">
+
+  <div class="card">
+    <div class="card-title">시험 구분</div>
+    <div class="tgl" id="examTypeG">
+      <div class="tb" data-v="6월 모평">6월 모평</div>
+      <div class="tb" data-v="7월 학평">7월 학평</div>
+      <div class="tb on" data-v="9월 모평">9월 모평</div>
+      <div class="tb" data-v="수능">수능</div>
+    </div>
+    <div style="margin-top:8px;padding:8px 10px;background:var(--accent-light);border-radius:8px;border:1px solid var(--accent-mid);font-size:10px;color:var(--accent);">
+      ℹ️ 9월 모평은 EBSi 2026.09.02 20시 가채점 추정컷으로 예상 배치표를 계산합니다. 공식 성적표를 입력하면 정밀 모드로 전환됩니다.
+    </div>
+  </div>
+
+  <!-- 국어 -->
+  <div class="card">
+    <div class="form-hdr">
+      <div class="fdot" style="background:#2563eb;"></div>
+      <div class="fhdr-title">국어</div>
+      <div class="fhdr-sub" id="kor-cut-info"></div>
+    </div>
+    <div class="form-sec">
+      <div class="form-lbl">선택과목</div>
+      <div class="tgl" id="korSubG">
+        <div class="tb on" data-v="화법과작문">화법과작문</div>
+        <div class="tb" data-v="언어와매체">언어와매체</div>
+      </div>
+    </div>
+    <div class="form-sec" style="margin-bottom:0;">
+      <div class="form-lbl">원점수 입력 → 예상 표준점수·백분위·등급 자동계산</div>
+      <div class="ai-wrap">
+        <div class="ai-row">
+          <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="kor_raw" type="number" placeholder="0~100" min="0" max="100" oninput="autoCalc('kor')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">표준점수</div><input class="ai-input computed" id="kor_std" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('kor')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">백분위</div><input class="ai-input computed" id="kor_pct" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('kor')"></div>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-res">
+          <div class="ai-res-cell"><div class="ai-res-lbl">등급</div><div class="ai-res-val empty" id="kor_gv">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><div class="ai-res-lbl">1등급 컷</div><div class="ai-res-val" id="kor_cut1" style="color:var(--t3);">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><span class="auto-badge" id="kor_src" style="display:none;">⚡ 자동계산</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수학 -->
+  <div class="card">
+    <div class="form-hdr">
+      <div class="fdot" style="background:#d97706;"></div>
+      <div class="fhdr-title">수학</div>
+      <div class="fhdr-sub" id="math-cut-info"></div>
+    </div>
+    <div class="form-sec">
+      <div class="form-lbl">선택과목</div>
+      <div class="tgl" id="mathSubG">
+        <div class="tb on" data-v="확률과통계">확률과통계</div>
+        <div class="tb" data-v="미적분">미적분</div>
+        <div class="tb" data-v="기하">기하</div>
+      </div>
+    </div>
+    <div class="form-sec" style="margin-bottom:0;">
+      <div class="form-lbl">원점수 입력 → 예상 표준점수·백분위·등급 자동계산</div>
+      <div class="ai-wrap">
+        <div class="ai-row">
+          <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="math_raw" type="number" placeholder="0~100" min="0" max="100" oninput="autoCalc('math')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">표준점수</div><input class="ai-input computed" id="math_std" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('math')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">백분위</div><input class="ai-input computed" id="math_pct" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('math')"></div>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-res">
+          <div class="ai-res-cell"><div class="ai-res-lbl">등급</div><div class="ai-res-val empty" id="math_gv">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><div class="ai-res-lbl">1등급 컷</div><div class="ai-res-val" id="math_cut1" style="color:var(--t3);">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><span class="auto-badge" id="math_src" style="display:none;">⚡ 자동계산</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 영어 -->
+  <div class="card">
+    <div class="form-hdr">
+      <div class="fdot" style="background:#059669;"></div>
+      <div class="fhdr-title">영어</div>
+      <div class="fhdr-sub">절대평가 · 90점↑ 1등급</div>
+    </div>
+    <div class="form-sec" style="margin-bottom:0;">
+      <div class="form-lbl">원점수 입력 → 등급 자동계산</div>
+      <div class="ai-wrap">
+        <div class="ai-row">
+          <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="eng_raw" type="number" placeholder="0~100" min="0" max="100" oninput="autoCalc('eng')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">등급</div><div class="ai-res-val empty" id="eng_gv" style="font-size:20px;padding-top:6px;">-</div></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell" style="font-size:10px;color:var(--t3);text-align:center;line-height:1.7;">90점↑ 1등급<br>80점↑ 2등급<br>70점↑ 3등급</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탐구1 -->
+  <div class="card">
+    <div class="form-hdr"><div class="fdot" style="background:#7c3aed;"></div><div class="fhdr-title">탐구 1과목</div></div>
+    <div class="form-sec">
+      <select class="fi" id="sci1_name" onchange="autoCalc('sci1')">
+        <option value="">-- 과목 선택 --</option>
+        <optgroup label="사회탐구">
+          <option>생활과윤리</option><option>윤리와사상</option><option>한국지리</option>
+          <option>세계지리</option><option>동아시아사</option><option>세계사</option>
+          <option>경제</option><option>정치와법</option><option>사회문화</option>
+        </optgroup>
+        <optgroup label="과학탐구">
+          <option>물리학Ⅰ</option><option>화학Ⅰ</option><option>생명과학Ⅰ</option><option>지구과학Ⅰ</option>
+          <option>물리학Ⅱ</option><option>화학Ⅱ</option><option>생명과학Ⅱ</option><option>지구과학Ⅱ</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-sec" style="margin-bottom:0;">
+        <div class="form-lbl">원점수 입력 → 예상 표준점수·백분위·등급 자동계산 (최대 50점)</div>
+      <div class="ai-wrap">
+        <div class="ai-row">
+          <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="sci1_raw" type="number" placeholder="0~50" min="0" max="50" oninput="autoCalc('sci1')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">표준점수</div><input class="ai-input computed" id="sci1_std" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('sci1')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">백분위</div><input class="ai-input computed" id="sci1_pct" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('sci1')"></div>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-res">
+          <div class="ai-res-cell"><div class="ai-res-lbl">등급</div><div class="ai-res-val empty" id="sci1_gv">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><div class="ai-res-lbl">1등급 컷</div><div class="ai-res-val" id="sci1_cut1" style="color:var(--t3);">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><span class="auto-badge" id="sci1_src" style="display:none;">⚡ 자동계산</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탐구2 -->
+  <div class="card">
+    <div class="form-hdr"><div class="fdot" style="background:#be185d;"></div><div class="fhdr-title">탐구 2과목</div></div>
+    <div class="form-sec">
+      <select class="fi" id="sci2_name" onchange="autoCalc('sci2')">
+        <option value="">-- 선택 안 함 --</option>
+        <optgroup label="사회탐구">
+          <option>생활과윤리</option><option>윤리와사상</option><option>한국지리</option>
+          <option>세계지리</option><option>동아시아사</option><option>세계사</option>
+          <option>경제</option><option>정치와법</option><option>사회문화</option>
+        </optgroup>
+        <optgroup label="과학탐구">
+          <option>물리학Ⅰ</option><option>화학Ⅰ</option><option>생명과학Ⅰ</option><option>지구과학Ⅰ</option>
+          <option>물리학Ⅱ</option><option>화학Ⅱ</option><option>생명과학Ⅱ</option><option>지구과학Ⅱ</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-sec" style="margin-bottom:0;">
+      <div class="ai-wrap">
+        <div class="ai-row">
+          <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="sci2_raw" type="number" placeholder="0~50" min="0" max="50" oninput="autoCalc('sci2')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">표준점수</div><input class="ai-input computed" id="sci2_std" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('sci2')"></div>
+          <div class="ai-sep"></div>
+          <div class="ai-cell"><div class="ai-lbl">백분위</div><input class="ai-input computed" id="sci2_pct" type="number" placeholder="원점수 입력" readonly oninput="manualScoreInput('sci2')"></div>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-res">
+          <div class="ai-res-cell"><div class="ai-res-lbl">등급</div><div class="ai-res-val empty" id="sci2_gv">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><div class="ai-res-lbl">1등급 컷</div><div class="ai-res-val" id="sci2_cut1" style="color:var(--t3);">-</div></div>
+          <div class="ai-sep" style="min-height:34px;"></div>
+          <div class="ai-res-cell"><span class="auto-badge" id="sci2_src" style="display:none;">⚡ 자동계산</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 한국사 -->
+  <div class="card">
+    <div class="form-hdr"><div class="fdot" style="background:#ea580c;"></div><div class="fhdr-title">한국사</div><div class="fhdr-sub">절대평가 · 40점↑ 1등급</div></div>
+    <div class="ai-wrap">
+      <div class="ai-row">
+        <div class="ai-cell"><div class="ai-lbl">원점수</div><input class="ai-input" id="hist_raw" type="number" placeholder="0~50" min="0" max="50" oninput="autoCalc('hist')"></div>
+        <div class="ai-sep"></div>
+        <div class="ai-cell"><div class="ai-lbl">등급</div><div class="ai-res-val empty" id="hist_gv" style="font-size:20px;padding-top:6px;">-</div></div>
+        <div class="ai-sep"></div>
+        <div class="ai-cell" style="font-size:10px;color:var(--t3);text-align:center;line-height:1.7;">40점↑ 1등급<br>35점↑ 2등급<br>30점↑ 3등급</div>
+      </div>
+    </div>
+  </div>
+
+  <label style="display:flex;align-items:flex-start;gap:8px;padding:11px 12px;margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:10px;color:var(--t2);line-height:1.6;cursor:pointer;">
+    <input id="official-score-mode" type="checkbox" onchange="toggleOfficialScoreMode(this.checked)" style="margin-top:2px;">
+    <span><strong>확인한 표준점수 직접 입력</strong><br>성적표나 신뢰하는 산출 사이트의 표준점수·백분위를 입력하면 추정값 대신 입력값으로 배치표를 다시 계산합니다. 백분위를 모르면 기존 추정값을 유지하세요.</span>
+  </label>
+  <button class="btn btn-p" onclick="saveScore()">✅ 성적 저장하기</button>
+  <button class="btn" onclick="saveScore('uni')" style="width:100%;margin-top:8px;background:var(--white);border:1px solid var(--accent);color:var(--accent);">🏫 저장하고 정시 배치표 보기</button>
+  <div style="height:24px;"></div>
+</div>
+
+<!-- ===== 지원전략 ===== -->
+<div id="pg-strategy" class="page">
+  <div id="strategy-content">
+    <div class="empty"><div class="empty-icon">🎯</div><div class="empty-text">성적을 입력하면<br>맞춤 지원전략을 제시해드려요</div></div>
+  </div>
+</div>
+
+<!-- ===== 주간테스트 ===== -->
+<div id="pg-wtest" class="page">
+  <div id="wtest-content">
+    <div class="empty"><div class="empty-icon">📝</div><div class="empty-text">불러오는 중...</div></div>
+  </div>
+</div>
+
+<!-- ===== 컬렉션 ===== -->
+<div id="pg-collection" class="page">
+  <div id="collection-content">
+    <div class="empty"><div class="empty-icon">🏅</div><div class="empty-text">불러오는 중...</div></div>
+  </div>
+</div>
+
+<!-- ===== D-day ===== -->
+<div id="pg-dday" class="page on">
+  <div id="dday-content"></div>
+</div>
+
+<!-- ===== 리포트 ===== -->
+<div id="pg-report" class="page">
+  <div id="report-content"></div>
+</div>
+
+<!-- ===== 자료실 (M·ARCHIVE 손풀이 · 복습) ===== -->
+<div id="pg-viewer" class="page">
+  <div id="viewer-content"></div>
+</div>
+
+<!-- ===== 계정관리 (원장 전용) ===== -->
+<div id="pg-admin" class="page">
+  <div id="wtest-content-admin"></div>
+</div>
+
+<!-- ===== 입시상담 (강사·원장 전용) ===== -->
+<div id="pg-counsel" class="page">
+  <div id="counsel-content"></div>
+</div>
+
+<!-- ===== 테스트 상담 (강사·원장 전용, 정시상담 이전 리포트) ===== -->
+<div id="pg-exam-counsel" class="page">
+  <div id="exam-counsel-content"></div>
+</div>
+
+<div id="pg-learning" class="page"><div id="learning-content"></div></div>
+</div><!-- /inner -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+<div style="text-align:center;padding:18px 0 28px;color:var(--t3);opacity:.5;font-size:10px;letter-spacing:.2px;">입실론 입시연구소</div>
+
+<script src="./src/legacy/admissions-data.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/scores.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/navigation.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/dashboard.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/strategy.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/exams-session.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/omr.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/exams-submit.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/accounts.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/exams-staff.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/student-report.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/exams-editor.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/collection.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/mock-analysis.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/photocards.js?release-build=15ef708d9cb640bf"></script>
+
+<script src="./src/legacy/early-admissions-data.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/early-admissions.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/materials.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/legacy/mobile-shell.js?release-build=15ef708d9cb640bf"></script>
+<script src="./counseling-engine.js?release-build=15ef708d9cb640bf"></script>
+<script src="./counseling.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/learning-bridge.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/runtime-config.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/operational-gate.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/operational-views.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/runtime-bootstrap.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/session-provider.js?release-build=15ef708d9cb640bf"></script>
+<script src="./app-session.js?release-build=15ef708d9cb640bf"></script>
+<script src="./src/core/pwa.js?release-build=15ef708d9cb640bf"></script>
+</body>
+</html>

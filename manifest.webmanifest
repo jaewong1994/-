@@ -1,17 +1,19 @@
 {
-  "id": "./",
-  "name": "입실론 입시연구소",
-  "short_name": "입실론",
-  "description": "학생관리, 모의고사 성적 분석과 정시 배치표",
+  "id": "./student-mvp-review",
+  "name": "입실론 학생관리 MVP 검토",
+  "short_name": "학생관리 검토",
+  "description": "학생관리와 학습 기능의 로컬 합성 검토본",
   "lang": "ko-KR",
-  "start_url": "./index.html",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#f5f7fb",
   "theme_color": "#1d4ed8",
   "orientation": "any",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./icons/app-icon-192.png",

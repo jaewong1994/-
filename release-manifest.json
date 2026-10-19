@@ -1,0 +1,550 @@
+[
+  {
+    "name": "app-session.js",
+    "sha256": "8f58b5c6745096bf87a4f9eb933569549cf8fb779ed45b97df626eb21600fea5"
+  },
+  {
+    "name": "auth-runtime.json",
+    "sha256": "343ff68988c36a2d7b28f0d4be9d7d32a5ea40adc310cd4f7c1c4527f6643972"
+  },
+  {
+    "name": "counseling-engine.js",
+    "sha256": "c809e7d31e0a1a442ec20d2049f0d44f8ba5f690153f6f9b5452b9767ffeaf6f"
+  },
+  {
+    "name": "counseling.css",
+    "sha256": "0d3ff1525b561d928dcbf1c7163a46af9bc0f6511c841fae17915bb40bed33aa"
+  },
+  {
+    "name": "counseling.js",
+    "sha256": "b5a1167deb57d61115ea9e9ddc81c302db59277b712cb46c035c0fd5f7f6e7aa"
+  },
+  {
+    "name": "icons/app-icon-192.png",
+    "sha256": "4c05b3478b6d15ca99c6b63e53c4552cec481f439ee168d3137f2f87ebc090bc"
+  },
+  {
+    "name": "icons/app-icon-512.png",
+    "sha256": "33eeca4cc54265932306f78c6b1ba4e79777ba3de6c478d9b346335b6c24f41f"
+  },
+  {
+    "name": "icons/app-icon-maskable-512.png",
+    "sha256": "33eeca4cc54265932306f78c6b1ba4e79777ba3de6c478d9b346335b6c24f41f"
+  },
+  {
+    "name": "icons/app-icon.svg",
+    "sha256": "b767ffeb3603f780fce9bcdeaf73a9f7b322b65fd0de9c287978b244d99c30fd"
+  },
+  {
+    "name": "index.html",
+    "sha256": "a2c2d5005574cef6d5a9d786387b4267239047c3a42b546534ff5383cfe0e182"
+  },
+  {
+    "name": "latest.html",
+    "sha256": "3b077e91eb28bb50be2bb890aa3368b5e4a18731c61193e95db4fe1215f8cd08"
+  },
+  {
+    "name": "learning/assets/AccessGate-iZ7F1I7U.js",
+    "sha256": "829842b2d4bb46eb77d0dfb00269fd39eef148020995ada233040e7d4362ab74"
+  },
+  {
+    "name": "learning/assets/AuthorHomeworkPage-Di0EwSKb.js",
+    "sha256": "395972b6b341c14948efe1d1ba587f765eb69047cc277de3cdd5bcd0e2875363"
+  },
+  {
+    "name": "learning/assets/authoring-CoUNDwSh.js",
+    "sha256": "2d3001b5abbcdf4e9df9647dd62fea26fb68b806189c6c7d9f962eb2b31e9d7c"
+  },
+  {
+    "name": "learning/assets/body-I5ihPDjW.js",
+    "sha256": "75af3fb9e7e600ce6d033d61960255422d4093270257690b1d620b9dedd8f70a"
+  },
+  {
+    "name": "learning/assets/CommunityPage-vGumNyLr.js",
+    "sha256": "fe4f742e8e9d342799c027e306fe63818d43404bd63cac24476d38e07002e940"
+  },
+  {
+    "name": "learning/assets/deviceStore-DnbChrKN.js",
+    "sha256": "214ad43f31491a56389e89a93847987566567eda68fe9129d335eb0aa7bb7706"
+  },
+  {
+    "name": "learning/assets/Feedback-BNFHNix2.js",
+    "sha256": "e5577046d65e3c2d27d4befa6485cb86bc548feb87c2d111009da90c49accc0a"
+  },
+  {
+    "name": "learning/assets/index-Cmam9vln.js",
+    "sha256": "def9d87cff2762b50fdbff2f854b36e2df3e15638dbd06c3560a8b2e02417d8f"
+  },
+  {
+    "name": "learning/assets/index-DnEngvWa.css",
+    "sha256": "f8e18af8136601094a0410291619fc717ea3838eb1b0e35dd82bf7021714c47b"
+  },
+  {
+    "name": "learning/assets/InkLabPage-BiO87CLK.css",
+    "sha256": "20849bc8a58ee0f1fb926bc16dc192d8424b1507afe5962e6fdb251b6a7586c8"
+  },
+  {
+    "name": "learning/assets/InkLabPage-DjxULSId.js",
+    "sha256": "c8a84d5d139d9e23f5d045750de29a621dbe32a647165a356f8866f4c0def873"
+  },
+  {
+    "name": "learning/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2",
+    "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+  },
+  {
+    "name": "learning/assets/KaTeX_AMS-Regular-DMm9YOAa.woff",
+    "sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251"
+  },
+  {
+    "name": "learning/assets/KaTeX_AMS-Regular-DRggAlZN.ttf",
+    "sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Bold-ATXxdsX0.ttf",
+    "sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Bold-BEiXGLvX.woff",
+    "sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Bold-Dq_IR9rO.woff2",
+    "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Regular-CTRA-rTL.woff",
+    "sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Regular-Di6jR-x-.woff2",
+    "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Caligraphic-Regular-wX97UBjC.ttf",
+    "sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Bold-BdnERNNW.ttf",
+    "sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Bold-BsDP51OF.woff",
+    "sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Bold-CL6g_b3V.woff2",
+    "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Regular-CB_wures.ttf",
+    "sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Regular-CTYiF6lA.woff2",
+    "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+  },
+  {
+    "name": "learning/assets/KaTeX_Fraktur-Regular-Dxdc4cR9.woff",
+    "sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Bold-Cx986IdX.woff2",
+    "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Bold-Jm3AIy58.woff",
+    "sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Bold-waoOVXN0.ttf",
+    "sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-BoldItalic-DxDJ3AOS.woff2",
+    "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-BoldItalic-DzxPMmG6.ttf",
+    "sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-BoldItalic-SpSLRI95.woff",
+    "sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Italic-3WenGoN9.ttf",
+    "sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Italic-BMLOBm91.woff",
+    "sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Italic-NWA7e6Wa.woff2",
+    "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Regular-B22Nviop.woff2",
+    "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Regular-Dr94JaBh.woff",
+    "sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc"
+  },
+  {
+    "name": "learning/assets/KaTeX_Main-Regular-ypZvNtVU.ttf",
+    "sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-BoldItalic-B3XSjfu4.ttf",
+    "sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-BoldItalic-CZnvNsCZ.woff2",
+    "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-BoldItalic-iY-2wyZ7.woff",
+    "sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-Italic-DA0__PXp.woff",
+    "sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-Italic-flOr_0UB.ttf",
+    "sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a"
+  },
+  {
+    "name": "learning/assets/KaTeX_Math-Italic-t53AETM-.woff2",
+    "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Bold-CFMepnvq.ttf",
+    "sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Bold-D1sUS0GD.woff2",
+    "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Bold-DbIhKOiC.woff",
+    "sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Italic-C3H0VqGB.woff2",
+    "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Italic-DN2j7dab.woff",
+    "sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Italic-YYjJ1zSn.ttf",
+    "sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Regular-BNo7hRIc.ttf",
+    "sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Regular-CS6fqUqJ.woff",
+    "sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605"
+  },
+  {
+    "name": "learning/assets/KaTeX_SansSerif-Regular-DDBCnlJ7.woff2",
+    "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+  },
+  {
+    "name": "learning/assets/KaTeX_Script-Regular-C5JkGWo-.ttf",
+    "sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67"
+  },
+  {
+    "name": "learning/assets/KaTeX_Script-Regular-D3wIWfF6.woff2",
+    "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Script-Regular-D5yQViql.woff",
+    "sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size1-Regular-C195tn64.woff",
+    "sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size1-Regular-Dbsnue_I.ttf",
+    "sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size1-Regular-mCD8mA8B.woff2",
+    "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size2-Regular-B7gKUWhC.ttf",
+    "sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size2-Regular-Dy4dx90m.woff2",
+    "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size2-Regular-oD1tc_U0.woff",
+    "sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size3-Regular-CTq5MqoE.woff",
+    "sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size3-Regular-DgpXs0kz.ttf",
+    "sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size4-Regular-BF-4gkZK.woff",
+    "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2",
+    "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size4-Regular-DWFBv043.ttf",
+    "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+  },
+  {
+    "name": "learning/assets/KaTeX_Typewriter-Regular-C0xS9mPB.woff",
+    "sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7"
+  },
+  {
+    "name": "learning/assets/KaTeX_Typewriter-Regular-CO6r4hn1.woff2",
+    "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+  },
+  {
+    "name": "learning/assets/KaTeX_Typewriter-Regular-D3Ib7_Hf.ttf",
+    "sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa"
+  },
+  {
+    "name": "learning/assets/LecturesPage-dk8k5JVy.js",
+    "sha256": "66830d4982b7173fe0ab97d90d75324041b6a0d609f9b13015b8a94586c75243"
+  },
+  {
+    "name": "learning/assets/LoginPage-BV4dFQPt.js",
+    "sha256": "a0eeb91eb09da54c7ea4e66d9f879233ddf0283c8ce4e74feb043ddeeddeaf27"
+  },
+  {
+    "name": "learning/assets/math-BvXWHf-j.js",
+    "sha256": "b262e9cad05e584918fee135c75dd122a2e030a97ded0b6726e0dcafa4f3b8b8"
+  },
+  {
+    "name": "learning/assets/pendingRpc-D7NXRqew.js",
+    "sha256": "5e84923022b98258e2555dcfbcb56dd369e8761d76efbcb07de0f5fbb298adc6"
+  },
+  {
+    "name": "learning/assets/react-CcH0kkjW.js",
+    "sha256": "b43b6b62aacbcd6bc8b97d2549382189c4dfe7b45696b34e76f2ea2c48c64d4e"
+  },
+  {
+    "name": "learning/assets/service-CqcczoOD.js",
+    "sha256": "0141bd7dce094bdd84f43b331353b022d0d2c479144ccbf7dcff2c8dbebd6972"
+  },
+  {
+    "name": "learning/assets/service-CWz5B_qq.js",
+    "sha256": "bb5221ee19a348fa2f1ba6dc2793653434e96a005617718c91f0f9d97da4a0c3"
+  },
+  {
+    "name": "learning/assets/service-DzLulHHH.js",
+    "sha256": "e77fac4c6e2f8380440900bdb3745c82652c33a132638bcde262f577cbbbc445"
+  },
+  {
+    "name": "learning/assets/SolvePage-9Ok-4z58.js",
+    "sha256": "b14066614aa7b4b785685d59a54c74a458323edfc6821f73dbe0b8451007f23b"
+  },
+  {
+    "name": "learning/assets/SolvePage-R-h_wNmv.css",
+    "sha256": "de1680f99ef87fc1ca4b3e40c136e05231b7683b479c7381300ed185eb20680f"
+  },
+  {
+    "name": "learning/assets/StudentHomePage-DUMglHmG.js",
+    "sha256": "3bd886b034b202d0b68973e658d385bec8357320810903f1adfe30ead6f7ab9d"
+  },
+  {
+    "name": "learning/assets/supabase-l0sNRNKZ.js",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  {
+    "name": "learning/assets/TeacherHomePage-CSHM4XIY.js",
+    "sha256": "a83f84c84becd6ded584843f75f2e981f01276213ad15ec748fe1baf08634db2"
+  },
+  {
+    "name": "learning/assets/WatchPage-DCMnQkUS.js",
+    "sha256": "7e4a1ed3b370fdbeffa5cec3a17e925eb837cd2c1e9e6c76663b740a4440ec5f"
+  },
+  {
+    "name": "learning/index.html",
+    "sha256": "ed384f0240941fafd1fe5a0741005c0e9efaf75bc061d8f59744a81bfe5c73dd"
+  },
+  {
+    "name": "manifest.webmanifest",
+    "sha256": "f4ee3c4f24a779708b79427686cac2483f4a3dcdbf5022a86b4dcd18520640fa"
+  },
+  {
+    "name": "mobile-ui.css",
+    "sha256": "b39be460bfae284433c9ec800030bbffcb4039b73348832b0851c961c66ac99d"
+  },
+  {
+    "name": "offline.html",
+    "sha256": "903801510179c429be86b8bd3b86932777426dbb3e7b9c7f02e31819f87bf698"
+  },
+  {
+    "name": "src/core/access.js",
+    "sha256": "2e2fa979850e8c571f0a153e83021ca5767ed17e295ba12b5dd7485897da13a4"
+  },
+  {
+    "name": "src/core/auth.js",
+    "sha256": "112408333ca1d8943ff70186492e547cc47f5a15f8bbe00c768e6d8cc05a521a"
+  },
+  {
+    "name": "src/core/backend.js",
+    "sha256": "ff839e8125247badc1f32b861282dfd8cc257bd3f78b5c39ffaed50281a4d231"
+  },
+  {
+    "name": "src/core/compatibility-client.js",
+    "sha256": "857fa2b6905f719f2a3ba17a7e4e5fcf0b67b76a7371e904186d3074dd59bb0f"
+  },
+  {
+    "name": "src/core/config.js",
+    "sha256": "41d2d0fc6451549f174ca119728829175e27cceaddd7954ef6bfc58a66489dc4"
+  },
+  {
+    "name": "src/core/learning-bridge.js",
+    "sha256": "9b1e4681aff1672c0d00b25f0c52d28a98d936721914098c959fb33aa445466c"
+  },
+  {
+    "name": "src/core/operational-gate.js",
+    "sha256": "ea931de0c8c208eb3939f5ae4b7c6b0806c257108821286925623a13acb27921"
+  },
+  {
+    "name": "src/core/operational-views.js",
+    "sha256": "08977c1badb0289a1afc93cc42a6c11f639768e712854f4f1c68f2a3aeadc8c6"
+  },
+  {
+    "name": "src/core/pwa.js",
+    "sha256": "ac29059eb3c3056722b7e0fdc762a632bd0444b4267b0c23dc7f5bd43844de1b"
+  },
+  {
+    "name": "src/core/runtime-bootstrap.js",
+    "sha256": "2f008fbc705c3e86c965acc47b479ee9d0d6fc96e71d852a4f4e4373b6a5520b"
+  },
+  {
+    "name": "src/core/runtime-config.js",
+    "sha256": "8426d9f609dcc3ed0f6aa721857a240109bfbba0812e7ecfed4e5a46ae489f8d"
+  },
+  {
+    "name": "src/core/server-auth.js",
+    "sha256": "d44ad70b6ec1f212314ab244b395b5292fda0480b367d5f03bed9d4caeb500cd"
+  },
+  {
+    "name": "src/core/session-provider.js",
+    "sha256": "ea60dc6ae9217425715c825bedfe929accd66ca4c1318f4fc569ec58485be690"
+  },
+  {
+    "name": "src/legacy/accounts.js",
+    "sha256": "7102d4917de11a8bbf12f26c1d98dd12e88d4b827fb9e576d86d1c4db787cff6"
+  },
+  {
+    "name": "src/legacy/admissions-data.js",
+    "sha256": "1c60a08cc38243f77193af870f2e855cc5dfd724f947598baebddb5f46ddcf0f"
+  },
+  {
+    "name": "src/legacy/collection.js",
+    "sha256": "62d86ecad9dfed044b92867b9888bc055c5114fc640281a5d7c757692e70c473"
+  },
+  {
+    "name": "src/legacy/dashboard.js",
+    "sha256": "47f9d43d70e8a284e8099a553146cbac7d28b8a03cf78bb5d1d3a42a8c9c5dfd"
+  },
+  {
+    "name": "src/legacy/early-admissions-data.js",
+    "sha256": "891c338833d437974e553ddf87bb969572510512e205c0d89a9f2eebb7d02c44"
+  },
+  {
+    "name": "src/legacy/early-admissions.js",
+    "sha256": "0191a841c392eb8a911e0a6c6d5d59435ca2516cf009c61dc1f11ee8227193a8"
+  },
+  {
+    "name": "src/legacy/exams-editor.js",
+    "sha256": "b6133e3dff6876c85ebd33b2be6786d3190f38792d6d8ef618d374fbe1fd8cd8"
+  },
+  {
+    "name": "src/legacy/exams-session.js",
+    "sha256": "d8b75c17fee9493d93d34bb6856784358f87010e7bb8b40465c77ae36d6c9b65"
+  },
+  {
+    "name": "src/legacy/exams-staff.js",
+    "sha256": "a72515c055e670e078d2745be5457d7c4ce6304e2a23a1aaf102f017dd317993"
+  },
+  {
+    "name": "src/legacy/exams-submit.js",
+    "sha256": "862c5d96f98fb5021a21ea1f54bb6cc0decab31fc93cde8586994f91e7d8ecd9"
+  },
+  {
+    "name": "src/legacy/materials.js",
+    "sha256": "68ad41a7a63ecb29c57daae2f6a35becd7cb3585e905589254a7ebeb8436babf"
+  },
+  {
+    "name": "src/legacy/mobile-shell.js",
+    "sha256": "0adc0318feefe94d99ab10ee7c4291f6cd9f5618ce865a1b2ae7af42d74f9770"
+  },
+  {
+    "name": "src/legacy/mock-analysis.js",
+    "sha256": "651a437955bec7f48a8fc298632bdc1ddafdf642696aef176ec6253b33a31242"
+  },
+  {
+    "name": "src/legacy/navigation.js",
+    "sha256": "62dc7539f7af8804d6686edce7377915a1f9922a4da163ec49c535283cb24776"
+  },
+  {
+    "name": "src/legacy/omr.js",
+    "sha256": "1ead53a917cef2f05dbf6bb27be1dd54d3e5d169e2a627e761793590710c1632"
+  },
+  {
+    "name": "src/legacy/photocards.js",
+    "sha256": "6033107e05d6293d2c24dc2057e0c165d2450899538ee35a5f4f49411e1c3a52"
+  },
+  {
+    "name": "src/legacy/scores.js",
+    "sha256": "9ea322f945184e6b8f239a574570e470b8441f3aa0d323723ef7aede118c3749"
+  },
+  {
+    "name": "src/legacy/strategy.js",
+    "sha256": "a931f0c46f6ff8b9a3a6f42b4a12b3479bc3742b18908b49028765753b850700"
+  },
+  {
+    "name": "src/legacy/student-report.js",
+    "sha256": "696640ecac7df6b574c548bb6f9761ba90b6c4068564eba5b1d5404be505d15b"
+  },
+  {
+    "name": "src/styles/accounts.css",
+    "sha256": "2520b74b21a16f72d9f9ff42afbce77f6520cead184d9684122db28558115227"
+  },
+  {
+    "name": "src/styles/legacy-0.css",
+    "sha256": "4c7e77afe83424c7cc354c702d3dae61b86033cdae592a448c0251b20f742dfa"
+  },
+  {
+    "name": "src/styles/review.css",
+    "sha256": "74baa475beaef876c9cdd35263125cc1077f2746946e0d3d737ec6912473c521"
+  },
+  {
+    "name": "sw.js",
+    "sha256": "10959ce461df3eb0d7929f46530ef16edfe569dc76c0b36ab36687663032374c"
+  },
+  {
+    "name": "vendor/chart.umd.js",
+    "sha256": "74401d738dd3e03ee5dfb3b6841210fe2c4ead8a960c4011ca4ba0b78a9fd8f3"
+  },
+  {
+    "name": "vendor/supabase.js",
+    "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3"
+  }
+]

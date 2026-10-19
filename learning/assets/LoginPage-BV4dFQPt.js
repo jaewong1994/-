@@ -1,0 +1,1 @@
+import{j as t}from"./index-Cmam9vln.js";import{f as e,b as s}from"./react-CcH0kkjW.js";import"./math-BvXWHf-j.js";function x(){e();const[a,r]=s.useState(""),[o,n]=s.useState(""),[u,i]=s.useState(!1),[c,m]=s.useState(null);return t.jsx("p",{className:"notice",children:"서버 설정이 없어 로그인할 수 없습니다."})}export{x as default};
