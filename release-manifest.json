@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "a2c2d5005574cef6d5a9d786387b4267239047c3a42b546534ff5383cfe0e182"
+    "sha256": "5e3595f1c909573ee387855329ba428ee88bb5cf904ac06df59047a5d99a1474"
   },
   {
     "name": "latest.html",
-    "sha256": "3b077e91eb28bb50be2bb890aa3368b5e4a18731c61193e95db4fe1215f8cd08"
+    "sha256": "ccb2bcbc5184e7deef8a19e96c4312b9d74c8f228dc9eb26d58a9ae7c6328717"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -429,7 +429,7 @@
   },
   {
     "name": "src/core/pwa.js",
-    "sha256": "ac29059eb3c3056722b7e0fdc762a632bd0444b4267b0c23dc7f5bd43844de1b"
+    "sha256": "bf073df7fe5a3fdd4ed9ea5433723b09eb5574358a7cfdc2fcac93b0e58010c3"
   },
   {
     "name": "src/core/runtime-bootstrap.js",
@@ -473,7 +473,7 @@
   },
   {
     "name": "src/legacy/exams-editor.js",
-    "sha256": "b6133e3dff6876c85ebd33b2be6786d3190f38792d6d8ef618d374fbe1fd8cd8"
+    "sha256": "ccf04cb83379919be77d36277e20c1823c88804125e54c77353f0e1942a65fc4"
   },
   {
     "name": "src/legacy/exams-session.js",
@@ -481,7 +481,7 @@
   },
   {
     "name": "src/legacy/exams-staff.js",
-    "sha256": "a72515c055e670e078d2745be5457d7c4ce6304e2a23a1aaf102f017dd317993"
+    "sha256": "c69111e399b1769d0897f2807bbfa4448bdf992a394a4289d44dc6be3a757d84"
   },
   {
     "name": "src/legacy/exams-submit.js",
@@ -493,7 +493,7 @@
   },
   {
     "name": "src/legacy/mobile-shell.js",
-    "sha256": "0adc0318feefe94d99ab10ee7c4291f6cd9f5618ce865a1b2ae7af42d74f9770"
+    "sha256": "6d3368667008d8aca551b1029e4713616e1ffcfed68a6eec36b10975e53bba33"
   },
   {
     "name": "src/legacy/mock-analysis.js",
@@ -533,11 +533,11 @@
   },
   {
     "name": "src/styles/review.css",
-    "sha256": "74baa475beaef876c9cdd35263125cc1077f2746946e0d3d737ec6912473c521"
+    "sha256": "59f9ecc24ee92a8d22e134b97d9650659a6cc250b17cccad1c3363420b82ebeb"
   },
   {
     "name": "sw.js",
-    "sha256": "10959ce461df3eb0d7929f46530ef16edfe569dc76c0b36ab36687663032374c"
+    "sha256": "68c4ee358b1c28c88d3eb4c014cf470ea38ca2387746574da590e1b4b5122d75"
   },
   {
     "name": "vendor/chart.umd.js",

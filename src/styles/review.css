@@ -6,6 +6,7 @@
 
 .pwa-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 16px;background:#edf4ff;color:#173b61;font-size:12px}.pwa-status span{flex:1;min-width:160px}.pwa-status button{font:inherit;padding:6px 8px;border:1px solid #a8bbd2;border-radius:6px;background:white;color:#173b61}.pwa-status[data-offline="true"]{background:#fff4d5;color:#634800}
 .app-sheet-scrim:not([hidden]){display:flex;position:fixed;inset:0;z-index:1600;background:rgba(15,23,42,.5);align-items:center;justify-content:center}.app-sheet{max-width:min(560px,100%);max-height:90dvh;overflow:auto;background:white;border-radius:16px;padding:20px;color:#172e47}.install-guide-body{line-height:1.7}.install-guide-body h3{margin-top:12px}.install-guide-body ol{padding-left:24px}.install-guide-body p{margin:10px 0}
+.install-sheet .pwa-status{margin-top:16px;border-radius:10px;padding:12px}.install-sheet .pwa-status>span{flex-basis:100%}.install-sheet{box-sizing:border-box}
 @media(max-width:767px){.pwa-status{padding:6px 10px}.app-sheet-scrim:not([hidden]){align-items:flex-end}.app-sheet{width:100%;padding-bottom:max(20px,env(safe-area-inset-bottom));border-radius:16px 16px 0 0}}
 
 #review-signin{display:grid;gap:10px;text-align:left}#review-signin input,#review-signin button{font:inherit;padding:12px;border:1px solid #a8bbd2;border-radius:6px}#review-signin p{font-size:13px;line-height:1.6;margin:2px 0}.auth-pending .review-bar{display:none}#review-account-name{margin-left:auto}
@@ -16,3 +17,36 @@
 #mvp-staff-navigation{width:100%;margin-bottom:12px}#mvp-staff-navigation .staff-toolbar{margin-bottom:0;scroll-snap-type:none}#mvp-staff-navigation .staff-tool{flex:0 0 auto}
 #w-teacher-detail-view,#rep-detail-view{scroll-margin-top:12px}#w-teacher-detail-view>button,#rep-detail-view>button{margin-bottom:12px}
 @media(max-width:767px){.inner,.inner.counsel-wide{padding-inline:12px}}
+
+/* Keep the existing compact install entry available after dismissing the guide. */
+.install-trigger{display:inline-flex}
+
+/* Scores remain atomic; narrow screens present each submission as a card. */
+.rank-note{font-size:12px;color:var(--t2);margin:10px 0}
+.test-rank-table{width:100%;border-collapse:collapse}
+.test-rank-table td{padding:12px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.rank-place,.rank-score,.rank-correct,.rank-action{white-space:nowrap;text-align:center}
+.rank-place{font-weight:700;font-size:14px}
+.rank-student{font-size:14px;min-width:0;overflow-wrap:anywhere}
+.rank-student small{display:block;font-size:11px;color:var(--t2);margin-top:4px}
+.test-rank-table .rank-score{font-size:22px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.rank-score>span{font-size:12px;margin-left:3px;font-weight:500}
+.rank-correct{font-size:13px;color:var(--t2)}
+.rank-wrong{font-size:13px;color:var(--red);line-height:1.7;overflow-wrap:anywhere}
+.rank-action button{min-height:40px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--t2);font:inherit;white-space:nowrap;cursor:pointer}
+.rank-mobile-label{display:none}
+@media(max-width:767px){
+ .test-rank-table,.test-rank-table tbody{display:block;width:100%}
+ .test-rank-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .test-rank-table tbody tr{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:8px 10px;padding:14px 12px;margin-top:10px;border:1px solid var(--border);border-radius:12px;background:var(--white);align-items:center}
+ .test-rank-table td{display:block;padding:0;border:0}
+ .rank-place{grid-column:1;grid-row:1;font-size:13px}
+ .rank-place>span{display:block}
+ .rank-student{grid-column:2;grid-row:1}
+ .rank-score{grid-column:3;grid-row:1;text-align:right}
+ .rank-correct{grid-column:2;grid-row:2;text-align:left}
+ .rank-action{grid-column:3;grid-row:2;text-align:right}
+ .rank-action button{min-height:44px}
+ .test-rank-table .rank-wrong{grid-column:1/-1;grid-row:3;padding-top:10px;border-top:1px solid var(--border)}
+ .rank-mobile-label{display:inline;color:var(--t2)}
+}

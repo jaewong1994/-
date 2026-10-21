@@ -183,26 +183,26 @@ const __mvpEpoch=SessionGuard.capture();
     d.innerHTML = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${escHtml(title)} · 등수</div></div><div style="font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">아직 제출한 학생이 없습니다.</div>${statsBtn}</div>`;
     return;
   }
-  let rows=''; let rank=0; let prevScore=null; let realRank=0;
+  let rows='';
   const maxScore = subs[0].score;
-  subs.forEach((s,i)=>{
-    realRank++;
-    if(s.score!==prevScore){ rank=realRank; prevScore=s.score; }
+  subs.forEach(s=>{
+    const rank=s.rank;
     const p=pmap[s.user_id]||{};
-    const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+    const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
     const perfect = (s.score===maxScore && maxScore>0) ? ' 💎' : '';
     const wrong = tinfo ? wWrongIdxs(tinfo, s.answers) : [];
     const wrongLabel = wrong.length ? wrong.map(i=>i+1).join(', ') : '만점';
     rows += `<tr>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;text-align:center;">${medal}</td>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${escHtml(p.name||'(이름없음)')}${perfect}<div style="font-size:9px;color:var(--t3);">${escHtml(p.student_no||'')}${cmap[p.class_id]?' · '+escHtml(cmap[p.class_id]):''}</div></td>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);text-align:center;">${s.score}</td>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:11px;color:var(--t2);text-align:center;">${s.correct_count}개</td>
-      <td style="padding:8px;border-bottom:1px solid var(--border);font-size:10px;color:${wrong.length?'var(--red)':'var(--a3)'};">${escHtml(wrongLabel)}</td>
-      <td style="padding:6px;border-bottom:1px solid var(--border);text-align:center;"><button onclick="wEditAnswers(${testId},'${s.user_id}',${Ui.argument(p.name)},${Ui.argument(title)})" style="padding:5px 8px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:6px;font-size:10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">수정</button></td>
+      <td class="rank-place"><span aria-hidden="true">${medal}</span> <span>${rank===null?'—':rank+'등'}</span></td>
+      <td class="rank-student"><strong>${escHtml(p.name||'(이름없음)')}${perfect}</strong><small>${escHtml(p.student_no||'')}${cmap[p.class_id]?' · '+escHtml(cmap[p.class_id]):''}</small></td>
+      <td class="rank-score">${s.score===null?'미채점':s.score+'<span>점</span>'}</td>
+      <td class="rank-correct"><span class="rank-mobile-label">정답 </span>${s.correct_count==null?'—':escHtml(s.correct_count)+'개'}</td>
+      <td class="rank-wrong"><span class="rank-mobile-label">틀린 문항 </span><span>${escHtml(wrongLabel)}</span></td>
+      <td class="rank-action"><button type="button" onclick="wEditAnswers(${testId},${Ui.argument(s.user_id)},${Ui.argument(p.name)},${Ui.argument(title)})">수정</button></td>
     </tr>`;
   });
-  const avg = Math.round(subs.reduce((a,s)=>a+s.score,0)/subs.length);
+  const scored=subs.filter(s=>s.score!==null);
+  const avg=scored.length?Math.round(scored.reduce((a,s)=>a+s.score,0)/scored.length):'—';
   const closeBtn = closed
     ? `<div style="margin-top:12px;padding:10px;background:var(--a3-light);border:1px solid #a7f3d0;border-radius:8px;font-size:12px;color:#065f46;text-align:center;font-weight:700;">✅ 마감 완료 · 메달/배지가 지급되었습니다</div>` + (_isMock?`<button onclick="wAwardSoloMedals(${testId},${Ui.argument(title)})" style="width:100%;margin-top:8px;padding:10px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🏅 혼자맞춤 메달 지급 (실전모의고사)</button>`:'')
     : `<button onclick="wCloseTest(${testId},${Ui.argument(title)})" style="width:100%;margin-top:12px;padding:11px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🔒 답안 마감 + 메달 지급</button>
@@ -210,8 +210,9 @@ const __mvpEpoch=SessionGuard.capture();
   d.innerHTML = `
   <div class="stg-card">
     <div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${Ui.escape(title)} · 등수</div><div class="stg-sub">${subs.length}명 응시</div></div>
-    <div style="font-size:11px;color:var(--t2);margin-bottom:10px;padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">평균 <strong style="color:var(--accent);">${avg}점</strong> · 최고 <strong>${subs[0].score}점</strong> 💎</div>
-    <table style="width:100%;border-collapse:collapse;">
+    <div style="font-size:11px;color:var(--t2);margin-bottom:10px;padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">평균 <strong style="color:var(--accent);">${avg}점</strong> · 최고 <strong>${maxScore===null?'—':maxScore+'점'}</strong> 💎</div>
+    <p class="rank-note">점수 높은 순 · 동점은 같은 등수 (예: 1, 2, 2, 4)</p>
+    <table class="test-rank-table" aria-label="테스트 등수">
       <thead><tr style="background:var(--bg);">
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;border-bottom:2px solid var(--border);">등수</th>
         <th style="padding:8px;font-size:9px;color:var(--t3);font-weight:700;text-align:left;border-bottom:2px solid var(--border);">이름</th>

@@ -41,7 +41,21 @@ const __mvpEpoch=SessionGuard.capture();
 
   const sb=sbReady();
   const rpc=await SessionGuard.wait((sb.rpc('staff_test_submissions', { p_test_id: testId })),__mvpEpoch);
-  return rpc;
+  if(rpc.error||!Array.isArray(rpc.data))return rpc;
+  return {...rpc,data:rankTestSubmissions(rpc.data)};
+}
+
+// RPC and paginated compatibility reads need not arrive in score order.
+// Rank the complete visible set, without mutating stored submissions or rewards.
+function rankTestSubmissions(submissions){
+  const rows=submissions.map(s=>({...s,score:s.score!==null&&s.score!==undefined&&String(s.score).trim()!==''&&Number.isFinite(Number(s.score))?Number(s.score):null}));
+  rows.sort((a,b)=>a.score===null?(b.score===null?String(a.user_id).localeCompare(String(b.user_id)):1):b.score===null?-1:b.score-a.score||String(a.user_id).localeCompare(String(b.user_id)));
+  let previous=null,rank=null;
+  return rows.map((s,i)=>{
+    if(s.score!==null&&s.score!==previous)rank=i+1;
+    previous=s.score;
+    return {...s,rank:s.score===null?null:rank};
+  });
 }
 
 async function renderWTeacher(){
