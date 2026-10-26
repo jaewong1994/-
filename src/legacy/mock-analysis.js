@@ -15,50 +15,13 @@ function mockIsCorrect(type, key, val){
   return String(key==null?'':key).split('|').map(s=>s.trim()).filter(Boolean).includes(v);
 }
 
-// 학생 홈에서 진입: 30문항 제출완료 시험만 링크
-function wMockEntry(testId, title, total){
-  const box = document.getElementById('mock-analysis-entry');
-  if(!box) return;
-  if(Number(total)!==30){ box.innerHTML=''; return; }
-  box.innerHTML = `<div class="stg-card">
-    <div class="stg-hdr"><div class="stg-icon">🎯</div><div class="stg-title">실전모의고사 내 풀이 결과</div><div class="stg-sub">내 답안 · 문항별 정답률</div></div>
-    <div style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:10px;">제출한 내 답안과 문항별 정오를 확인하세요. 시험 마감 후 전체 정답률과 비교할 수 있습니다.</div>
-    <button onclick="wRenderMockAnalysis(${testId},${Ui.argument(title)},${total})" style="width:100%;padding:11px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">내 답안 분석 보기 →</button>
-  </div>`;
+// Keep old navigation callers compatible; ordinary tests also have analysis.
+function wMockEntry(testId,title,total){
+  const box=document.getElementById('mock-analysis-entry');
+  if(box)box.innerHTML='<button class="staff-row-btn" onclick="wResultView('+Number(testId)+','+Ui.argument(title)+','+Number(total)+')">등수 · 문항별 결과 보기</button>';
 }
-
-// Student analysis uses the existing own-wrong RPC, never a teacher answer-key read.
 async function renderOwnMockAnalysis(testId,title){
-  const epoch=SessionGuard.capture(),cont=document.getElementById('wtest-content'),sb=sbReady(),owner=_wuser?.id;
-  if(_wprofile?.role!=='student'||!owner||!cont||!sb)return;
-  cont.innerHTML='<p role="status">내 답안 분석을 불러오는 중입니다.</p>';
-  const [testResult,submission,wrongResult,comparison]=await SessionGuard.wait(Promise.all([
-    sb.from('tests').select('id,title,total').eq('id',testId).single(),
-    sb.from('submissions').select('answers,score,correct_count').eq('test_id',testId).eq('user_id',owner).maybeSingle(),
-    sb.rpc('my_wrong_items',{p_test_id:testId}),
-    sb.schema==='shared-tests-v1'?sb.rpc('mock_item_analysis',{p_test_id:testId}):Promise.resolve(null)
-  ]),epoch);
-  const n=testResult.data?.total,mine=submission.data,wrong=wrongResult.data;
-  const back='<button type="button" class="staff-row-btn" onclick="renderWStudent()">테스트 목록으로</button>';
-  if(testResult.error||submission.error||wrongResult.error||!mine||!Array.isArray(mine.answers)||!Number.isInteger(n)||n<1||n>100||!Array.isArray(wrong)||wrong.some(row=>!Number.isInteger(row.item_idx)||row.item_idx<0||row.item_idx>=n)){
-    cont.innerHTML='<section class="stg-card"><p role="alert">제출 결과를 확인하지 못했습니다. 목록에서 제출 상태를 확인한 뒤 다시 시도해 주세요.</p>'+back+'</section>';return;
-  }
-  const wrongSet=new Set(wrong.map(row=>row.item_idx));
-  const rows=comparison?.data;
-  const validComparison=!comparison?.error&&Array.isArray(rows)&&rows.length===n&&new Set(rows.map(row=>row.item_idx)).size===n&&rows.every(row=>
-    Number.isInteger(row.item_idx)&&row.item_idx>=0&&row.item_idx<n&&typeof row.me_correct==='boolean'&&typeof row.comparison_ready==='boolean'&&row.me_correct===!wrongSet.has(row.item_idx)&&
-    (!row.comparison_ready?(row.correct_rate==null&&row.correct_count==null&&row.participant_count==null):
-      row.correct_count!=null&&row.correct_rate!=null&&Number.isInteger(Number(row.correct_count))&&Number.isInteger(Number(row.participant_count))&&Number(row.participant_count)>0&&Number(row.correct_count)>=0&&Number(row.correct_count)<=Number(row.participant_count)&&Number.isFinite(Number(row.correct_rate))&&Number(row.correct_rate)>=0&&Number(row.correct_rate)<=100));
-  const ready=validComparison&&rows.every(row=>row.comparison_ready),byIndex=validComparison?new Map(rows.map(row=>[row.item_idx,row])):new Map();
-  const note=ready?'전체 정답률은 시험에 응시한 학생의 익명 집계입니다.':validComparison?'시험 마감 후 전체 정답률이 공개됩니다.':comparison?'비교 분석을 불러오지 못했습니다. 내 답안과 오답은 아래에서 확인할 수 있습니다.':'다른 학생과의 문항별 비교는 준비 중입니다. 현재는 내 답안과 오답을 확인할 수 있습니다.';
-  let html=wHeader(_wprofile.name||'학생','학생')+'<section class="stg-card"><h2>'+Ui.escape(testResult.data.title||title||'내 답안 분석')+'</h2><p>맞힌 문제 '+(n-wrongSet.size)+'개 · 오답 '+wrongSet.size+'개</p><p'+(comparison&&!validComparison?' role="alert"':'')+'>'+note+'</p><ol>';
-  for(let i=0;i<n;i++){
-    const answer=mine.answers[i]==null||mine.answers[i]===''?'미응답':String(mine.answers[i]),row=byIndex.get(i);
-    html+='<li><strong>'+(i+1)+'번 · '+(wrongSet.has(i)?'오답':'정답')+'</strong> — 내 답안: '+Ui.escape(answer);
-    if(ready)html+=' · 전체 정답률 '+Number(row.correct_rate).toFixed(1)+'% ('+Number(row.correct_count)+'/'+Number(row.participant_count)+'명)'+(row.me_correct&&Number(row.correct_count)===1?' · 나 혼자 맞힌 문제':'');
-    html+='</li>';
-  }
-  cont.innerHTML=html+'</ol>'+back+'</section>';
+  return StudentTestResults.open(testId,title);
 }
 
 // 문항별 분석 화면

@@ -19,7 +19,7 @@
  const rpcArgs={list_managed_tests:[],staff_test_submissions:['p_test_id'],student_report:['p_student'],test_wrong_matrix:['p_test_id'],submit_answers:['p_test_id','p_answers'],close_test:['p_test_id'],teacher_regrade:['p_test_id','p_user_id','p_answers'],teacher_update_key:['p_test_id','p_answers','p_types','p_points','p_levels'],my_wrong_items:['p_test_id'],my_wrong_history:[],my_rank:['p_test_id'],hall_of_fame:['p_test_id'],award_solo_medals:['p_test_id'],claim_photocard:['p_test_id'],mock_submissions:['p_test_id'],set_my_nickname:['p_nick'],set_my_profile:['p_name','p_class_id']};
  const staffRpc=new Set(['list_managed_tests','staff_test_submissions','student_report','test_wrong_matrix','close_test','teacher_regrade','teacher_update_key','award_solo_medals']);
  const originalRpcNames=Object.keys(rpcArgs);
- const sharedRpcArgs={staff_test_detail:['p_test_id'],mock_item_analysis:['p_test_id'],delete_class:['p_class_id'],staff_account_statuses:[]};
+ const sharedRpcArgs={staff_test_detail:['p_test_id'],mock_item_analysis:['p_test_id'],student_test_results:['p_test_id'],delete_class:['p_class_id'],staff_account_statuses:[]};
  const leases=new Set();
  const fail=()=>({data:null,error:{message:'요청을 완료하지 못했습니다. 계정 권한 또는 기존 서버 연결을 확인해 주세요.'}});
  const uuid=v=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);

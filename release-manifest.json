@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "5e3595f1c909573ee387855329ba428ee88bb5cf904ac06df59047a5d99a1474"
+    "sha256": "a729d4d1c710a1687bdfd50c60d6b41705a66158efcb7daf524fbbf9e0d164c2"
   },
   {
     "name": "latest.html",
-    "sha256": "ccb2bcbc5184e7deef8a19e96c4312b9d74c8f228dc9eb26d58a9ae7c6328717"
+    "sha256": "b9d430273b2ec066e9256de7716da0b03fe9420603e3effd26b032623d3497ff"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -409,7 +409,7 @@
   },
   {
     "name": "src/core/compatibility-client.js",
-    "sha256": "857fa2b6905f719f2a3ba17a7e4e5fcf0b67b76a7371e904186d3074dd59bb0f"
+    "sha256": "28e1e3f5b3db15ce44f4471ff2d2445cb15f03ed02411190fa158314d676d79c"
   },
   {
     "name": "src/core/config.js",
@@ -448,6 +448,10 @@
     "sha256": "ea60dc6ae9217425715c825bedfe929accd66ca4c1318f4fc569ec58485be690"
   },
   {
+    "name": "src/core/student-test-results.js",
+    "sha256": "2247db5b4342db0ee3a8545688f88fd0bc37951bedf7e9614586e034ac2b042e"
+  },
+  {
     "name": "src/legacy/accounts.js",
     "sha256": "7102d4917de11a8bbf12f26c1d98dd12e88d4b827fb9e576d86d1c4db787cff6"
   },
@@ -477,7 +481,7 @@
   },
   {
     "name": "src/legacy/exams-session.js",
-    "sha256": "d8b75c17fee9493d93d34bb6856784358f87010e7bb8b40465c77ae36d6c9b65"
+    "sha256": "4507386458d6c9f2931d215b68d19dd527a7a331f116288bc32d50ec49524bc4"
   },
   {
     "name": "src/legacy/exams-staff.js",
@@ -485,7 +489,7 @@
   },
   {
     "name": "src/legacy/exams-submit.js",
-    "sha256": "862c5d96f98fb5021a21ea1f54bb6cc0decab31fc93cde8586994f91e7d8ecd9"
+    "sha256": "a6a98ecf1fb1e76c48d5d0fcf4c896a0b240ded6a2e1458cb6ef32db8455994a"
   },
   {
     "name": "src/legacy/materials.js",
@@ -497,7 +501,7 @@
   },
   {
     "name": "src/legacy/mock-analysis.js",
-    "sha256": "651a437955bec7f48a8fc298632bdc1ddafdf642696aef176ec6253b33a31242"
+    "sha256": "540e1f051f5c7d5873f19e1feccf71b1b7d0dd43306de54b0627ce8a2539230d"
   },
   {
     "name": "src/legacy/navigation.js",
@@ -536,8 +540,12 @@
     "sha256": "59f9ecc24ee92a8d22e134b97d9650659a6cc250b17cccad1c3363420b82ebeb"
   },
   {
+    "name": "src/styles/student-test-results.css",
+    "sha256": "038442acf3f0c9f0483408419d202272bdc465124b9271d5686bc37d7e83d138"
+  },
+  {
     "name": "sw.js",
-    "sha256": "68c4ee358b1c28c88d3eb4c014cf470ea38ca2387746574da590e1b4b5122d75"
+    "sha256": "23e77420c02ac9f121a551bcacb7f9a89b9d08f9939864a3dbf1644ffa714208"
   },
   {
     "name": "vendor/chart.umd.js",

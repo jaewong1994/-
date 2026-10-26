@@ -217,70 +217,35 @@ const __mvpEpoch=SessionGuard.capture();
 
 // ===== 학생 화면 =====
 async function renderWStudent(){
-const __mvpEpoch=SessionGuard.capture();
-
-  const cont=document.getElementById('wtest-content');
-  const sb=sbReady();
+  const epoch=SessionGuard.capture(),cont=document.getElementById('wtest-content'),sb=sbReady(),owner=_wuser?.id;
+  if(!cont||!sb||!owner||_wprofile?.role!=='student')return;
   const nick=_wprofile.nickname||'';
-  cont.innerHTML = wHeader(_wprofile.name||'학생', '학생')
-    + `<div class="stg-card" style="padding:12px 14px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:16px;">😎</span>
-          <div style="flex:1;">
-            <div style="font-size:10px;color:var(--t3);">명예의 전당 표시 이름 (닉네임)</div>
-            <div style="font-size:13px;font-weight:700;">${nick?nick:'<span style=\"color:var(--t3);font-weight:400;\">미설정 (익명으로 표시)</span>'}</div>
-          </div>
-          <button onclick="wEditNick()" style="padding:6px 12px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">${nick?'변경':'설정'}</button>
-          <button onclick="wChangePw()" style="padding:6px 12px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🔑 비번변경</button>
-        </div>
-      </div>`;
-
-  // 내게 배정된 테스트만
-  const { data:myAssign } = await SessionGuard.wait((sb.from('test_assignments').select('test_id').eq('user_id',_wuser.id)),__mvpEpoch);
-  const assignedIds = (myAssign||[]).map(a=>a.test_id);
-  if(!assignedIds.length){
-    cont.innerHTML += `<div class="stg-card"><div style="font-size:12px;color:var(--t3);text-align:center;padding:20px 0;">아직 배정된 테스트가 없습니다.<br><span style="font-size:10px;">선생님이 시험을 지정하면 여기에 표시됩니다.</span></div></div>`;
-    return;
+  cont.innerHTML=wHeader(_wprofile.name||'학생','학생')+
+    '<section class="stg-card student-test-list"><div class="str-profile"><div><p>결과 · 명예의 전당 닉네임</p><strong>'+Ui.escape(nick||'미설정 (익명)')+'</strong></div><button type="button" onclick="wEditNick()">닉네임 '+(nick?'변경':'설정')+'</button><button type="button" onclick="wChangePw()">비밀번호 변경</button></div></section>';
+  const region=document.createElement('section');region.className='stg-card student-test-list';region.innerHTML='<p role="status">테스트 목록을 불러오는 중입니다.</p>';cont.append(region);
+  try{
+    const [assigned,submitted]=await SessionGuard.wait(Promise.all([
+      sb.from('test_assignments').select('test_id').eq('user_id',owner),
+      sb.from('submissions').select('test_id,score,correct_count').eq('user_id',owner)
+    ]),epoch);
+    if(!region.isConnected)return;
+    if(assigned.error||submitted.error||!Array.isArray(assigned.data)||!Array.isArray(submitted.data))throw Error('unavailable');
+    const ids=[...new Set([...assigned.data,...submitted.data].map(r=>r.test_id))].filter(id=>Number.isSafeInteger(Number(id))&&Number(id)>0);
+    if(!ids.length){region.innerHTML='<h2>테스트 목록</h2><p>아직 배정된 테스트가 없습니다.</p>';return;}
+    const result=await SessionGuard.wait(sb.from('tests').select('id,title,total,exam_date,closed').in('id',ids).order('exam_date',{ascending:false}),epoch);
+    if(!region.isConnected)return;
+    if(result.error||!Array.isArray(result.data))throw Error('unavailable');
+    const submissions=new Map(submitted.data.map(row=>[row.test_id,row]));
+    region.innerHTML='<h2>테스트 목록</h2><p class="str-list-note">응시한 테스트에서 등수와 문항별 결과를 확인하세요.</p>'+result.data.map(t=>{
+      if(!Number.isSafeInteger(Number(t.id))||Number(t.id)<1)return '';
+      const mine=submissions.get(t.id),score=mine?.score!=null&&Number.isFinite(Number(mine.score))?Number(mine.score)+'점':'채점 확인 중';
+      const action=mine?'wResultView':'wOpenTest',disabled=!mine&&t.closed;
+      return '<article class="str-test-row"><div><h3>'+Ui.escape(t.title)+'</h3><p>'+Ui.escape(t.exam_date||'')+' · '+Number(t.total)+'문항 · '+(t.closed?'마감':'진행 중')+'</p></div><div class="str-test-action"><span>'+(mine?'제출 완료 · '+score:disabled?'마감됨':'미응시')+'</span><button type="button" '+(disabled?'disabled':'onclick="'+action+'('+Number(t.id)+','+Ui.argument(t.title)+','+Number(t.total)+')"')+'>'+(mine?'등수 · 문항별 결과':disabled?'마감':'응시하기')+'</button></div></article>';
+    }).join('');
+  }catch(error){
+    if(error?.name==='StaleSession'||!region.isConnected)return;
+    region.innerHTML='<p role="alert">테스트 목록을 불러오지 못했습니다. 다시 확인해 주세요.</p><button type="button" onclick="renderWStudent()">다시 불러오기</button>';
   }
-  const { data:tests } = await SessionGuard.wait((sb.from('tests').select('id,title,total,exam_date,closed').in('id',assignedIds).order('exam_date',{ascending:false})),__mvpEpoch);
-  if(!tests || !tests.length){
-    cont.innerHTML += `<div class="stg-card"><div style="font-size:12px;color:var(--t3);text-align:center;padding:20px 0;">아직 배정된 테스트가 없습니다.</div></div>`;
-    return;
-  }
-  // 내 제출 내역
-  const { data:subs } = await SessionGuard.wait((sb.from('submissions').select('test_id,score,correct_count').eq('user_id',_wuser.id)),__mvpEpoch);
-  const subMap = {}; (subs||[]).forEach(s=>subMap[s.test_id]=s);
-
-  let html = `<div class="stg-card"><div class="stg-hdr"><div class="stg-icon">📝</div><div class="stg-title">테스트 목록</div></div>`;
-  for(const t of tests){
-    const mine=subMap[t.id];
-    const status = mine
-      ? `<span style="font-size:11px;font-weight:700;color:var(--a3);">제출완료 · ${mine.score}점</span>`
-      : (t.closed ? `<span style="font-size:11px;color:var(--t3);">마감됨</span>` : `<span style="font-size:11px;color:var(--red);">미응시</span>`);
-    let btnLabel, onclick, disabled=false, bg, color, border;
-    if(mine){
-      // 제출 완료 → 결과 확인하기
-      btnLabel='결과 확인하기';
-      onclick=`wResultView(${t.id},${Ui.argument(t.title)},${t.total})`;
-      bg='var(--a3)'; color='white'; border='var(--a3)';
-    } else if(t.closed){
-      btnLabel='마감'; disabled=true; bg='var(--bg)'; color='var(--t3)'; border='var(--border)';
-    } else {
-      btnLabel='응시하기';
-      onclick=`wOpenTest(${t.id},${Ui.argument(t.title)},${t.total})`;
-      bg='var(--accent)'; color='white'; border='var(--accent)';
-    }
-    html += `<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);">
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:700;">${Ui.escape(t.title)} ${t.closed?'🔒':''}</div>
-        <div style="font-size:10px;color:var(--t3);">${t.exam_date||''} · ${t.total}문항</div>
-      </div>
-      ${status}
-      <button ${disabled?'disabled':''} onclick="${disabled?'':onclick}" style="padding:7px 14px;background:${bg};color:${color};border:1px solid ${border};border-radius:7px;font-size:11px;font-weight:700;cursor:${disabled?'not-allowed':'pointer'};font-family:'Noto Sans KR',sans-serif;">${btnLabel}</button>
-    </div>`;
-  }
-  html += `</div>`;
-  cont.innerHTML += html;
 }
 
 // 테스트 응시 화면 (미응시 학생만)
