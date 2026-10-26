@@ -4,13 +4,14 @@
  let request=0;
  const esc=value=>Ui.escape(value),integer=value=>value!==null&&value!==''&&Number.isSafeInteger(Number(value));
  const safe=async task=>{try{return await task();}catch{return {data:null,error:true};}};
- function comparison(rows,n,wrong,closed){
-  if(!Array.isArray(rows)||rows.length!==n||new Set(rows.map(r=>r?.item_idx)).size!==n)return null;
-  const valid=rows.every(r=>r&&Number.isInteger(r.item_idx)&&r.item_idx>=0&&r.item_idx<n&&r.me_correct===!wrong.has(r.item_idx)&&r.comparison_ready===closed&&
-   (closed?integer(r.participant_count)&&Number(r.participant_count)>0&&integer(r.correct_count)&&Number(r.correct_count)>=0&&Number(r.correct_count)<=Number(r.participant_count)&&
+ function comparison(rows,n,wrong){
+  if(!Array.isArray(rows)||rows.length!==n||new Set(rows.map(r=>r?.item_idx)).size!==n||new Set(rows.map(r=>r?.comparison_ready)).size!==1)return null;
+  const ready=rows[0]?.comparison_ready;
+  const valid=rows.every(r=>r&&Number.isInteger(r.item_idx)&&r.item_idx>=0&&r.item_idx<n&&r.me_correct===!wrong.has(r.item_idx)&&typeof r.comparison_ready==='boolean'&&
+   (ready?integer(r.participant_count)&&Number(r.participant_count)>0&&integer(r.correct_count)&&Number(r.correct_count)>=0&&Number(r.correct_count)<=Number(r.participant_count)&&
     r.correct_rate!==null&&Number.isFinite(Number(r.correct_rate))&&Math.abs(Number(r.correct_rate)-100*Number(r.correct_count)/Number(r.participant_count))<=0.051:
     r.correct_count==null&&r.participant_count==null&&r.correct_rate==null&&r.correct_nicknames==null&&r.wrong_nicknames==null));
-  if(!valid||closed&&new Set(rows.map(r=>Number(r.participant_count))).size!==1)return null;
+  if(!valid||ready&&new Set(rows.map(r=>Number(r.participant_count))).size!==1)return null;
   return new Map(rows.map(r=>[r.item_idx,r]));
  }
  function nicknames(row){
@@ -71,23 +72,24 @@
   }
   const wrong=new Set(wrongRows.map(r=>r.item_idx)),closed=examData.closed===true;
   window._wTypes=Array.isArray(examData.types)?examData.types:Array(n).fill('mc');
-  let stats=!peerResult?.error?comparison(peerResult?.data,n,wrong,closed):null;
-  let hasPeers=closed&&stats&&[...stats.values()].every(nicknames);
+  let stats=!peerResult?.error?comparison(peerResult?.data,n,wrong):null;
+  let hasPeers=stats?.get(0)?.comparison_ready&&[...stats.values()].every(nicknames);
   if(!stats&&sb.schema==='shared-tests-v1'){
    const fallback=await rpc('mock_item_analysis');if(!current())return;
-   stats=!fallback.error?comparison(fallback.data,n,wrong,closed):null;hasPeers=false;
+   stats=!fallback.error?comparison(fallback.data,n,wrong):null;hasPeers=false;
   }
   const rank=!rankResult.error&&Array.isArray(rankResult.data)?rankResult.data[0]:null;
   const validRank=rank&&integer(rank.score)&&integer(mine.score)&&Number(rank.score)===Number(mine.score);
   const overall=validRank?rankCard('전체 등수',rank.overall_rank,rank.overall_total):'';
   const cls=validRank&&rank.class_name?rankCard(rank.class_name+' · 반 등수',rank.class_rank,rank.class_total):'';
   const score=integer(mine.score)?Number(mine.score)+'<small>점</small>':'<small>채점 확인 중</small>';
-  let note=!closed?'시험 마감 후 전체 정·오답률과 학생 닉네임이 공개됩니다.':stats?'응시자 '+Number(stats.get(0).participant_count)+'명 기준 · 미응답은 오답에 포함됩니다.':'문항별 비교를 불러오지 못했어요. 내 답안은 확인할 수 있습니다. 다시 불러와 주세요.';
-  if(closed&&stats&&!hasPeers)note+=' 학생 닉네임은 아직 불러올 수 없습니다.';
+  const comparisonReady=stats?.get(0)?.comparison_ready===true;
+  let note=comparisonReady?'현재 제출한 '+Number(stats.get(0).participant_count)+'명 기준 · 미응답은 오답에 포함됩니다.'+(closed?'':' 추가 제출에 따라 정답률이 바뀔 수 있어요.'):stats?'이 시험의 문항별 비교는 아직 공개되지 않았습니다.':'문항별 비교를 불러오지 못했어요. 내 답안은 확인할 수 있습니다. 다시 불러와 주세요.';
+  if(comparisonReady&&!hasPeers)note+=' 학생 닉네임은 아직 불러올 수 없습니다.';
   host.innerHTML='<div class="str-heading"><div><p class="str-eyebrow">나의 테스트 결과</p><h2>'+esc(examData.title||title||'테스트')+'</h2></div><span class="str-state">'+(closed?'시험 마감':'진행 중')+'</span></div>'+buttons+
    '<section class="stg-card str-overview" aria-label="점수와 등수"><dl><div class="str-score"><dt>내 점수</dt><dd>'+score+'</dd></div>'+overall+cls+'</dl><p class="str-summary">맞힌 문제 '+(n-wrong.size)+'개 · 오답 '+wrong.size+'개 <span>/ '+n+'문항</span></p>'+
    (overall?'<p class="str-muted">동점자는 같은 등수입니다.'+(closed?'':' 진행 중인 시험은 응시자에 따라 등수가 바뀔 수 있어요.')+'</p>':'<p class="str-muted" role="status">등수를 불러오지 못했어요. 다시 불러오기를 눌러 주세요.</p>')+'</section>'+
-   '<section class="stg-card str-analysis"><h2>문항별 결과</h2><p class="str-note"'+(closed&&(!stats||!hasPeers)?' role="status"':'')+'>'+note+'</p>'+
+   '<section class="stg-card str-analysis"><h2>문항별 결과</h2><p class="str-note"'+(!comparisonReady||!hasPeers?' role="status"':'')+'>'+note+'</p>'+
    (hasPeers?'<p class="str-muted">닉네임만 표시되며, 미설정 학생은 익명으로 표시됩니다.</p>':'')+
    '<div class="str-filters" role="group" aria-label="문항 필터">'+[['all','전체',n],['wrong','오답',wrong.size],['correct','정답',n-wrong.size]].map(([key,label,count])=>'<button type="button" data-action="filter" data-filter="'+key+'" aria-pressed="'+(key==='all')+'">'+label+' <b>'+count+'</b></button>').join('')+'</div>'+
    '<div class="str-questions">'+Array.from({length:n},(_,i)=>question(i,mine,wrong,stats?.get(i),hasPeers)).join('')+'</div><p class="str-empty" role="status" hidden>해당하는 문항이 없습니다.</p></section>'+

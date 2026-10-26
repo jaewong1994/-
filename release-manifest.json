@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "a729d4d1c710a1687bdfd50c60d6b41705a66158efcb7daf524fbbf9e0d164c2"
+    "sha256": "94ab51fd8a2b348ab4933720dda95e3d9d014d1e690d38adfb61eb0d1e5c2632"
   },
   {
     "name": "latest.html",
-    "sha256": "b9d430273b2ec066e9256de7716da0b03fe9420603e3effd26b032623d3497ff"
+    "sha256": "f205d12ebb900daad78597242e315344480ab267848efe7661466d36263418ea"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -449,7 +449,7 @@
   },
   {
     "name": "src/core/student-test-results.js",
-    "sha256": "2247db5b4342db0ee3a8545688f88fd0bc37951bedf7e9614586e034ac2b042e"
+    "sha256": "d294cc0c229dbcafedebf2f414b348dad1ac947f7b2a7792a1cb4eae09e9a2eb"
   },
   {
     "name": "src/legacy/accounts.js",
@@ -545,7 +545,7 @@
   },
   {
     "name": "sw.js",
-    "sha256": "23e77420c02ac9f121a551bcacb7f9a89b9d08f9939864a3dbf1644ffa714208"
+    "sha256": "8333c28dec1e330fd0313a63ef7d22df8fe41d5e1559afaeb365ae8ee2179ce3"
   },
   {
     "name": "vendor/chart.umd.js",
