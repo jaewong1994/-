@@ -78,6 +78,7 @@
    host.innerHTML='<div class="stg-card"><h2>결과를 불러오지 못했어요</h2><p role="alert">제출 기록과 채점 결과를 확인할 수 없습니다. 잠시 후 다시 불러와 주세요.</p>'+buttons+'</div>';return;
   }
   const wrong=new Set(wrongRows.map(r=>r.item_idx)),closed=examData.closed===true;
+  host.dataset.resumeKind='result';host.dataset.resumeTest=String(Number(testId));
   window._wTypes=Array.isArray(examData.types)?examData.types:Array(n).fill('mc');
   let stats=!peerResult?.error?comparison(peerResult?.data,n,wrong):null;
   let hasPeers=stats?.get(0)?.comparison_ready&&[...stats.values()].every(nicknames);

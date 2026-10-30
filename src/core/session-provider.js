@@ -11,7 +11,9 @@ root.MvpProviderReady=(async function(){
  if(storedLogout)adapter.suspend();
  adapter.subscribe(state=>{
   if(state.status==='signed-in'){try{root.localStorage.removeItem(key);root.sessionStorage.removeItem(key);}catch{}storedLogout=false;}
-  listeners.forEach(fn=>fn(state.status==='signed-in'?'SIGNED_IN':'SIGNED_OUT',state.session));
+  // A fresh identity check is not a logout. The host locks interaction while
+  // retaining the current view until the verified identity/scope is known.
+  listeners.forEach(fn=>fn(state.status==='checking'?'SESSION_CHECKING':state.status==='signed-in'?'SIGNED_IN':'SIGNED_OUT',state.session));
  });
  const auth={getSession:async()=>({data:{session:adapter.getState().session},error:null}),getUser:async()=>({data:{user:adapter.getState().session?.user||null},error:null}),onAuthStateChange(fn){listeners.add(fn);return{data:{subscription:{unsubscribe:()=>listeners.delete(fn)}}};},signOut:async()=>{storedLogout=true;try{root.localStorage.setItem(key,'1');}catch{}try{root.sessionStorage.setItem(key,'1');}catch{}return adapter.signOut();},signInWithPassword:input=>adapter.signIn(input)};
  const compatible=runtime.operations===root.MvpCompatibility?.contract&&Boolean(root.MvpCompatibility);

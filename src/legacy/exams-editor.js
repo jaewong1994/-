@@ -208,7 +208,7 @@ const __mvpEpoch=SessionGuard.capture();
     : `<button onclick="wCloseTest(${testId},${Ui.argument(title)})" style="width:100%;margin-top:12px;padding:11px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🔒 답안 마감 + 메달 지급</button>
        <div style="font-size:9px;color:var(--t3);text-align:center;margin-top:5px;">마감하면 더 이상 제출할 수 없고, 1·2·3등 메달과 만점 배지가 지급됩니다.</div>`;
   d.innerHTML = `
-  <div class="stg-card">
+  <div class="stg-card" data-resume-kind="rank" data-resume-test="${Number(testId)}">
     <div class="stg-hdr"><div class="stg-icon">🏆</div><div class="stg-title">${Ui.escape(title)} · 등수</div><div class="stg-sub">${subs.length}명 응시</div></div>
     <div style="font-size:11px;color:var(--t2);margin-bottom:10px;padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">평균 <strong style="color:var(--accent);">${avg}점</strong> · 최고 <strong>${maxScore===null?'—':maxScore+'점'}</strong> 💎</div>
     <p class="rank-note">점수 높은 순 · 동점은 같은 등수 (예: 1, 2, 2, 4)</p>

@@ -256,7 +256,7 @@ const __mvpEpoch=SessionGuard.capture();
   const sb=sbReady();
   // 이미 제출했으면 결과 화면으로
   const { data:already } = await SessionGuard.wait((sb.from('submissions').select('test_id').eq('test_id',testId).eq('user_id',_wuser.id).maybeSingle()),__mvpEpoch);
-  if(already){ wResultView(testId, title, total); return; }
+  if(already)return wResultView(testId,title,total);
   const { data:test } = await SessionGuard.wait((sb.from('tests').select('types,closed').eq('id',testId).single()),__mvpEpoch);
   if(test && test.closed){ alert('이미 마감된 테스트입니다.'); renderWStudent(); return; }
   const types = (test && test.types) ? test.types : new Array(total).fill('mc');
@@ -281,7 +281,7 @@ const __mvpEpoch=SessionGuard.capture();
   }
 
   cont.innerHTML = wHeader(_wprofile.name||'학생','학생') + `
-  <div class="stg-card">
+  <div class="stg-card" data-resume-kind="take" data-resume-test="${Number(testId)}">
     <div class="stg-hdr"><div class="stg-icon">✏️</div><div class="stg-title">${Ui.escape(title)}</div><div class="stg-sub">${total}문항</div></div>
     <div style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid var(--accent-mid);border-radius:10px;padding:12px;margin-bottom:12px;">
       <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px;">📷 OMR 카드 자동 입력</div>

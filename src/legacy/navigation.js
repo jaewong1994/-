@@ -35,7 +35,7 @@ function closeTopDetail(id){
 }
 window.addEventListener('mvp-session-reset',()=>{detailReturnFocus.clear();detailRequests.clear();const nav=document.getElementById('mvp-staff-navigation');if(nav)nav.hidden=true;});
 
-function runPageRender(render){try{Promise.resolve(render()).catch(error=>{if(error?.name!=='StaleSession')showToast('화면을 불러오지 못했습니다. 다시 열어 주세요.');});}catch{showToast('화면을 불러오지 못했습니다. 다시 열어 주세요.');}}
+function runPageRender(render){try{return Promise.resolve(render()).catch(error=>{if(error?.name!=='StaleSession')showToast('화면을 불러오지 못했습니다. 다시 열어 주세요.');});}catch{showToast('화면을 불러오지 못했습니다. 다시 열어 주세요.');return Promise.resolve();}}
 function showCat(cat){
   if(!window.AppSession||!AppSession.canOpen(cat))return;
   document.querySelectorAll('.cat').forEach(c=>c.classList.toggle('on', c.dataset.cat===cat));
@@ -43,10 +43,10 @@ function showCat(cat){
   const subtabs=document.getElementById('subtabs');
   if(cat==='ipsi'){
     subtabs.style.display='flex';
-    showPage('uni');
+    return showPage('uni');
   } else {
     subtabs.style.display='none';
-    showPage(cat); // wtest / collection / dday
+    return showPage(cat); // wtest / collection / dday
   }
 }
 
@@ -66,21 +66,21 @@ function showPage(n){
     const tabs=document.querySelectorAll('.tab');
     if(tabs[IPSI_TABS[n]]) tabs[IPSI_TABS[n]].classList.add('on');
   }
-  if(n==='learning')runPageRender(renderLearning);
-  if(n==='susi')runPageRender(renderSusi);
-  if(n==='trend')runPageRender(renderTrend);
-  if(n==='uni')runPageRender(renderUni);
-  if(n==='score')runPageRender(renderScore);
-  if(n==='cut')runPageRender(renderGradeCuts);
-  if(n==='strategy')runPageRender(renderStrategy);
-  if(n==='wtest'){const section=window._mvpStaffSection;window._mvpStaffSection=null;runPageRender(section==='classes'?wManageClasses:section==='poka'?wPhotoAdmin:renderWTest);}
-  if(n==='collection')runPageRender(renderCollection);
-  if(n==='dday')runPageRender(renderDday);
-  if(n==='report')runPageRender(renderReport);
-  if(n==='viewer')runPageRender(renderViewer);
-  if(n==='admin')runPageRender(renderWAdmin);
-  if(n==='counsel')runPageRender(renderCounsel);
-  if(n==='exam-counsel')runPageRender(renderExamCounsel);
+  if(n==='learning')return runPageRender(renderLearning);
+  if(n==='susi')return runPageRender(renderSusi);
+  if(n==='trend')return runPageRender(renderTrend);
+  if(n==='uni')return runPageRender(renderUni);
+  if(n==='score')return runPageRender(renderScore);
+  if(n==='cut')return runPageRender(renderGradeCuts);
+  if(n==='strategy')return runPageRender(renderStrategy);
+  if(n==='wtest'){const section=window._mvpStaffSection;window._mvpStaffSection=null;return runPageRender(section==='classes'?wManageClasses:section==='poka'?wPhotoAdmin:renderWTest);}
+  if(n==='collection')return runPageRender(renderCollection);
+  if(n==='dday')return runPageRender(renderDday);
+  if(n==='report')return runPageRender(renderReport);
+  if(n==='viewer')return runPageRender(renderViewer);
+  if(n==='admin')return runPageRender(renderWAdmin);
+  if(n==='counsel')return runPageRender(renderCounsel);
+  if(n==='exam-counsel')return runPageRender(renderExamCounsel);
 }
 
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}

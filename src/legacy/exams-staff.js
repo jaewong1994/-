@@ -221,6 +221,7 @@ const __mvpEpoch=SessionGuard.capture();
   window._ekTypes   = _ekPad(test.types,total,'mc').map(t=>t||'mc');
   window._ekPoints  = _ekPad(test.points,total,5).map(p=>parseInt(p)||0);
   window._ekLevels  = _ekPad(test.levels,total,'').map(l=>l||'');
+  window._ekBase=JSON.stringify([test.answers,test.types,test.points,test.levels]);
 
   let rows='';
   for(let i=0;i<total;i++){
@@ -251,7 +252,7 @@ const __mvpEpoch=SessionGuard.capture();
        </div>`
     : '';
 
-  d.innerHTML = `<div class="stg-card exam-key-editor">
+  d.innerHTML = `<div class="stg-card exam-key-editor" data-resume-kind="key" data-resume-test="${Number(testId)}">
     <div class="stg-hdr"><div class="stg-icon">🛠️</div><div class="stg-title">정답 수정 <small style="font-size:10px;color:var(--t3)">R3</small></div><div class="stg-sub">${Ui.escape(window._ekTitle)} · ${total}문항</div></div>
     ${warn}
     <div style="font-size:9px;color:var(--t3);margin-bottom:8px;line-height:1.6;">주관식 복수정답 <code style="background:var(--surface);padding:0 4px;border-radius:3px;">|</code> 구분 · 난이도: ⚔️준킬 💀킬 👑GOD<br>문항 수 변경은 이 화면에서 할 수 없어요. 필요하면 '복사'로 새 테스트를 만드세요.</div>

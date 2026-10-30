@@ -1,7 +1,7 @@
 [
   {
     "name": "app-session.js",
-    "sha256": "ba35887c028dbfd023cc1aa67d69db62ff2e65dfa0ca42b14dbf9bd47210d0ac"
+    "sha256": "f5dbdb135e3a148bea9480c9addf9f919173e734ee78fea6b694fdf7c28f229c"
   },
   {
     "name": "auth-runtime.json",
@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "2447dbe8a95b824f190a30eae8d8a594f40b83c4e2ec8781813580a8e85085b3"
+    "sha256": "32102256d61517376b9038c00902426bfaecdc5c4107108ddde8978aa6a7625b"
   },
   {
     "name": "latest.html",
-    "sha256": "2447dbe8a95b824f190a30eae8d8a594f40b83c4e2ec8781813580a8e85085b3"
+    "sha256": "32102256d61517376b9038c00902426bfaecdc5c4107108ddde8978aa6a7625b"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -445,11 +445,15 @@
   },
   {
     "name": "src/core/session-provider.js",
-    "sha256": "ea60dc6ae9217425715c825bedfe929accd66ca4c1318f4fc569ec58485be690"
+    "sha256": "3ad483751e44f52788d74dcf50f3ab8a390870cfef340c33a9a28b923dd9bf29"
   },
   {
     "name": "src/core/student-test-results.js",
-    "sha256": "6b2bcdf7cd782f0764b129db4ca1d96409830f0991aba4a72d71699c3fc28a18"
+    "sha256": "c908940fbee69c361f5172c5b99baf3401d00f84af76f1cf59d63d1f11e299a6"
+  },
+  {
+    "name": "src/core/view-memory.js",
+    "sha256": "01be371958db18bacc17cca9ecea74e6dc8fc9c311f3b70c284d15c62bbd206c"
   },
   {
     "name": "src/legacy/accounts.js",
@@ -477,15 +481,15 @@
   },
   {
     "name": "src/legacy/exams-editor.js",
-    "sha256": "ccf04cb83379919be77d36277e20c1823c88804125e54c77353f0e1942a65fc4"
+    "sha256": "fc43b8afaa532d353b216245b1f1860ba970e48928bb53f111334e9ff29ab80b"
   },
   {
     "name": "src/legacy/exams-session.js",
-    "sha256": "4507386458d6c9f2931d215b68d19dd527a7a331f116288bc32d50ec49524bc4"
+    "sha256": "59ed2a2b00bbb721c971296faefc3fe08933bb73928abc736cf2c5d13b56a2b6"
   },
   {
     "name": "src/legacy/exams-staff.js",
-    "sha256": "b9695ebebe9c27b8ca0093c87617f27610c6e035f2eddaf083416d5bab051e70"
+    "sha256": "5287aa5bbdc7a8e27a19bdcfbb81685b20c380ff31b8f67f69cb9c8b21689d3e"
   },
   {
     "name": "src/legacy/exams-submit.js",
@@ -505,7 +509,7 @@
   },
   {
     "name": "src/legacy/navigation.js",
-    "sha256": "62dc7539f7af8804d6686edce7377915a1f9922a4da163ec49c535283cb24776"
+    "sha256": "d3d1e71cc452eccfa89e156683f729b358c253fd2e81fdbb681d4bb23b2cc1f7"
   },
   {
     "name": "src/legacy/omr.js",
@@ -545,7 +549,7 @@
   },
   {
     "name": "sw.js",
-    "sha256": "9e9eb752cd5d9b6a19af1b4553da4f379309dfa4535b32cda5474bf98025287e"
+    "sha256": "b8c641ba7d685dd15b3ee2b63a96b69ccd2019fa8ec32af2571d81d0e11a011f"
   },
   {
     "name": "vendor/chart.umd.js",
