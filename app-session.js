@@ -24,7 +24,9 @@ function clear(){
  document.querySelectorAll('#pg-learning iframe').forEach(x=>x.remove());
  if(typeof vwCacheClear==='function')vwCacheClear();
  clearTimeout(window._pcDecoT);clearTimeout(window._st);clearTimeout(_susiGradeTimer);
- for(const key of Object.keys(window).filter(k=>/^_(?:rep|pc|ek|wrongMatrix|assignSet|myCol|mockWrongItems)/.test(k)))window[key]=null;
+ // Helpers such as _ekPad share these legacy prefixes with account data.
+ // Keep executable helpers; clear only the prior account's values and drafts.
+ for(const key of Object.keys(window).filter(k=>/^_(?:rep|pc|ek|wrongMatrix|assignSet|myCol|mockWrongItems)/.test(k)&&typeof window[k]!=='function'))window[key]=null;
  _vwPaths={};_vw={groups:[],mats:[],classes:[],gc:[]};_vwAdmin=false;_vwEdit=null;_vwAddTo=null;_vwBusy=false;
  document.querySelectorAll('#pc-viewer,#pc-reveal,#vw-overlay,#pc-pos-overlay').forEach(x=>x.remove());
  if(typeof applyPhotoBg==='function')applyPhotoBg();
