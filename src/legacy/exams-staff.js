@@ -184,15 +184,20 @@ const __mvpEpoch=SessionGuard.capture();
   const sb=sbReady();
   const d=document.getElementById('w-teacher-detail');
   const detailRequest=openTopDetail('w-teacher-detail');
+  window._ekEditor=null;
   d.innerHTML = `<div class="stg-card"><div style="text-align:center;font-size:12px;color:var(--t3);">불러오는 중...</div></div>`;
-  const { data:test, error } = await SessionGuard.wait((readStaffTest(testId)),__mvpEpoch);
+  let loaded;try{loaded=await SessionGuard.wait(readStaffTest(testId),__mvpEpoch);}catch{loaded={error:{message:'연결을 확인한 뒤 다시 열어 주세요.'}};}
+  const {data:test,error}=loaded;
   if(!currentTopDetail('w-teacher-detail',detailRequest))return;
   if(error || !test){
     d.innerHTML = `<div class="stg-card"><div style="font-size:12px;color:var(--red);">불러오기 실패: ${Ui.escape(error?error.message:'테스트 없음')}</div></div>`;
     return;
   }
   const total=test.total;
-  const { count } = await SessionGuard.wait((sb.from('submissions').select('id',{count:'exact',head:true}).eq('test_id',testId)),__mvpEpoch);
+  if(!Number.isInteger(total)||total<1||total>100){d.textContent='문항 정보를 확인할 수 없습니다. 다시 열어 주세요.';return;}
+  let count=null;
+  // Counting submissions is advisory. An unavailable count must not block editing.
+  try{const r=await Promise.race([Promise.resolve(sb.from('submissions').select('id',{count:'exact',head:true}).eq('test_id',testId)),new Promise(resolve=>setTimeout(()=>resolve({error:true}),2500))]);if(!r.error&&Number.isSafeInteger(r.count))count=r.count;}catch{}
   if(!currentTopDetail('w-teacher-detail',detailRequest))return;
 
   window._ekTestId = testId;
@@ -200,6 +205,7 @@ const __mvpEpoch=SessionGuard.capture();
   window._ekTotal  = total;
   window._ekSubs   = count||0;
   window._ekClosed = !!test.closed;
+  window._ekEditor={node:d,request:detailRequest,epoch:__mvpEpoch,saving:false};
   window._ekOrig    = _ekPad(test.answers,total,'').map(a=>a==null?'':String(a));
   window._ekAnswers = window._ekOrig.slice();
   window._ekTypes   = _ekPad(test.types,total,'mc').map(t=>t||'mc');
@@ -228,21 +234,21 @@ const __mvpEpoch=SessionGuard.capture();
     </div>`;
   }
 
-  const warn = window._ekSubs
+  const warn = count===null?'<p role="status">제출 인원을 확인하지 못했습니다. 저장하면 기존 제출 기록도 새 정답으로 재채점됩니다.</p>':window._ekSubs
     ? `<div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:8px;padding:9px 11px;margin-bottom:10px;font-size:10px;color:var(--accent);line-height:1.6;">
          ⚠️ 이미 <strong>${window._ekSubs}명</strong>이 제출했습니다. 저장하면 이 학생들의 점수·개수가 <strong>새 정답 기준으로 자동 재채점</strong>됩니다. (학생이 낸 답안과 제출 시각은 그대로 유지)
          ${window._ekClosed?'<br>🔒 <strong>이미 마감된 테스트</strong>입니다. 점수·등수는 다시 계산되지만, <strong>이미 지급된 메달·배지는 자동으로 조정되지 않습니다.</strong>':''}
        </div>`
     : '';
 
-  d.innerHTML = `<div class="stg-card">
-    <div class="stg-hdr"><div class="stg-icon">🛠️</div><div class="stg-title">정답 수정</div><div class="stg-sub">${window._ekTitle} · ${total}문항</div></div>
+  d.innerHTML = `<div class="stg-card exam-key-editor">
+    <div class="stg-hdr"><div class="stg-icon">🛠️</div><div class="stg-title">정답 수정</div><div class="stg-sub">${Ui.escape(window._ekTitle)} · ${total}문항</div></div>
     ${warn}
     <div style="font-size:9px;color:var(--t3);margin-bottom:8px;line-height:1.6;">주관식 복수정답 <code style="background:var(--surface);padding:0 4px;border-radius:3px;">|</code> 구분 · 난이도: ⚔️준킬 💀킬 👑GOD<br>문항 수 변경은 이 화면에서 할 수 없어요. 필요하면 '복사'로 새 테스트를 만드세요.</div>
     <div style="max-height:460px;overflow-y:auto;padding:2px;">${rows}</div>
-    <button onclick="wSaveKey()" style="width:100%;margin-top:12px;padding:11px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">저장${window._ekSubs?' + 전원 재채점':''}</button>
+    <button type="button" id="ek-save" onclick="wSaveKey()" style="width:100%;margin-top:12px;padding:11px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">저장·재채점</button>
     <button onclick="renderWTeacher()" style="width:100%;margin-top:8px;padding:10px;background:var(--surface);color:var(--t2);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">← 목록으로</button>
-    <div id="ek-msg" style="font-size:11px;color:var(--red);margin-top:8px;text-align:center;"></div>
+    <div id="ek-msg" role="status" aria-live="polite" style="font-size:13px;color:var(--red);margin-top:8px;text-align:center;"></div>
   </div>`;
 
   for(let i=0;i<total;i++){ wEkRenderBox(i); wEkMark(i); }
@@ -261,7 +267,7 @@ function wEkRenderBox(i){
     box.innerHTML=`<div class="omr-opts">${opts}</div>`;
   } else {
     const val=String(window._ekAnswers[i]||'');
-    box.innerHTML=`<input class="ek-sa-inp" data-saq="${i}" value="${val.replace(/"/g,'&quot;')}" oninput="wEkType(${i},this.value)" placeholder="정답 입력 (복수: 답1|답2)" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">`;
+    box.innerHTML=`<input class="ek-sa-inp" data-saq="${i}" aria-label="${i+1}번 정답" maxlength="200" value="${Ui.escape(val)}" oninput="wEkType(${i},this.value)" placeholder="정답 입력 (복수: 답1|답2)" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">`;
   }
 }
 
@@ -310,6 +316,9 @@ function wEkType(q,v){ window._ekAnswers[q]=v; wEkMark(q); }
 
 async function wSaveKey(){
 const __mvpEpoch=SessionGuard.capture();
+  const editor=window._ekEditor;
+  const current=()=>{try{SessionGuard.assert(__mvpEpoch);return editor===window._ekEditor&&editor?.node.isConnected&&currentTopDetail('w-teacher-detail',editor.request);}catch{return false;}};
+  if(!window.AppSession?.can('manage-tests')||!current()||editor.saving)return;
 
   const sb=sbReady();
   const testId=window._ekTestId, total=window._ekTotal;
@@ -318,15 +327,15 @@ const __mvpEpoch=SessionGuard.capture();
   const types=(window._ekTypes||[]).map(t=>t||'mc');
   const levels=(window._ekLevels||[]).map(l=>l||'');
   const points=[];
-  document.querySelectorAll('.ek-pt').forEach(el=>{ points[parseInt(el.dataset.pt)]=parseInt(el.value)||0; });
+  editor.node.querySelectorAll('.ek-pt').forEach(el=>{ points[Number(el.dataset.pt)]=Number(el.value); });
 
   // 검증
   for(let i=0;i<total;i++){
-    if(!answers[i]){ msg.style.color='var(--red)'; msg.textContent=`${i+1}번 정답을 입력하세요.`; return; }
+    if(!answers[i]||answers[i].length>200){ msg.style.color='var(--red)'; msg.textContent=`${i+1}번 정답을 1~200자로 입력하세요.`; return; }
     if(types[i]==='mc' && !/^[1-5]$/.test(answers[i])){
       msg.style.color='var(--red)'; msg.textContent=`${i+1}번은 객관식입니다. 1~5 중에서 고르세요.`; return;
     }
-    if(!(points[i]>0)){ msg.style.color='var(--red)'; msg.textContent=`${i+1}번 배점을 확인하세요.`; return; }
+    if(!Number.isSafeInteger(points[i])||points[i]<1||points[i]>1000){ msg.style.color='var(--red)'; msg.textContent=`${i+1}번 배점은 1~1000의 정수로 입력하세요.`; return; }
   }
 
   // 변경 요약 후 확인
@@ -340,12 +349,16 @@ const __mvpEpoch=SessionGuard.capture();
     : `정답 변경 없음 (유형·배점·난이도만 저장)\n\n`;
   cmsg += subs ? `제출한 학생 ${subs}명의 점수가 새 정답 기준으로 다시 계산됩니다.` : `저장할까요?`;
   if(subs && window._ekClosed) cmsg += `\n(마감된 테스트, 이미 지급된 메달은 조정되지 않습니다)`;
-  if(!confirm(cmsg)) return;
+  if(!confirm(cmsg)){msg.textContent='저장을 취소했습니다. 입력한 내용은 유지됩니다.';return;}
 
+  editor.saving=true;
+  const controls=Array.from(editor.node.querySelectorAll('button,input'));controls.forEach(el=>el.disabled=true);
+  try{
   msg.style.color='var(--t3)'; msg.textContent = subs?'저장 + 재채점 중...':'저장 중...';
   const { data, error } = await SessionGuard.wait((sb.rpc('teacher_update_key', {
     p_test_id:testId, p_answers:answers, p_types:types, p_points:points, p_levels:levels
   })),__mvpEpoch);
+  if(!current())return;
   if(error){
     msg.style.color='var(--red)';
     msg.textContent='정답 저장·재채점을 확인하지 못했습니다. 기존 정답만 따로 덮어쓰지 않았습니다. 연결 상태를 확인해 주세요.';
@@ -353,6 +366,8 @@ const __mvpEpoch=SessionGuard.capture();
   }
   showToast(subs ? `저장 완료 · ${data}명 재채점됨` : '저장 완료');
   renderWTeacher();
+  }catch{if(current())msg.textContent='저장 결과를 확인하지 못했습니다. 입력 내용은 유지됩니다. 연결 후 다시 시도해 주세요.';}
+  finally{editor.saving=false;if(current())controls.forEach(el=>el.disabled=false);}
 }
 
 // ===== 반·학생 관리 =====

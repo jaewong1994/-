@@ -30,7 +30,10 @@
    const correct=Number(row.correct_count),total=Number(row.participant_count),rate=Number(row.correct_rate),wrongRate=100-rate;
    html+='<div class="str-rates"><span>정답 <strong>'+rate.toFixed(1)+'%</strong> · '+correct+'명</span><span>오답 <strong>'+wrongRate.toFixed(1)+'%</strong> · '+(total-correct)+'명</span></div><div class="str-rate-bar" aria-hidden="true"><span style="width:'+rate+'%"></span></div>';
    if(row.me_correct&&correct===1)html+='<p class="str-solo">나 혼자 맞힌 문제</p>';
-   if(peers)html+='<details class="str-peers"><summary>'+(i+1)+'번 맞힌·틀린 학생 닉네임 <span>보기</span></summary><div class="str-peer-columns"><div><h4>맞힌 학생 · '+correct+'명</h4><div class="str-chips">'+chips(row.correct_nicknames)+'</div></div><div><h4>틀린 학생 · '+(total-correct)+'명</h4><div class="str-chips">'+chips(row.wrong_nicknames)+'</div></div></div></details>';
+   if(peers)html+='<div class="str-peers"><button type="button" data-action="peers" aria-expanded="false" aria-controls="str-peers-'+i+'">'+(i+1)+'번 맞힌·틀린 학생 닉네임 보기</button><div class="str-peer-columns" id="str-peers-'+i+'" hidden><div><h4>맞힌 학생 · '+correct+'명</h4><div class="str-chips">'+chips(row.correct_nicknames)+'</div></div><div><h4>틀린 학생 · '+(total-correct)+'명</h4><div class="str-chips">'+chips(row.wrong_nicknames)+'</div></div></div></div>';
+   else html+='<p class="str-muted" role="status">학생 명단을 불러오지 못했습니다. <button type="button" data-action="retry">다시 불러오기</button></p>';
+  }else{
+   html+='<p class="str-muted" role="status">정답률·학생 명단을 불러올 수 없습니다. <button type="button" data-action="retry">다시 불러오기</button></p>';
   }
   return html+'</article>';
  }
@@ -52,6 +55,10 @@
    const button=event.target.closest('button[data-action]');if(!button||!current())return;
    if(button.dataset.action==='back'){request++;renderWStudent();}
    else if(button.dataset.action==='retry')open(testId,title);
+   else if(button.dataset.action==='peers'){
+    const panel=host.querySelector('#'+button.getAttribute('aria-controls'));if(!panel)return;
+    const expanded=button.getAttribute('aria-expanded')==='true';panel.hidden=expanded;button.setAttribute('aria-expanded',String(!expanded));
+   }
    else if(button.dataset.action==='filter'){
     const filter=button.dataset.filter;host.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
     let visible=0;host.querySelectorAll('[data-result]').forEach(card=>{card.hidden=filter!=='all'&&card.dataset.result!==filter;if(!card.hidden)visible++;});

@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "94ab51fd8a2b348ab4933720dda95e3d9d014d1e690d38adfb61eb0d1e5c2632"
+    "sha256": "423ca1753571c27a209a87f88f83e02c40ace82a47ec0fe37f6397d72f512da5"
   },
   {
     "name": "latest.html",
-    "sha256": "f205d12ebb900daad78597242e315344480ab267848efe7661466d36263418ea"
+    "sha256": "423ca1753571c27a209a87f88f83e02c40ace82a47ec0fe37f6397d72f512da5"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -449,7 +449,7 @@
   },
   {
     "name": "src/core/student-test-results.js",
-    "sha256": "d294cc0c229dbcafedebf2f414b348dad1ac947f7b2a7792a1cb4eae09e9a2eb"
+    "sha256": "6b2bcdf7cd782f0764b129db4ca1d96409830f0991aba4a72d71699c3fc28a18"
   },
   {
     "name": "src/legacy/accounts.js",
@@ -485,7 +485,7 @@
   },
   {
     "name": "src/legacy/exams-staff.js",
-    "sha256": "c69111e399b1769d0897f2807bbfa4448bdf992a394a4289d44dc6be3a757d84"
+    "sha256": "46a63cc48e4839384431882e55d1f677e044d6d7668affc1fa9e202264f94c42"
   },
   {
     "name": "src/legacy/exams-submit.js",
@@ -541,11 +541,11 @@
   },
   {
     "name": "src/styles/student-test-results.css",
-    "sha256": "038442acf3f0c9f0483408419d202272bdc465124b9271d5686bc37d7e83d138"
+    "sha256": "eb74b31dd1f04d9e938db9703d959a330deeadb2a0d65dc7114d23a42a295b97"
   },
   {
     "name": "sw.js",
-    "sha256": "8333c28dec1e330fd0313a63ef7d22df8fe41d5e1559afaeb365ae8ee2179ce3"
+    "sha256": "09b44f51ad1b3564d5793ef06e619f94418781578e19d9b016831ecc05a0e457"
   },
   {
     "name": "vendor/chart.umd.js",

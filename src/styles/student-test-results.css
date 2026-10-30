@@ -22,7 +22,16 @@
 .student-test-results .str-filters button{border:1px solid var(--border);background:var(--white);color:var(--t2);border-radius:9px;padding:8px 12px;font-size:13px}
 .student-test-results .str-filters button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .student-test-results .str-filters b{margin-left:4px;font-variant-numeric:tabular-nums}
-.student-test-results .str-questions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;align-items:start}
+.student-test-results .str-questions{display:grid;grid-template-columns:1fr;gap:12px;align-items:start}
+@media(min-width:700px){.student-test-results .str-questions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.student-test-results .str-questions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.student-test-results .str-peers>button{display:block;width:100%;text-align:left;padding:12px 8px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--accent);font:inherit;font-size:13px;font-weight:700;min-height:48px;white-space:normal}
+.student-test-results .str-peers>button::after{content:'＋';float:right;margin-left:8px}
+.student-test-results .str-peers>button[aria-expanded=true]::after{content:'−'}
+.student-test-results .str-muted button{border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--accent);padding:8px;font:inherit}
+.exam-key-editor button,.exam-key-editor input{touch-action:manipulation}
+.exam-key-editor button:disabled,.exam-key-editor input:disabled{opacity:.6}
+@media(max-width:700px){.exam-key-editor .omr-bubble,.exam-key-editor .ek-type-btn,.exam-key-editor .ek-lv-btn{min-width:44px!important;min-height:44px!important}.exam-key-editor .ek-ansbox{flex-basis:100%!important;order:3}.exam-key-editor .ek-sa-inp,.exam-key-editor .ek-pt{font-size:16px!important;min-height:44px}}
 .student-test-results .str-question{padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);min-width:0}
 .student-test-results [hidden]{display:none!important}
 .student-test-results .str-question-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
