@@ -177,17 +177,26 @@ function _ekPad(arr, total, def){
 }
 
 async function wEditKey(testId, title){
+let keyEditorStage='ENTRY',keyEditorHost=null;
+try{
 if(!window.AppSession?.can('manage-tests'))return;
 
 const __mvpEpoch=SessionGuard.capture();
+  // Keep the editor's implementation private even when an older session script
+  // still clears globals with the _ek prefix in an already-open tab.
+  const _ekPad=(arr,total,value)=>Array.from({length:total},(_,i)=>Array.isArray(arr)&&i<arr.length?arr[i]:value);
 
+  keyEditorStage='HOST';
   const sb=sbReady();
   const d=document.getElementById('w-teacher-detail');
+  keyEditorHost=d;
+  if(!d)throw Error('Editor host unavailable');
   const detailRequest=openTopDetail('w-teacher-detail');
   window._ekEditor=null;
   d.innerHTML = `<div class="stg-card"><div style="text-align:center;font-size:12px;color:var(--t3);">불러오는 중...</div></div>`;
+  keyEditorStage='READ';
   let loaded;try{loaded=await SessionGuard.wait(readStaffTest(testId),__mvpEpoch);}catch{loaded={error:{message:'연결을 확인한 뒤 다시 열어 주세요.'}};}
-  const {data:test,error}=loaded;
+  const error=loaded?.error,data=loaded?.data,test=Array.isArray(data)&&data.length===1?data[0]:data;
   if(!currentTopDetail('w-teacher-detail',detailRequest))return;
   if(error || !test){
     d.innerHTML = `<div class="stg-card"><div style="font-size:12px;color:var(--red);">불러오기 실패: ${Ui.escape(error?error.message:'테스트 없음')}</div></div>`;
@@ -200,6 +209,7 @@ const __mvpEpoch=SessionGuard.capture();
   try{const r=await Promise.race([Promise.resolve(sb.from('submissions').select('id',{count:'exact',head:true}).eq('test_id',testId)),new Promise(resolve=>setTimeout(()=>resolve({error:true}),2500))]);if(!r.error&&Number.isSafeInteger(r.count))count=r.count;}catch{}
   if(!currentTopDetail('w-teacher-detail',detailRequest))return;
 
+  keyEditorStage='FORM';
   window._ekTestId = testId;
   window._ekTitle  = test.title||title||'';
   window._ekTotal  = total;
@@ -242,7 +252,7 @@ const __mvpEpoch=SessionGuard.capture();
     : '';
 
   d.innerHTML = `<div class="stg-card exam-key-editor">
-    <div class="stg-hdr"><div class="stg-icon">🛠️</div><div class="stg-title">정답 수정</div><div class="stg-sub">${Ui.escape(window._ekTitle)} · ${total}문항</div></div>
+    <div class="stg-hdr"><div class="stg-icon">🛠️</div><div class="stg-title">정답 수정 <small style="font-size:10px;color:var(--t3)">R3</small></div><div class="stg-sub">${Ui.escape(window._ekTitle)} · ${total}문항</div></div>
     ${warn}
     <div style="font-size:9px;color:var(--t3);margin-bottom:8px;line-height:1.6;">주관식 복수정답 <code style="background:var(--surface);padding:0 4px;border-radius:3px;">|</code> 구분 · 난이도: ⚔️준킬 💀킬 👑GOD<br>문항 수 변경은 이 화면에서 할 수 없어요. 필요하면 '복사'로 새 테스트를 만드세요.</div>
     <div style="max-height:460px;overflow-y:auto;padding:2px;">${rows}</div>
@@ -251,7 +261,23 @@ const __mvpEpoch=SessionGuard.capture();
     <div id="ek-msg" role="status" aria-live="polite" style="font-size:13px;color:var(--red);margin-top:8px;text-align:center;"></div>
   </div>`;
 
+  keyEditorStage='INPUTS';
   for(let i=0;i<total;i++){ wEkRenderBox(i); wEkMark(i); }
+}catch(error){
+  if(error?.name==='StaleSession')return;
+  const kind=['TypeError','ReferenceError','RangeError','SyntaxError'].includes(error?.name)?error.name:'Error';
+  const code='KEY-R3-'+keyEditorStage+'-'+kind;
+  const host=keyEditorHost?.isConnected?keyEditorHost:document.getElementById('wtest-content');
+  if(host){
+   host.replaceChildren();const card=document.createElement('section');card.className='stg-card';
+   const heading=document.createElement('h2');heading.textContent='정답 수정 화면을 열지 못했습니다.';
+   const message=document.createElement('p');message.setAttribute('role','alert');message.textContent='아래 오류 코드를 알려 주세요. 기존 정답과 제출 기록은 저장하거나 변경하지 않았습니다.';
+   const detail=document.createElement('p');detail.textContent=code;
+   const retry=document.createElement('button');retry.type='button';retry.className='staff-row-btn';retry.textContent='다시 열기';retry.onclick=()=>wEditKey(testId,title);
+   const back=document.createElement('button');back.type='button';back.className='staff-row-btn';back.textContent='테스트 목록으로';back.onclick=()=>renderWTeacher();
+   card.append(heading,message,detail,retry,back);host.append(card);
+  }else if(typeof showToast==='function')showToast(code);
+}
 }
 
 // 문항별 정답 입력 영역 렌더 (유형에 따라 버블 또는 텍스트)

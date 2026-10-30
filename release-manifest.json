@@ -1,7 +1,7 @@
 [
   {
     "name": "app-session.js",
-    "sha256": "c83ef1503d543593f3986fb1a667e6dd00cc0ffc2f9c17ed06c5ea3ebb0be75c"
+    "sha256": "ba35887c028dbfd023cc1aa67d69db62ff2e65dfa0ca42b14dbf9bd47210d0ac"
   },
   {
     "name": "auth-runtime.json",
@@ -37,11 +37,11 @@
   },
   {
     "name": "index.html",
-    "sha256": "098601856a848df7d97f2245b19bec92406bef4580fefbf730a69f44cac12d40"
+    "sha256": "2447dbe8a95b824f190a30eae8d8a594f40b83c4e2ec8781813580a8e85085b3"
   },
   {
     "name": "latest.html",
-    "sha256": "098601856a848df7d97f2245b19bec92406bef4580fefbf730a69f44cac12d40"
+    "sha256": "2447dbe8a95b824f190a30eae8d8a594f40b83c4e2ec8781813580a8e85085b3"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
@@ -485,7 +485,7 @@
   },
   {
     "name": "src/legacy/exams-staff.js",
-    "sha256": "46a63cc48e4839384431882e55d1f677e044d6d7668affc1fa9e202264f94c42"
+    "sha256": "b9695ebebe9c27b8ca0093c87617f27610c6e035f2eddaf083416d5bab051e70"
   },
   {
     "name": "src/legacy/exams-submit.js",
@@ -545,7 +545,7 @@
   },
   {
     "name": "sw.js",
-    "sha256": "a9bc95c772579e7b032c063e9f2a57fba15f31641bd432a4fb11f224aefdbea9"
+    "sha256": "9e9eb752cd5d9b6a19af1b4553da4f379309dfa4535b32cda5474bf98025287e"
   },
   {
     "name": "vendor/chart.umd.js",

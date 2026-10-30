@@ -65,7 +65,15 @@ const sheet=document.querySelector('#mobile-more-sheet .app-sheet-grid');
 for(const [page,label]of [['learning','학습'],['counsel','입시상담'],['exam-counsel','테스트 상담'],['admin','계정 관리']]){const b=document.createElement('button');b.type='button';b.dataset.sessionMenu=page;b.textContent=label;b.onclick=()=>{closeMobileMore();showCat(page);};sheet.append(b);}
 document.querySelectorAll('[onclick*="mobileNavigate"]').forEach(el=>{const match=el.getAttribute('onclick').match(/mobileNavigate\('([^']+)'\)/);if(match)el.dataset.sessionMenu=match[1];});
 document.querySelectorAll('.cat').forEach(el=>{el.role='button';el.tabIndex=0;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});});
-window.addEventListener('unhandledrejection',e=>{if(e.reason?.name==='StaleSession')e.preventDefault();else{e.preventDefault();showToast('처리하지 못했습니다. 화면을 다시 열어 주세요.');}});
+window.addEventListener('unhandledrejection',e=>{
+ e.preventDefault();if(e.reason?.name==='StaleSession')return;
+ // Report only a bounded error category and our source filename/line. Never
+ // expose an exception message, URL/query, account data or the full stack.
+ const kind=['TypeError','ReferenceError','RangeError','SyntaxError'].includes(e.reason?.name)?e.reason.name:'Error';
+ const source=typeof e.reason?.stack==='string'?e.reason.stack.match(/(app-session\.js|exams-staff\.js|navigation\.js|backend\.js|session-provider\.js|student-test-results\.js)(?:\?[^:\s]*)?:(\d+):\d+/):null;
+ const code='APP-R3-'+kind+(source?'-'+source[1]+':'+source[2]:'');
+ showToast('처리하지 못했습니다. '+code+' · 이 오류 코드를 알려 주세요.');
+});
 if(provider.mode!=='blocked')sbReady().auth.onAuthStateChange(handle);handle('BOOT',provider.session());if(provider.mode==='blocked'){status.textContent='연결 설정을 확인할 수 없습니다. 연결 상태와 설정을 확인한 뒤 새로고침해 주세요.';form.hidden=true;}else void provider.boot();
 })();
 
