@@ -581,11 +581,11 @@
   },
   {
     "name": "mm/school.css",
-    "sha256": "56bcbdb846154292ba68519e5cf4ec12ec2b319809e7e853e55a60efeedfc3e1"
+    "sha256": "f645cd880c5461ae5e1a239a1d61b690fdda432421247b398e1dd34385d76a58"
   },
   {
     "name": "mm/school.js",
-    "sha256": "c99d619000c16fc0d746f9b39b8cd84c4a711c40ecd0fd18522b19dd70677bba"
+    "sha256": "b00393f64d39894418acb3447b9167705198facbcf4246d6c2a49de38ba182c8"
   },
   {
     "name": "mm/staff.js",
@@ -594,6 +594,14 @@
   {
     "name": "mm/student.js",
     "sha256": "9ccb9d1265b4bbfc77612ebda10e11ea28169210fe3ab952e827fe4172773a7f"
+  },
+  {
+    "name": "mm/video-marks.js",
+    "sha256": "967e0819d07de697c8ebed9f32b36fa74e1599926feec977c5bc5f3549050b31"
+  },
+  {
+    "name": "mm/videos.js",
+    "sha256": "c89503b92a725c0ee1a31fcebff4027fff2ae7e8737203e93a316f4b8c3279cf"
   },
   {
     "name": "mobile-ui.css",
