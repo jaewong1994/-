@@ -1,0 +1,5 @@
+Cimulity · https://github.com/zeikar/cimulity/blob/efc2aba82be962f485315305273592a922dfb941/game/core/valueNoise.ts
+value-noise.js is a JavaScript port of the upstream terrain noise generator. See Cimulity-LICENSE.txt.
+
+IsoCity · https://github.com/amilich/isometric-city/blob/b774dd7913103e9dd9ec51b2151893c22683886e/src/components/game/drawPedestrians.ts
+village-life.js adapts the leg and arm motion in drawWalkingPedestrian for pixel sprites. See IsoCity-LICENSE.txt.

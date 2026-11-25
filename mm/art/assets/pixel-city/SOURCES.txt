@@ -1,0 +1,8 @@
+Pixel32 artwork, licensed CC0 1.0 by the artist.
+Pixel city — https://opengameart.org/content/pixel-city
+Pixel City - Municipal buildings — https://opengameart.org/content/pixel-city-municipal-buildings
+Pixel city - brick apartments — https://opengameart.org/content/pixel-city-brick-apartments
+Pixel village (conifers only) — https://opengameart.org/content/pixel-village
+License: https://creativecommons.org/publicdomain/zero/1.0/
+prepare_city_art.py extracts, recolors and aligns the source sheet objects. MM uses its own city plans, streets, reward towers and characters.
+HTML5 city simulation reference: https://github.com/graememcc/micropolisJS (urban zoning reference; no code or art from this project).

@@ -37,55 +37,35 @@
   },
   {
     "name": "index.html",
-    "sha256": "32102256d61517376b9038c00902426bfaecdc5c4107108ddde8978aa6a7625b"
+    "sha256": "c0b614465895be57b3a645bc05aaa0d32aaa81915918ab9773145548b3b6477a"
   },
   {
     "name": "latest.html",
-    "sha256": "32102256d61517376b9038c00902426bfaecdc5c4107108ddde8978aa6a7625b"
+    "sha256": "c0b614465895be57b3a645bc05aaa0d32aaa81915918ab9773145548b3b6477a"
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
-    "sha256": "829842b2d4bb46eb77d0dfb00269fd39eef148020995ada233040e7d4362ab74"
+    "sha256": "b5f5145b1fb3ae1615887aec33c76868b398ad13592ca8640f09b11decbd5702"
   },
   {
     "name": "learning/assets/AuthorHomeworkPage-Di0EwSKb.js",
-    "sha256": "395972b6b341c14948efe1d1ba587f765eb69047cc277de3cdd5bcd0e2875363"
-  },
-  {
-    "name": "learning/assets/authoring-CoUNDwSh.js",
-    "sha256": "2d3001b5abbcdf4e9df9647dd62fea26fb68b806189c6c7d9f962eb2b31e9d7c"
-  },
-  {
-    "name": "learning/assets/body-I5ihPDjW.js",
-    "sha256": "75af3fb9e7e600ce6d033d61960255422d4093270257690b1d620b9dedd8f70a"
+    "sha256": "e149a4c0d015ef19508f00f5679b7d35ca9bb8c34744efd0c6c901f695d79c83"
   },
   {
     "name": "learning/assets/CommunityPage-vGumNyLr.js",
-    "sha256": "fe4f742e8e9d342799c027e306fe63818d43404bd63cac24476d38e07002e940"
-  },
-  {
-    "name": "learning/assets/deviceStore-DnbChrKN.js",
-    "sha256": "214ad43f31491a56389e89a93847987566567eda68fe9129d335eb0aa7bb7706"
+    "sha256": "b4086e451acbd2290ce6b7a3fa44de3309c162a67f3d43b56a92c4d6c985fb81"
   },
   {
     "name": "learning/assets/Feedback-BNFHNix2.js",
-    "sha256": "e5577046d65e3c2d27d4befa6485cb86bc548feb87c2d111009da90c49accc0a"
-  },
-  {
-    "name": "learning/assets/index-Cmam9vln.js",
-    "sha256": "def9d87cff2762b50fdbff2f854b36e2df3e15638dbd06c3560a8b2e02417d8f"
-  },
-  {
-    "name": "learning/assets/index-DnEngvWa.css",
-    "sha256": "f8e18af8136601094a0410291619fc717ea3838eb1b0e35dd82bf7021714c47b"
+    "sha256": "becec068d6c7f36ab637dcdf9b5dd7c5820201a3da370734d1683a44184ea3bd"
   },
   {
     "name": "learning/assets/InkLabPage-BiO87CLK.css",
-    "sha256": "20849bc8a58ee0f1fb926bc16dc192d8424b1507afe5962e6fdb251b6a7586c8"
+    "sha256": "1b1d4f1aef2cab2139589454356156ef99aeb5dbd07f01852835aa061ac95d39"
   },
   {
     "name": "learning/assets/InkLabPage-DjxULSId.js",
-    "sha256": "c8a84d5d139d9e23f5d045750de29a621dbe32a647165a356f8866f4c0def873"
+    "sha256": "31f0787069fe40c06e1519e953c5bc9c0061755b11fb7f4fa6301a71addb0a1d"
   },
   {
     "name": "learning/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2",
@@ -304,12 +284,12 @@
     "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58"
   },
   {
-    "name": "learning/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2",
-    "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
-  },
-  {
     "name": "learning/assets/KaTeX_Size4-Regular-DWFBv043.ttf",
     "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877"
+  },
+  {
+    "name": "learning/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2",
+    "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
   },
   {
     "name": "learning/assets/KaTeX_Typewriter-Regular-C0xS9mPB.woff",
@@ -325,67 +305,287 @@
   },
   {
     "name": "learning/assets/LecturesPage-dk8k5JVy.js",
-    "sha256": "66830d4982b7173fe0ab97d90d75324041b6a0d609f9b13015b8a94586c75243"
+    "sha256": "bd80193011f8c38b0e4c1319f48f115029570cbbda0a446283fcd9c00b9796fc"
   },
   {
     "name": "learning/assets/LoginPage-BV4dFQPt.js",
-    "sha256": "a0eeb91eb09da54c7ea4e66d9f879233ddf0283c8ce4e74feb043ddeeddeaf27"
-  },
-  {
-    "name": "learning/assets/math-BvXWHf-j.js",
-    "sha256": "b262e9cad05e584918fee135c75dd122a2e030a97ded0b6726e0dcafa4f3b8b8"
-  },
-  {
-    "name": "learning/assets/pendingRpc-D7NXRqew.js",
-    "sha256": "5e84923022b98258e2555dcfbcb56dd369e8761d76efbcb07de0f5fbb298adc6"
-  },
-  {
-    "name": "learning/assets/react-CcH0kkjW.js",
-    "sha256": "b43b6b62aacbcd6bc8b97d2549382189c4dfe7b45696b34e76f2ea2c48c64d4e"
-  },
-  {
-    "name": "learning/assets/service-CqcczoOD.js",
-    "sha256": "0141bd7dce094bdd84f43b331353b022d0d2c479144ccbf7dcff2c8dbebd6972"
-  },
-  {
-    "name": "learning/assets/service-CWz5B_qq.js",
-    "sha256": "bb5221ee19a348fa2f1ba6dc2793653434e96a005617718c91f0f9d97da4a0c3"
-  },
-  {
-    "name": "learning/assets/service-DzLulHHH.js",
-    "sha256": "e77fac4c6e2f8380440900bdb3745c82652c33a132638bcde262f577cbbbc445"
+    "sha256": "4511d9b48bad234a862b43c53758b08be2eae03f9191b26512117f3409cb7b10"
   },
   {
     "name": "learning/assets/SolvePage-9Ok-4z58.js",
-    "sha256": "b14066614aa7b4b785685d59a54c74a458323edfc6821f73dbe0b8451007f23b"
+    "sha256": "178699cc6f5651af5c1d8255e843343291d91f24a745a744331f1ab8e83bf2d5"
   },
   {
     "name": "learning/assets/SolvePage-R-h_wNmv.css",
-    "sha256": "de1680f99ef87fc1ca4b3e40c136e05231b7683b479c7381300ed185eb20680f"
+    "sha256": "8013a4728813a9bd81c0e1e42230ccfe85514da48bb343d218198343bea383eb"
   },
   {
     "name": "learning/assets/StudentHomePage-DUMglHmG.js",
-    "sha256": "3bd886b034b202d0b68973e658d385bec8357320810903f1adfe30ead6f7ab9d"
-  },
-  {
-    "name": "learning/assets/supabase-l0sNRNKZ.js",
-    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    "sha256": "10fa45aa7dc06a5d8d880e172e3fbc5b0c2cbbf0548adc142b2b73f2fdd5055f"
   },
   {
     "name": "learning/assets/TeacherHomePage-CSHM4XIY.js",
-    "sha256": "a83f84c84becd6ded584843f75f2e981f01276213ad15ec748fe1baf08634db2"
+    "sha256": "e6ebcc3c0864de30fc51d95839db4c879bd42e2c21a4bf0d678a56b6dc1643f6"
   },
   {
     "name": "learning/assets/WatchPage-DCMnQkUS.js",
-    "sha256": "7e4a1ed3b370fdbeffa5cec3a17e925eb837cd2c1e9e6c76663b740a4440ec5f"
+    "sha256": "396e81dab5328a54bc671bb64c0c082d3f52ace57c91e7fe1a69e8e7e8591c90"
+  },
+  {
+    "name": "learning/assets/authoring-CoUNDwSh.js",
+    "sha256": "62d377d7964bee7e5a59dd72e499b010b7d4c68730d275dcfe3a80f516859598"
+  },
+  {
+    "name": "learning/assets/body-I5ihPDjW.js",
+    "sha256": "684cb758bd250b4083a1684125711811f78d0b51396ba82fcccf5be8beff45d3"
+  },
+  {
+    "name": "learning/assets/deviceStore-DnbChrKN.js",
+    "sha256": "56a3e20e20fe79767aa422afe8020c2c2a9b86f0bd6ffcc6aacb053295f610ab"
+  },
+  {
+    "name": "learning/assets/index-Cmam9vln.js",
+    "sha256": "3f5bd8265b90dcafb7854b79916873a9c96d8d80e4ed833c01e103b2466b01b7"
+  },
+  {
+    "name": "learning/assets/index-DnEngvWa.css",
+    "sha256": "0a2d70c60b22b1228b48344be2783441f12eac97b83c15c1c112d42e0e021a61"
+  },
+  {
+    "name": "learning/assets/math-BvXWHf-j.js",
+    "sha256": "7041525a11e3db699c66ca02bd0b0b14435c8f5bde8da573617e1a56b20065ff"
+  },
+  {
+    "name": "learning/assets/pendingRpc-D7NXRqew.js",
+    "sha256": "5b134adb42f73f3f5624191a6d20f3aff7c8976c1238807db30bdb1e203f0898"
+  },
+  {
+    "name": "learning/assets/react-CcH0kkjW.js",
+    "sha256": "1b174255325f1e2ae16f71639447c502578911c460e6052e177cbba97cf614f6"
+  },
+  {
+    "name": "learning/assets/service-CWz5B_qq.js",
+    "sha256": "2676647052c8ef0d9480b8b026efbaaa0d7e4fd1d48b761b2eeb5706947d3a80"
+  },
+  {
+    "name": "learning/assets/service-CqcczoOD.js",
+    "sha256": "88c6394dd0e5cbc084fe7be6a09206a048e9edea539d0674e1d404b74f847969"
+  },
+  {
+    "name": "learning/assets/service-DzLulHHH.js",
+    "sha256": "4fefe09b51d88c290a4ea3b953f25a2ee7581973ddd6c6e56ae7f8d253df0d07"
+  },
+  {
+    "name": "learning/assets/supabase-l0sNRNKZ.js",
+    "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
   },
   {
     "name": "learning/index.html",
-    "sha256": "ed384f0240941fafd1fe5a0741005c0e9efaf75bc061d8f59744a81bfe5c73dd"
+    "sha256": "c6a46abb15bebf6d3db484285a20738dccf6910f7e9ae9fb4f0e1becf6195177"
   },
   {
     "name": "manifest.webmanifest",
-    "sha256": "f4ee3c4f24a779708b79427686cac2483f4a3dcdbf5022a86b4dcd18520640fa"
+    "sha256": "b5066192091396f2c97917f5d227c10a4b45ccb13089f3428eb085a180fb38ee"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/SOURCES.txt",
+    "sha256": "39df07468877575b7d1614d891593318eac2769edfeda332917f8cf0cfe1da61"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/brick.png",
+    "sha256": "871445dc39e30e547b31b675202b3280009d117cc6d44e2379837ca83aa8a9c8"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/city.png",
+    "sha256": "80b4efd1977f91b7f69b42026289df9361ea9bd10f90a0925c32f6c9efdf9c2e"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/civic.png",
+    "sha256": "b6bd3dc183c72ffe6264ad553addd4e7efe41a3a4437174906c5dfc4a1536461"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/sprites.json",
+    "sha256": "a17c303d8dad0fbf8ee9b316db90c2ff09d7e1a148346be2a8948020fced0b44"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/sprites.png",
+    "sha256": "a4a7790a40494c182357cb81578b6251a4743b153f5306fd281c21298569940e"
+  },
+  {
+    "name": "mm/art/assets/pixel-city/trees.png",
+    "sha256": "f071d1c4e87e0ac105fa9bea8b87f4a2d49c480537de6fdefa3a7138a9c539e2"
+  },
+  {
+    "name": "mm/art/campus-life.js",
+    "sha256": "02309fe807dd817a9dbaa360601940ac115fe5284619bb7bd18c61d573f1a3ae"
+  },
+  {
+    "name": "mm/art/city-activity.js",
+    "sha256": "daff23e1e525bd5e8e6d670db21e83beb12d14455f627c9d54f2f8b3bb85ad3d"
+  },
+  {
+    "name": "mm/art/city-art.js",
+    "sha256": "f2ce5db50c05a3eea3e16ff5b4681809a3a02a6089d809c2c72f73624cb616da"
+  },
+  {
+    "name": "mm/art/city-buildings.js",
+    "sha256": "8d14e31e1534349ce44fccfd8b194119889192c2bad8c01937650790c4d22ca1"
+  },
+  {
+    "name": "mm/art/city-edge.js",
+    "sha256": "c3ec051e7a379a612d791f5daedae37b080eb42d798e506a73b510bbfdb0aeba"
+  },
+  {
+    "name": "mm/art/city-events.js",
+    "sha256": "a8c496a814d72dc59bcf601da0b9def9f2e937b34781f2082cf82afcd8e1d694"
+  },
+  {
+    "name": "mm/art/city-fabric.js",
+    "sha256": "af92491776d1fb40287391df16261bff08a06101ab60db6e3e4e5a6789dd91a6"
+  },
+  {
+    "name": "mm/art/city-form.js",
+    "sha256": "1e19dbe9643eee8241bcc8b2b9940c550636c1266175388d6a29dcf30a9089a9"
+  },
+  {
+    "name": "mm/art/city-frontage.js",
+    "sha256": "50674199d34ab4109d241bd0b90ed03d9b4c71de59549d7f5a44b3fa91f9d3d2"
+  },
+  {
+    "name": "mm/art/city-hours.js",
+    "sha256": "63b9670f89693b8deb1b1743e31fe3b292df44d5427c6d8412e24acac7798b50"
+  },
+  {
+    "name": "mm/art/city-lots.js",
+    "sha256": "400d34cdf924691e0701e35926dfecfa5e5807679d0fe9b3a23c36783fe8ba43"
+  },
+  {
+    "name": "mm/art/city-plans.json",
+    "sha256": "c34c41cf16bc9c03d19cbd780f7fe5fabb4abd3c06c41c2b31d79cbaf99e1460"
+  },
+  {
+    "name": "mm/art/city-rewards.json",
+    "sha256": "5a2396d4bab1cd6978b5483f48d29cedaeafb6d5569773fb5b0e910652adad82"
+  },
+  {
+    "name": "mm/art/city-scene.js",
+    "sha256": "00b2a233125e93ea90a088d1aa60b82ba52a6ec9e28110c7b3e5c7de6463e4a0"
+  },
+  {
+    "name": "mm/art/city-trees.js",
+    "sha256": "0f262ab18b34777cba8e543ccf560777b5b72382bad88f3777b080acc86060fd"
+  },
+  {
+    "name": "mm/art/classroom.js",
+    "sha256": "80a462360ed9c3e51dbd71290f216efaad3c5cfdeace55529eb0847cf16072c7"
+  },
+  {
+    "name": "mm/art/metropolis.js",
+    "sha256": "19e01e1793af84be2843afe6b403637ae42e6a3ef8820aa041efb1ef8c8e1af8"
+  },
+  {
+    "name": "mm/art/reward-buildings.js",
+    "sha256": "a4912abaff0549da6a6c801e0ddb12317b13fe7cf320f7697f7674e3776f8345"
+  },
+  {
+    "name": "mm/art/reward-sites.js",
+    "sha256": "6b89914be7828527321e4e038841d67084fc783c10f020e0b63009d486b83e90"
+  },
+  {
+    "name": "mm/art/roof-sign.js",
+    "sha256": "97a9befaf56b1e3c70b5a0105f925182b278f9718f1309a4a8ea66ef45acb8da"
+  },
+  {
+    "name": "mm/art/vendor/village/Cimulity-LICENSE.txt",
+    "sha256": "e52630fe2544df75e2815ec23b4f461aa9be9d86596ce0bd662b7f4fba4e0e63"
+  },
+  {
+    "name": "mm/art/vendor/village/IsoCity-LICENSE.txt",
+    "sha256": "1a8373cf1f2f6f1474a0af184fe4627ce6752297731ca77b20c131cd607e8f53"
+  },
+  {
+    "name": "mm/art/vendor/village/SOURCES.txt",
+    "sha256": "436da14b40bda34dfa8cd7d43c32f932c9f47f00a135c4aaac0988837738a469"
+  },
+  {
+    "name": "mm/art/vendor/village/value-noise.js",
+    "sha256": "feab2adf268d71342b3bc3945761d83fb546824ca553726d829671d91582fe43"
+  },
+  {
+    "name": "mm/art/village-life.js",
+    "sha256": "9cdf6bb08de7562c382b0766287431d392aa6f11a684e37e1e1235f30223413d"
+  },
+  {
+    "name": "mm/art/world.js",
+    "sha256": "3636622bec9e9fc38442b6d22d823ad4551007aee8f37188a494445a8031f7d3"
+  },
+  {
+    "name": "mm/book.js",
+    "sha256": "d802da82627655cc7dd3341cd2169a90f74ddf1a6ad078f70480a9c07fc5411f"
+  },
+  {
+    "name": "mm/city.js",
+    "sha256": "e50da3437478c2a13bb4dd2b568a08e2b1a76b2a1cb91becd1784d36ae39d956"
+  },
+  {
+    "name": "mm/fonts/GmarketSansTTFMedium.woff",
+    "sha256": "4b08276a5dddd6429a9b02055b6f4042867b4c542da3cb82551f34e5ef0704d8"
+  },
+  {
+    "name": "mm/icon-192.png",
+    "sha256": "efe6b03561f8a64293861c584fbfbcc1c9f63cdd1437d3aa512c49e5047d4e78"
+  },
+  {
+    "name": "mm/icon-512.png",
+    "sha256": "842b0ab357d6dce744561a3d7b514980a10717006d75c53598937fbd04c34a4f"
+  },
+  {
+    "name": "mm/index.html",
+    "sha256": "c0b614465895be57b3a645bc05aaa0d32aaa81915918ab9773145548b3b6477a"
+  },
+  {
+    "name": "mm/join-qr.png",
+    "sha256": "c7819d86fa25494fc48b5edaed3c364b700f274da84772426a9cdc6d3be00162"
+  },
+  {
+    "name": "mm/lib/LICENSE-pdf-lib.txt",
+    "sha256": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb"
+  },
+  {
+    "name": "mm/lib/LICENSE-pdfjs.txt",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  },
+  {
+    "name": "mm/lib/pdf-lib.min.js",
+    "sha256": "0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f"
+  },
+  {
+    "name": "mm/lib/pdf.mjs",
+    "sha256": "522ad2c83bc8a0010e7f0cc60d0892b77c8d2bf2c9702dc12288311d94270f42"
+  },
+  {
+    "name": "mm/lib/pdf.worker.mjs",
+    "sha256": "b4c8353ded0d88d2e2009574a29eb4e0c3ff7e942ecdf51ef5f71566a9667f31"
+  },
+  {
+    "name": "mm/papers.js",
+    "sha256": "8b67a245e1a315faf54498eb17fa20b19788cf7f971eec192599d5b4b171e7d4"
+  },
+  {
+    "name": "mm/school.css",
+    "sha256": "baf7077128054b1ffa5f646d9ea02f8a53cdcbe2091ef75e2f9852c1239e195c"
+  },
+  {
+    "name": "mm/school.js",
+    "sha256": "6d12eec4ecce17712cca2764fec08f1644c5f2355ceea3dd53aa3150a378db2f"
+  },
+  {
+    "name": "mm/staff.js",
+    "sha256": "aa94bba3026100dd7e6e2fb9494c01240f509474a0861670e2692bd8eaed5f12"
+  },
+  {
+    "name": "mm/student.js",
+    "sha256": "027fcca68acacdb3a9b5fca52b477717deb35f4bcb255db373394042c5dbfec9"
   },
   {
     "name": "mobile-ui.css",
@@ -401,7 +601,7 @@
   },
   {
     "name": "src/core/auth.js",
-    "sha256": "112408333ca1d8943ff70186492e547cc47f5a15f8bbe00c768e6d8cc05a521a"
+    "sha256": "96450b2d6accedef855041be99af7c772f5428a28183e4db7dddef1b7ae9dfcb"
   },
   {
     "name": "src/core/backend.js",
@@ -413,7 +613,7 @@
   },
   {
     "name": "src/core/config.js",
-    "sha256": "41d2d0fc6451549f174ca119728829175e27cceaddd7954ef6bfc58a66489dc4"
+    "sha256": "17b5f46f582d1deb9ed5f72f3d2578a6be1aee6d74a3f6d22a020dc3dc4e0744"
   },
   {
     "name": "src/core/learning-bridge.js",
@@ -449,11 +649,11 @@
   },
   {
     "name": "src/core/student-test-results.js",
-    "sha256": "c908940fbee69c361f5172c5b99baf3401d00f84af76f1cf59d63d1f11e299a6"
+    "sha256": "1753783b158f4e9e4654864c444d6b09874142827a358a2ae984800b1b961032"
   },
   {
     "name": "src/core/view-memory.js",
-    "sha256": "01be371958db18bacc17cca9ecea74e6dc8fc9c311f3b70c284d15c62bbd206c"
+    "sha256": "0cba20babd8a2a0791aae2213e97c17f9baae6ebaf4231622de7bb81a7fc339d"
   },
   {
     "name": "src/legacy/accounts.js",
@@ -545,18 +745,18 @@
   },
   {
     "name": "src/styles/student-test-results.css",
-    "sha256": "eb74b31dd1f04d9e938db9703d959a330deeadb2a0d65dc7114d23a42a295b97"
+    "sha256": "14ded19df7546c86c09d9fcd5cb60f166f84090d2cc00866c26308808e0bc5fd"
   },
   {
     "name": "sw.js",
-    "sha256": "b8c641ba7d685dd15b3ee2b63a96b69ccd2019fa8ec32af2571d81d0e11a011f"
+    "sha256": "cc6909664810e6a03f1b01fa339334f18d72a5fa01b400217f5fcfd5573a50ad"
   },
   {
     "name": "vendor/chart.umd.js",
-    "sha256": "74401d738dd3e03ee5dfb3b6841210fe2c4ead8a960c4011ca4ba0b78a9fd8f3"
+    "sha256": "9d6d0813ffe092ead5602c0d50f3f6c362f72dea70661d51efd72854aed76a5c"
   },
   {
     "name": "vendor/supabase.js",
-    "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3"
+    "sha256": "7a3acf0322c297237cdf47b4c2eec07a5ff8363cbb335c4bef8fdb27876bf006"
   }
 ]
