@@ -388,6 +388,10 @@
     "sha256": "b5066192091396f2c97917f5d227c10a4b45ccb13089f3428eb085a180fb38ee"
   },
   {
+    "name": "mm/accounts.js",
+    "sha256": "92835e0153d92174bf4877c247d7a0c439f1b27372a17c10a8469bca0acfe878"
+  },
+  {
     "name": "mm/art/assets/pixel-city/SOURCES.txt",
     "sha256": "39df07468877575b7d1614d891593318eac2769edfeda332917f8cf0cfe1da61"
   },
@@ -577,15 +581,15 @@
   },
   {
     "name": "mm/school.css",
-    "sha256": "baf7077128054b1ffa5f646d9ea02f8a53cdcbe2091ef75e2f9852c1239e195c"
+    "sha256": "56bcbdb846154292ba68519e5cf4ec12ec2b319809e7e853e55a60efeedfc3e1"
   },
   {
     "name": "mm/school.js",
-    "sha256": "48c6ae9568eab6ac27ba4d248f59cac89ed1f5ab447073eff9ef65cd8ede82be"
+    "sha256": "c99d619000c16fc0d746f9b39b8cd84c4a711c40ecd0fd18522b19dd70677bba"
   },
   {
     "name": "mm/staff.js",
-    "sha256": "3d11b6ae9229143d576fc2573d45c8c288458c7f1cbe538bc8e861b072c15ebd"
+    "sha256": "373a861ba04b1de1028b771d3784f65c566cb456314fcf5e004f53dbbcaad611"
   },
   {
     "name": "mm/student.js",
