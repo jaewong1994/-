@@ -45,27 +45,27 @@
   },
   {
     "name": "learning/assets/AccessGate-iZ7F1I7U.js",
-    "sha256": "b5f5145b1fb3ae1615887aec33c76868b398ad13592ca8640f09b11decbd5702"
+    "sha256": "829842b2d4bb46eb77d0dfb00269fd39eef148020995ada233040e7d4362ab74"
   },
   {
     "name": "learning/assets/AuthorHomeworkPage-Di0EwSKb.js",
-    "sha256": "e149a4c0d015ef19508f00f5679b7d35ca9bb8c34744efd0c6c901f695d79c83"
+    "sha256": "395972b6b341c14948efe1d1ba587f765eb69047cc277de3cdd5bcd0e2875363"
   },
   {
     "name": "learning/assets/CommunityPage-vGumNyLr.js",
-    "sha256": "b4086e451acbd2290ce6b7a3fa44de3309c162a67f3d43b56a92c4d6c985fb81"
+    "sha256": "fe4f742e8e9d342799c027e306fe63818d43404bd63cac24476d38e07002e940"
   },
   {
     "name": "learning/assets/Feedback-BNFHNix2.js",
-    "sha256": "becec068d6c7f36ab637dcdf9b5dd7c5820201a3da370734d1683a44184ea3bd"
+    "sha256": "e5577046d65e3c2d27d4befa6485cb86bc548feb87c2d111009da90c49accc0a"
   },
   {
     "name": "learning/assets/InkLabPage-BiO87CLK.css",
-    "sha256": "1b1d4f1aef2cab2139589454356156ef99aeb5dbd07f01852835aa061ac95d39"
+    "sha256": "20849bc8a58ee0f1fb926bc16dc192d8424b1507afe5962e6fdb251b6a7586c8"
   },
   {
     "name": "learning/assets/InkLabPage-DjxULSId.js",
-    "sha256": "31f0787069fe40c06e1519e953c5bc9c0061755b11fb7f4fa6301a71addb0a1d"
+    "sha256": "c8a84d5d139d9e23f5d045750de29a621dbe32a647165a356f8866f4c0def873"
   },
   {
     "name": "learning/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2",
@@ -305,83 +305,83 @@
   },
   {
     "name": "learning/assets/LecturesPage-dk8k5JVy.js",
-    "sha256": "bd80193011f8c38b0e4c1319f48f115029570cbbda0a446283fcd9c00b9796fc"
+    "sha256": "66830d4982b7173fe0ab97d90d75324041b6a0d609f9b13015b8a94586c75243"
   },
   {
     "name": "learning/assets/LoginPage-BV4dFQPt.js",
-    "sha256": "4511d9b48bad234a862b43c53758b08be2eae03f9191b26512117f3409cb7b10"
+    "sha256": "a0eeb91eb09da54c7ea4e66d9f879233ddf0283c8ce4e74feb043ddeeddeaf27"
   },
   {
     "name": "learning/assets/SolvePage-9Ok-4z58.js",
-    "sha256": "178699cc6f5651af5c1d8255e843343291d91f24a745a744331f1ab8e83bf2d5"
+    "sha256": "b14066614aa7b4b785685d59a54c74a458323edfc6821f73dbe0b8451007f23b"
   },
   {
     "name": "learning/assets/SolvePage-R-h_wNmv.css",
-    "sha256": "8013a4728813a9bd81c0e1e42230ccfe85514da48bb343d218198343bea383eb"
+    "sha256": "de1680f99ef87fc1ca4b3e40c136e05231b7683b479c7381300ed185eb20680f"
   },
   {
     "name": "learning/assets/StudentHomePage-DUMglHmG.js",
-    "sha256": "10fa45aa7dc06a5d8d880e172e3fbc5b0c2cbbf0548adc142b2b73f2fdd5055f"
+    "sha256": "3bd886b034b202d0b68973e658d385bec8357320810903f1adfe30ead6f7ab9d"
   },
   {
     "name": "learning/assets/TeacherHomePage-CSHM4XIY.js",
-    "sha256": "e6ebcc3c0864de30fc51d95839db4c879bd42e2c21a4bf0d678a56b6dc1643f6"
+    "sha256": "a83f84c84becd6ded584843f75f2e981f01276213ad15ec748fe1baf08634db2"
   },
   {
     "name": "learning/assets/WatchPage-DCMnQkUS.js",
-    "sha256": "396e81dab5328a54bc671bb64c0c082d3f52ace57c91e7fe1a69e8e7e8591c90"
+    "sha256": "7e4a1ed3b370fdbeffa5cec3a17e925eb837cd2c1e9e6c76663b740a4440ec5f"
   },
   {
     "name": "learning/assets/authoring-CoUNDwSh.js",
-    "sha256": "62d377d7964bee7e5a59dd72e499b010b7d4c68730d275dcfe3a80f516859598"
+    "sha256": "2d3001b5abbcdf4e9df9647dd62fea26fb68b806189c6c7d9f962eb2b31e9d7c"
   },
   {
     "name": "learning/assets/body-I5ihPDjW.js",
-    "sha256": "684cb758bd250b4083a1684125711811f78d0b51396ba82fcccf5be8beff45d3"
+    "sha256": "75af3fb9e7e600ce6d033d61960255422d4093270257690b1d620b9dedd8f70a"
   },
   {
     "name": "learning/assets/deviceStore-DnbChrKN.js",
-    "sha256": "56a3e20e20fe79767aa422afe8020c2c2a9b86f0bd6ffcc6aacb053295f610ab"
+    "sha256": "214ad43f31491a56389e89a93847987566567eda68fe9129d335eb0aa7bb7706"
   },
   {
     "name": "learning/assets/index-Cmam9vln.js",
-    "sha256": "3f5bd8265b90dcafb7854b79916873a9c96d8d80e4ed833c01e103b2466b01b7"
+    "sha256": "def9d87cff2762b50fdbff2f854b36e2df3e15638dbd06c3560a8b2e02417d8f"
   },
   {
     "name": "learning/assets/index-DnEngvWa.css",
-    "sha256": "0a2d70c60b22b1228b48344be2783441f12eac97b83c15c1c112d42e0e021a61"
+    "sha256": "f8e18af8136601094a0410291619fc717ea3838eb1b0e35dd82bf7021714c47b"
   },
   {
     "name": "learning/assets/math-BvXWHf-j.js",
-    "sha256": "7041525a11e3db699c66ca02bd0b0b14435c8f5bde8da573617e1a56b20065ff"
+    "sha256": "b262e9cad05e584918fee135c75dd122a2e030a97ded0b6726e0dcafa4f3b8b8"
   },
   {
     "name": "learning/assets/pendingRpc-D7NXRqew.js",
-    "sha256": "5b134adb42f73f3f5624191a6d20f3aff7c8976c1238807db30bdb1e203f0898"
+    "sha256": "5e84923022b98258e2555dcfbcb56dd369e8761d76efbcb07de0f5fbb298adc6"
   },
   {
     "name": "learning/assets/react-CcH0kkjW.js",
-    "sha256": "1b174255325f1e2ae16f71639447c502578911c460e6052e177cbba97cf614f6"
+    "sha256": "b43b6b62aacbcd6bc8b97d2549382189c4dfe7b45696b34e76f2ea2c48c64d4e"
   },
   {
     "name": "learning/assets/service-CWz5B_qq.js",
-    "sha256": "2676647052c8ef0d9480b8b026efbaaa0d7e4fd1d48b761b2eeb5706947d3a80"
+    "sha256": "bb5221ee19a348fa2f1ba6dc2793653434e96a005617718c91f0f9d97da4a0c3"
   },
   {
     "name": "learning/assets/service-CqcczoOD.js",
-    "sha256": "88c6394dd0e5cbc084fe7be6a09206a048e9edea539d0674e1d404b74f847969"
+    "sha256": "0141bd7dce094bdd84f43b331353b022d0d2c479144ccbf7dcff2c8dbebd6972"
   },
   {
     "name": "learning/assets/service-DzLulHHH.js",
-    "sha256": "4fefe09b51d88c290a4ea3b953f25a2ee7581973ddd6c6e56ae7f8d253df0d07"
+    "sha256": "e77fac4c6e2f8380440900bdb3745c82652c33a132638bcde262f577cbbbc445"
   },
   {
     "name": "learning/assets/supabase-l0sNRNKZ.js",
-    "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
   },
   {
     "name": "learning/index.html",
-    "sha256": "c6a46abb15bebf6d3db484285a20738dccf6910f7e9ae9fb4f0e1becf6195177"
+    "sha256": "ed384f0240941fafd1fe5a0741005c0e9efaf75bc061d8f59744a81bfe5c73dd"
   },
   {
     "name": "manifest.webmanifest",
@@ -417,47 +417,47 @@
   },
   {
     "name": "mm/art/campus-life.js",
-    "sha256": "02309fe807dd817a9dbaa360601940ac115fe5284619bb7bd18c61d573f1a3ae"
+    "sha256": "07e514ba6fb1688ec3ee13a5f0833501f319f335682df30caac9f67d44913fba"
   },
   {
     "name": "mm/art/city-activity.js",
-    "sha256": "daff23e1e525bd5e8e6d670db21e83beb12d14455f627c9d54f2f8b3bb85ad3d"
+    "sha256": "d9d7398cd728a3247eb4539f902b196d1c7d5341c578ec91f57207cdd04f3193"
   },
   {
     "name": "mm/art/city-art.js",
-    "sha256": "f2ce5db50c05a3eea3e16ff5b4681809a3a02a6089d809c2c72f73624cb616da"
+    "sha256": "058e2cad1c30cd0c2ea0a09ece1f084cf9e927ac8770e727618ef15e645b32d5"
   },
   {
     "name": "mm/art/city-buildings.js",
-    "sha256": "8d14e31e1534349ce44fccfd8b194119889192c2bad8c01937650790c4d22ca1"
+    "sha256": "5a680c3a8d48ff6d9c6e68d07e5de15c75ee22c8abe7ede76c438c47b83f2b32"
   },
   {
     "name": "mm/art/city-edge.js",
-    "sha256": "c3ec051e7a379a612d791f5daedae37b080eb42d798e506a73b510bbfdb0aeba"
+    "sha256": "7511126460ba51905dc8083a427f32acb213c5241f75892fb115710aad4cc5ec"
   },
   {
     "name": "mm/art/city-events.js",
-    "sha256": "a8c496a814d72dc59bcf601da0b9def9f2e937b34781f2082cf82afcd8e1d694"
+    "sha256": "5f485ba232c8a0fb376196978cddcf378ae8d58fd6457b9a2fa7696febfa933f"
   },
   {
     "name": "mm/art/city-fabric.js",
-    "sha256": "af92491776d1fb40287391df16261bff08a06101ab60db6e3e4e5a6789dd91a6"
+    "sha256": "dc9b8c5c35d8b7ac770936672a9045f346157706a3484acac3a5d124de3cabb2"
   },
   {
     "name": "mm/art/city-form.js",
-    "sha256": "1e19dbe9643eee8241bcc8b2b9940c550636c1266175388d6a29dcf30a9089a9"
+    "sha256": "7756fa1829acb3b997fdfa898f2fc145f9d8d2fa2cb777ca921a7246507dcfac"
   },
   {
     "name": "mm/art/city-frontage.js",
-    "sha256": "50674199d34ab4109d241bd0b90ed03d9b4c71de59549d7f5a44b3fa91f9d3d2"
+    "sha256": "8da7c65983f623c1dc4a20428c7824a086ba858c7e0dc3eaeec52210def7a659"
   },
   {
     "name": "mm/art/city-hours.js",
-    "sha256": "63b9670f89693b8deb1b1743e31fe3b292df44d5427c6d8412e24acac7798b50"
+    "sha256": "80ed1c754c4b78b48072959845fb57f721932a8bbdcd3a62b8dbe6df11e7bc03"
   },
   {
     "name": "mm/art/city-lots.js",
-    "sha256": "400d34cdf924691e0701e35926dfecfa5e5807679d0fe9b3a23c36783fe8ba43"
+    "sha256": "d81a956fd9e8c0d0d25acb354b5c3b0bdec0971f7eb48e7569618c248430c2c9"
   },
   {
     "name": "mm/art/city-plans.json",
@@ -469,31 +469,31 @@
   },
   {
     "name": "mm/art/city-scene.js",
-    "sha256": "00b2a233125e93ea90a088d1aa60b82ba52a6ec9e28110c7b3e5c7de6463e4a0"
+    "sha256": "b06c44313c2f33fd1987a7273c669b27fb30835161a888b332cf292b6635170f"
   },
   {
     "name": "mm/art/city-trees.js",
-    "sha256": "0f262ab18b34777cba8e543ccf560777b5b72382bad88f3777b080acc86060fd"
+    "sha256": "115958b25808913e3b64dd4fd070cbbfefe57d97c2f9e945c793ba18a3b74c7a"
   },
   {
     "name": "mm/art/classroom.js",
-    "sha256": "80a462360ed9c3e51dbd71290f216efaad3c5cfdeace55529eb0847cf16072c7"
+    "sha256": "975f39f229d9f07d5731c4ca4d5043a8cd936a9da5af3a40b11b83fabe8257c8"
   },
   {
     "name": "mm/art/metropolis.js",
-    "sha256": "19e01e1793af84be2843afe6b403637ae42e6a3ef8820aa041efb1ef8c8e1af8"
+    "sha256": "b136729b3323df9373386d456342970f22fded6dd2732a1835caca0696baf78c"
   },
   {
     "name": "mm/art/reward-buildings.js",
-    "sha256": "a4912abaff0549da6a6c801e0ddb12317b13fe7cf320f7697f7674e3776f8345"
+    "sha256": "495feaaf481ee3a8c1e1a311acf68df9ec9d3669ca82949d0ae059db47fc8ea1"
   },
   {
     "name": "mm/art/reward-sites.js",
-    "sha256": "6b89914be7828527321e4e038841d67084fc783c10f020e0b63009d486b83e90"
+    "sha256": "bc59f5c5104fd03b1d42246fc99b290d9342a362138a361504b60b152e338bc6"
   },
   {
     "name": "mm/art/roof-sign.js",
-    "sha256": "97a9befaf56b1e3c70b5a0105f925182b278f9718f1309a4a8ea66ef45acb8da"
+    "sha256": "f0268d023b1f0deb5ca9e88a1da9ddce9eafdcaa81c0d3b7f6623a7de4248d38"
   },
   {
     "name": "mm/art/vendor/village/Cimulity-LICENSE.txt",
@@ -509,15 +509,15 @@
   },
   {
     "name": "mm/art/vendor/village/value-noise.js",
-    "sha256": "feab2adf268d71342b3bc3945761d83fb546824ca553726d829671d91582fe43"
+    "sha256": "5b3be09cba397e38fc82c595c5c621866be07bb633e44c2f08c47eb817f80d68"
   },
   {
     "name": "mm/art/village-life.js",
-    "sha256": "9cdf6bb08de7562c382b0766287431d392aa6f11a684e37e1e1235f30223413d"
+    "sha256": "72953ddc192e47c8c07c3fc5954231afd9177dd2ad6bd3cb0058d3eadf82232c"
   },
   {
     "name": "mm/art/world.js",
-    "sha256": "3636622bec9e9fc38442b6d22d823ad4551007aee8f37188a494445a8031f7d3"
+    "sha256": "f54c58d7c1a929d85c39147b1826a50e81e09b4eb9db8af4d5e4ab6aa3146c60"
   },
   {
     "name": "mm/book.js",
@@ -525,7 +525,7 @@
   },
   {
     "name": "mm/city.js",
-    "sha256": "e50da3437478c2a13bb4dd2b568a08e2b1a76b2a1cb91becd1784d36ae39d956"
+    "sha256": "688f356dfa1cc1f137eba4f319496b2788de457266d95eccb2d86c9939b31f15"
   },
   {
     "name": "mm/fonts/GmarketSansTTFMedium.woff",
@@ -541,7 +541,7 @@
   },
   {
     "name": "mm/index.html",
-    "sha256": "c0b614465895be57b3a645bc05aaa0d32aaa81915918ab9773145548b3b6477a"
+    "sha256": "6fa2f9c9421d732c1f1485f734dae4161489c911647f34d2391fed132f998ae6"
   },
   {
     "name": "mm/join-qr.png",
@@ -569,7 +569,7 @@
   },
   {
     "name": "mm/papers.js",
-    "sha256": "8b67a245e1a315faf54498eb17fa20b19788cf7f971eec192599d5b4b171e7d4"
+    "sha256": "283e5ea4c8c0dda48673343dab75fb413f6868c7c28c2d477ab21ad76b0b2057"
   },
   {
     "name": "mm/school.css",
@@ -577,15 +577,15 @@
   },
   {
     "name": "mm/school.js",
-    "sha256": "6d12eec4ecce17712cca2764fec08f1644c5f2355ceea3dd53aa3150a378db2f"
+    "sha256": "4a45bb2bf000a4a317eb0d8586f3c7fddc6babd86a7bfbaacb583b5f2e56fc00"
   },
   {
     "name": "mm/staff.js",
-    "sha256": "aa94bba3026100dd7e6e2fb9494c01240f509474a0861670e2692bd8eaed5f12"
+    "sha256": "ba4b5e9f8b411a02ccde57e1615244bcf8a0328e042805c393c9234a8f81b2d6"
   },
   {
     "name": "mm/student.js",
-    "sha256": "027fcca68acacdb3a9b5fca52b477717deb35f4bcb255db373394042c5dbfec9"
+    "sha256": "9ccb9d1265b4bbfc77612ebda10e11ea28169210fe3ab952e827fe4172773a7f"
   },
   {
     "name": "mobile-ui.css",
@@ -601,7 +601,7 @@
   },
   {
     "name": "src/core/auth.js",
-    "sha256": "96450b2d6accedef855041be99af7c772f5428a28183e4db7dddef1b7ae9dfcb"
+    "sha256": "112408333ca1d8943ff70186492e547cc47f5a15f8bbe00c768e6d8cc05a521a"
   },
   {
     "name": "src/core/backend.js",
@@ -613,7 +613,7 @@
   },
   {
     "name": "src/core/config.js",
-    "sha256": "17b5f46f582d1deb9ed5f72f3d2578a6be1aee6d74a3f6d22a020dc3dc4e0744"
+    "sha256": "41d2d0fc6451549f174ca119728829175e27cceaddd7954ef6bfc58a66489dc4"
   },
   {
     "name": "src/core/learning-bridge.js",
@@ -649,11 +649,11 @@
   },
   {
     "name": "src/core/student-test-results.js",
-    "sha256": "1753783b158f4e9e4654864c444d6b09874142827a358a2ae984800b1b961032"
+    "sha256": "c908940fbee69c361f5172c5b99baf3401d00f84af76f1cf59d63d1f11e299a6"
   },
   {
     "name": "src/core/view-memory.js",
-    "sha256": "0cba20babd8a2a0791aae2213e97c17f9baae6ebaf4231622de7bb81a7fc339d"
+    "sha256": "01be371958db18bacc17cca9ecea74e6dc8fc9c311f3b70c284d15c62bbd206c"
   },
   {
     "name": "src/legacy/accounts.js",
@@ -745,7 +745,7 @@
   },
   {
     "name": "src/styles/student-test-results.css",
-    "sha256": "14ded19df7546c86c09d9fcd5cb60f166f84090d2cc00866c26308808e0bc5fd"
+    "sha256": "eb74b31dd1f04d9e938db9703d959a330deeadb2a0d65dc7114d23a42a295b97"
   },
   {
     "name": "sw.js",
@@ -753,10 +753,10 @@
   },
   {
     "name": "vendor/chart.umd.js",
-    "sha256": "9d6d0813ffe092ead5602c0d50f3f6c362f72dea70661d51efd72854aed76a5c"
+    "sha256": "74401d738dd3e03ee5dfb3b6841210fe2c4ead8a960c4011ca4ba0b78a9fd8f3"
   },
   {
     "name": "vendor/supabase.js",
-    "sha256": "7a3acf0322c297237cdf47b4c2eec07a5ff8363cbb335c4bef8fdb27876bf006"
+    "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3"
   }
 ]
