@@ -544,6 +544,10 @@
     "sha256": "6fa2f9c9421d732c1f1485f734dae4161489c911647f34d2391fed132f998ae6"
   },
   {
+    "name": "mm/join-card.html",
+    "sha256": "a46ff308b31d0add5b69a2f3b6a2bd94dd17763df6df9a73bc4077025dcf6bc4"
+  },
+  {
     "name": "mm/join-qr.png",
     "sha256": "c7819d86fa25494fc48b5edaed3c364b700f274da84772426a9cdc6d3be00162"
   },
@@ -577,11 +581,11 @@
   },
   {
     "name": "mm/school.js",
-    "sha256": "4a45bb2bf000a4a317eb0d8586f3c7fddc6babd86a7bfbaacb583b5f2e56fc00"
+    "sha256": "48c6ae9568eab6ac27ba4d248f59cac89ed1f5ab447073eff9ef65cd8ede82be"
   },
   {
     "name": "mm/staff.js",
-    "sha256": "ba4b5e9f8b411a02ccde57e1615244bcf8a0328e042805c393c9234a8f81b2d6"
+    "sha256": "3d11b6ae9229143d576fc2573d45c8c288458c7f1cbe538bc8e861b072c15ebd"
   },
   {
     "name": "mm/student.js",

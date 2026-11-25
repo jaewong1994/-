@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f6f0"><title>MM 학생 가입 QR</title>
+<link rel="stylesheet" href="/mm/school.css">
+<style>
+body{min-height:100dvh;display:grid;place-items:center;padding:20px}
+main{width:min(100%,520px);padding:0 18px}h1{font-size:clamp(30px,7vw,46px);margin:16px 0 12px}
+img{width:min(72vw,315px);height:auto;display:block;margin:18px auto;image-rendering:pixelated}
+ol{padding-left:1.5em}li{padding:3px 0}.row{justify-content:space-between;border-top:1px solid var(--line);padding-top:15px}
+@page{size:A4;margin:25mm}@media print{body{background:white;min-height:235mm;padding:0}main{width:148mm}.row{display:none}}
+</style>
+</head><body><main>
+<div class="word">MM <small>민재웅 MATH</small></div><h1>학생 가입</h1>
+<a href="/mm/#join"><img src="/mm/join-qr.png" alt="휴대폰으로 스캔해 학생 가입 열기" width="369" height="369"></a>
+<ol><li>카메라로 QR을 찍고 이름과 휴대전화 번호를 입력하세요.</li><li>화면에 뜬 확인번호를 선생님께 보여 주세요.</li><li>닉네임과 패스키를 등록하면 가입이 끝납니다.</li></ol>
+<div class="row"><a class="button" href="/mm/#join">가입 화면 열기</a><button onclick="window.print()">인쇄</button></div>
+</main></body></html>
