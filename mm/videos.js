@@ -45,15 +45,15 @@ function videoList(root,data,staff){
   const videos=data.videos;
   root.innerHTML='<div class="row spread"><h1>수업영상</h1>'+(staff?'<a class="button primary" href="#videos/new">영상 등록</a>':'')+'</div>'+
     (videos.length?'<div class="lesson-list">'+videos.map(v=>{
-      const groups=staff?v.classes.map(c=>c.name):v.classes;
-      return '<a class="lesson-row" href="#videos/'+esc(v.id)+'"><div><small>'+esc([...new Set(groups)].join(' · '))+' · '+esc(dateLabel(v.date))+'</small><strong>'+esc(v.title)+'</strong></div><span>'+(staff&&!v.published?'게시 중지':v.bookmarks.length?'문항 '+v.bookmarks.length+'개':'영상 보기')+' ›</span></a>';
+      const groups=staff?(v.classes||[]).map(c=>c.name):v.classes;
+      return '<a class="lesson-row" href="#videos/'+esc(v.id)+'"><div><small>'+esc([...new Set(groups),dateLabel(v.date)].join(' · '))+'</small><strong>'+esc(v.title)+'</strong></div><span>'+(staff&&!v.published?'비공개':v.bookmarks.length?'문항 '+v.bookmarks.length+'개':'영상 보기')+' ›</span></a>';
     }).join('')+'</div>':'<p class="muted">'+(staff?'등록한 영상이 없습니다.':'수강 중인 반에 올라온 영상이 없습니다.')+'</p>');
 }
 function detail(root,video,staff,current){
   root.innerHTML='<a class="back quiet" href="#videos">← 수업영상</a><div class="row spread"><h1>'+esc(video.title)+'</h1>'+
     (staff?'<a class="button" href="#videos/'+esc(video.id)+'/edit">영상 수정</a>':'')+'</div>'+
     '<div class="lesson-player"><iframe title="'+esc(video.title)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
-    '<div class="row spread"><small>'+esc((staff?video.classes.map(g=>g.name):video.classes).join(' · '))+'</small><a data-external target="_blank" rel="noopener noreferrer">YouTube에서 열기 ↗</a></div>'+
+    '<div class="row spread"><small>'+esc((staff?(video.classes||[]).map(g=>g.name):video.classes).join(' · ')||(staff?'비공개 초안':''))+'</small><a data-external target="_blank" rel="noopener noreferrer">YouTube에서 열기 ↗</a></div>'+
     '<div data-chapters class="lesson-chapters">'+video.bookmarks.map(mark=>'<button data-seconds="'+mark.seconds+'" aria-pressed="false"><b>'+mark.number+'번</b><span>'+esc(mark.label)+'</span><time>'+timeLabel(mark.seconds)+'</time></button>').join('')+'</div>';
   displayPlayer(root,video,current);
 }
@@ -67,7 +67,7 @@ function editor(root,data,v,current){
     '<fieldset><legend>수강반</legend><div class="lesson-classes">'+choices.map((g,i)=>'<label><input type="checkbox" data-group="'+i+'" '+(existing.has(groupKey(g))?'checked':'')+'>'+esc(g.name)+(duplicates.has(g.name)?' · '+esc(g.teacher):'')+'</label>').join('')+(!choices.length?'<a href="#home">학생 관리에서 수강반 등록</a>':'')+'</div></fieldset>'+
     '<fieldset><legend>문항 북마크</legend><div class="actions"><button type="button" data-copy>Gemini 요청문 복사</button><label class="button lesson-file">분석 파일 열기<input type="file" accept=".json,.txt,.md,application/json,text/plain" data-file></label></div>'+
     '<label>분석 결과<textarea name="analysis" rows="5" placeholder="7번 12:34&#10;8번 21:08&#10;또는 Gemini 분석 JSON 붙여넣기"></textarea></label><div data-preview class="lesson-preview" aria-live="polite"></div></fieldset>'+
-    '<label class="lesson-publish"><input type="checkbox" name="published" '+(!v||v.published?'checked':'')+'>선택한 반에 공개</label>'+
+    '<label class="lesson-publish"><input type="checkbox" name="published" '+((v?v.published:choices.length>0)?'checked':'')+'>선택한 반에 공개</label>'+
     '<p role="alert" data-error></p><div class="actions"><button type="submit" class="primary">'+(isNew?'영상 등록':'변경 저장')+'</button></div></form>';
   const form=root.querySelector('form'),analysis=form.elements.analysis,preview=root.querySelector('[data-preview]'),err=root.querySelector('[data-error]'),save=form.querySelector('[type=submit]');
   const fileInput=form.querySelector('[data-file]');let busy=false;
@@ -76,7 +76,7 @@ function editor(root,data,v,current){
     try {
       const marks=parseMarks(analysis.value);
       preview.innerHTML=marks.map(m=>'<span>'+esc(m.number)+'번 <time>'+timeLabel(m.seconds)+'</time>'+(m.label?' · '+esc(m.label):'')+'</span>').join('');
-      err.textContent='';save.disabled=busy||!choices.length;return marks;
+      err.textContent='';save.disabled=busy;return marks;
     }catch(e){preview.replaceChildren();err.textContent=e.message;save.disabled=true;return null}
   }
   analysis.oninput=review;review();
@@ -94,8 +94,8 @@ function editor(root,data,v,current){
     const youtube=youtubeId(form.elements.url.value);
     if(!youtube){err.textContent='유효한 유튜브 영상 링크를 입력하세요.';form.elements.url.focus();return}
     const classes=[...form.querySelectorAll('[data-group]:checked')].map(el=>choices[Number(el.dataset.group)]);
-    if(!classes.length){err.textContent='수강반을 한 개 이상 선택하세요.';return}
-    const title=form.elements.title.value.trim()||dateLabel(Date.now())+' '+classes[0].name+' 수업';
+    if(form.elements.published.checked&&!classes.length){err.textContent='공개할 수강반을 선택하세요.';return}
+    const title=form.elements.title.value.trim()||[dateLabel(Date.now()),classes[0]?.name,'수업'].filter(Boolean).join(' ');
     busy=true;save.disabled=true;
     try{
       await rpc('save',{id,revision:v?.revision||0,title,youtube,bookmarks,classes:classes.map(({staff,name})=>({staff,name})),published:form.elements.published.checked});
