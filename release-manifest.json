@@ -525,11 +525,15 @@
   },
   {
     "name": "mm/book.js",
-    "sha256": "d802da82627655cc7dd3341cd2169a90f74ddf1a6ad078f70480a9c07fc5411f"
+    "sha256": "56c0e0a58176417505ca8334a7f81436ccf7e6dc651cbfbbc6e46cd7dca7fdc4"
   },
   {
     "name": "mm/city.js",
-    "sha256": "0afe53942d769b3e46595e8e4ba6ee5684045684681d30b488f0137645f19ff1"
+    "sha256": "90ef3987430d04279bf317710d3b7abf43025bedcc312e6fae8a340ae6861f19"
+  },
+  {
+    "name": "mm/followup.js",
+    "sha256": "15c03d310f8c8f9d2060b4f37528d1abf3d9a12d7a3024ebeb192db4de00fa71"
   },
   {
     "name": "mm/fonts/GmarketSansTTFMedium.woff",
@@ -581,19 +585,19 @@
   },
   {
     "name": "mm/school.css",
-    "sha256": "f645cd880c5461ae5e1a239a1d61b690fdda432421247b398e1dd34385d76a58"
+    "sha256": "183f53fd2f31d8222e9d03e249a2e89f10ac47341ebe6527a66aa93433bcf34a"
   },
   {
     "name": "mm/school.js",
-    "sha256": "b00393f64d39894418acb3447b9167705198facbcf4246d6c2a49de38ba182c8"
+    "sha256": "d025334202d6e2810d46c6cf3951e6351027717e3018d1b96729c474c6d59665"
   },
   {
     "name": "mm/staff.js",
-    "sha256": "373a861ba04b1de1028b771d3784f65c566cb456314fcf5e004f53dbbcaad611"
+    "sha256": "632d1e58b82d3d6c662e6e18662c80a8de1abc59d93fd93b09f6da3222a9c3f3"
   },
   {
     "name": "mm/student.js",
-    "sha256": "9ccb9d1265b4bbfc77612ebda10e11ea28169210fe3ab952e827fe4172773a7f"
+    "sha256": "8c747dc7f346b08871dbfbb0cb589335668651d566e6021c02cf786dc065d6c1"
   },
   {
     "name": "mm/video-marks.js",

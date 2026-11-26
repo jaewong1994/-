@@ -1,11 +1,19 @@
 // Pages작업본/mm/city.js
-import { session, esc, go, say, events, button, classroom } from "./school.js";
+import { session as session2, esc as esc2, go as go2, say as say2, events as events2, button as button2, classroom } from "./school.js";
+
+// Pages작업본/mm/followup.js
+import { back, button, esc, events, fileLink, go, say, session } from "./school.js";
+async function followup(op, data = {}) {
+  const result = await session().rpc("mm_followup", { op, data });
+  if (result.error) throw Error(result.error.message);
+  return result.data;
+}
 
 // Pages작업본/mm/art/roof-sign.js
 function signFrame(o, scale) {
   const { rx, ry, height } = o.design;
-  const left = -rx * 0.92, back = -ry * 0.94;
-  return { x: o.sx + (left - back) * scale, y: o.sy + ((left + back) / 2 - height - 40) * scale, w: rx * 1.83 * scale, h: 15.5 * scale, scale };
+  const left = -rx * 0.92, back2 = -ry * 0.94;
+  return { x: o.sx + (left - back2) * scale, y: o.sy + ((left + back2) / 2 - height - 40) * scale, w: rx * 1.83 * scale, h: 15.5 * scale, scale };
 }
 function onSign(o, scale, x, y) {
   if (!o) return false;
@@ -83,7 +91,7 @@ function bitmap(name) {
   const levels = specs[name];
   let top = -12;
   for (const [i, [a, b, h]] of levels.entries()) {
-    const f = top + (a + b) * 0.36, l = [-a, top + (b - a) * 0.36], r = [b, top + (a - b) * 0.36], back = [b - a, top - (a + b) * 0.36];
+    const f = top + (a + b) * 0.36, l = [-a, top + (b - a) * 0.36], r = [b, top + (a - b) * 0.36], back2 = [b - a, top - (a + b) * 0.36];
     poly(sun, [[0, f], l, [l[0], l[1] - h], [0, f - h]]);
     poly(dark, [[0, f], r, [r[0], r[1] - h], [0, f - h]]);
     for (let z = 3; z < h - 1; z += glass ? 4 : 5) for (const sign of [-1, 1]) {
@@ -92,7 +100,7 @@ function bitmap(name) {
         poly(sign < 0 ? win : "#88a7a4", [[sign, f - z - 0.5], [sign * (len - 1), f - (len - 1) * 0.72 - z], [sign * (len - 1), f - (len - 1) * 0.72 - z - 1], [sign, f - z - 1.5]]);
       } else for (let q = 2; q < len - 1; q += 4) rect2(sign < 0 ? win : "#405b60", sign * q, f - q * 0.72 - z - 1, 2, 2);
     }
-    poly(name === "glasshouse" ? "#a9c8c3" : cap, [[0, f - h], [l[0], l[1] - h], [back[0], back[1] - h], [r[0], r[1] - h]]);
+    poly(name === "glasshouse" ? "#a9c8c3" : cap, [[0, f - h], [l[0], l[1] - h], [back2[0], back2[1] - h], [r[0], r[1] - h]]);
     if (name === "garden-slab" || name === "terraced-tower") {
       for (let q = 2; q < a - 1; q += 4) {
         rect2("#5b815d", -q, f - q * 0.72 - h - 2, 3, 2);
@@ -651,17 +659,17 @@ function trips(network, stage, seed) {
     const dest = far[Math.floor(random(seed, "car-end" + i) * far.length)], out = [];
     for (let a = dest; a; a = visited.get(a)) out.unshift(a);
     const used = new Set(out.slice(1).map((a, k) => [key2(a.x, a.y), key2(out[k].x, out[k].y)].sort().join("/")));
-    const back = /* @__PURE__ */ new Map([[dest, null]]), search = [dest];
-    for (let j = 0; j < search.length && !back.has(start); j++) for (const b of neighbours.get(search[j])) {
+    const back2 = /* @__PURE__ */ new Map([[dest, null]]), search = [dest];
+    for (let j = 0; j < search.length && !back2.has(start); j++) for (const b of neighbours.get(search[j])) {
       const a = search[j], id = [key2(a.x, a.y), key2(b.x, b.y)].sort().join("/");
-      if (used.has(id) || back.has(b)) continue;
-      back.set(b, a);
+      if (used.has(id) || back2.has(b)) continue;
+      back2.set(b, a);
       search.push(b);
     }
     let ret = out.slice(1, -1).reverse();
-    if (back.has(start)) {
+    if (back2.has(start)) {
       ret = [];
-      for (let a = back.get(start); a && a !== dest; a = back.get(a)) ret.unshift(a);
+      for (let a = back2.get(start); a && a !== dest; a = back2.get(a)) ret.unshift(a);
     }
     const route = [...out, ...ret];
     result.push({ route, offset: random(seed, "car-pos" + i) * route.length, speed: 0.8 + random(seed, "pace" + i) * 0.58, paint: i % 7 });
@@ -729,7 +737,7 @@ function fair(c, x, y, s, time, period) {
   for (const d of [-2, 2]) {
     stroke("#577a87", 2.3, [[-17 + d, 2], [-9 + d, -25], [-1 + d, -3]]);
   }
-  const wheel = (a, back) => [-9 + Math.cos(a) * 17 + back, -25 + Math.sin(a) * 17 + Math.cos(a) * 3 - back * 0.4];
+  const wheel = (a, back2) => [-9 + Math.cos(a) * 17 + back2, -25 + Math.sin(a) * 17 + Math.cos(a) * 3 - back2 * 0.4];
   const rotation = period === "dawn" ? 0 : time * 0.12;
   for (const offset of [-2, 0]) {
     const rim = Array.from({ length: 33 }, (_, i) => wheel(i * Math.PI / 16 + rotation, offset));
@@ -2123,7 +2131,7 @@ function drawClassroom(c, d, period, pose, catFrame = 0) {
           c.stroke();
         };
         const coat = "#466977", skin2 = "#edbb8c", leg = "#383e48";
-        const back = acting && (action2 === "window" || action2 === "board"), left = acting ? action2 === "window" : returning !== (action2 === "window");
+        const back2 = acting && (action2 === "window" || action2 === "board"), left = acting ? action2 === "window" : returning !== (action2 === "window");
         const head = u + lean + (acting && action2 === "window" ? -0.55 : 0);
         line2(leg, 1.35, [u - 0.9, bodyY - 4.5], [u - 1.2 - step - (dance ? 1.4 : 0), v - 0.6 - hop]);
         line2(leg, 1.35, [u + 1, bodyY - 4.5], [u + 1.4 + step + (dance ? 1.3 : 0), v - 0.35 - hop]);
@@ -2134,9 +2142,9 @@ function drawClassroom(c, d, period, pose, catFrame = 0) {
         c.fillStyle = skin2;
         c.fillRect(head - 1.55, bodyY - 11.1, 3.15, 2.8);
         c.fillStyle = "#453d39";
-        c.fillRect(head - 1.75, bodyY - 12, 3.6, back ? 2.8 : 1.5);
+        c.fillRect(head - 1.75, bodyY - 12, 3.6, back2 ? 2.8 : 1.5);
         c.fillRect(head + (left ? 0.8 : -1.6), bodyY - 10.8, 1.05, 1.4);
-        if (!back) {
+        if (!back2) {
           const dx = left ? -1.9 : 0.25;
           c.fillStyle = "#354a50";
           c.fillRect(head + dx, bodyY - 10.2, 1.8, 0.55);
@@ -3555,14 +3563,14 @@ function mountMap(canvas2, opts) {
     status.setAttribute("role", "status");
     const available = opts.gifts.filter((g) => buildable.get(plot.lot).has(g.style)).sort((a, b) => (a.lot >= 0) - (b.lot >= 0));
     for (const g of available) {
-      const li = document.createElement("li"), button2 = document.createElement("button"), name = document.createElement("b"), action2 = document.createElement("span");
-      button2.type = "button";
+      const li = document.createElement("li"), button3 = document.createElement("button"), name = document.createElement("b"), action2 = document.createElement("span");
+      button3.type = "button";
       name.textContent = rewardNames[g.style];
       action2.textContent = g.lot < 0 ? "짓기" : "이곳으로 이전";
-      button2.append(rewardThumbnail(g.style), name, action2);
-      li.append(button2);
+      button3.append(rewardThumbnail(g.style), name, action2);
+      li.append(button3);
       list.append(li);
-      button2.onclick = async () => {
+      button3.onclick = async () => {
         if (saving) return;
         saving = true;
         placement.querySelectorAll("button").forEach((b) => b.disabled = true);
@@ -3956,7 +3964,7 @@ function mountMap(canvas2, opts) {
 
 // Pages작업본/mm/city.js
 async function action(op, data = {}) {
-  const r = await session().rpc("mm_city", { op, data });
+  const r = await session2().rpc("mm_city", { op, data });
   if (r.error) throw Error(r.error.message);
   return r.data;
 }
@@ -3979,17 +3987,15 @@ function planFor(seed, n) {
   return { version: 1, kind, feature: m.feature, motif: m.name, guide: m.guide, axisX: mx === 1 ? 4 : 0, axisY: my === 1 ? 4 : 0, blocks };
 }
 async function city(root, s, current, requested) {
-  const [c, weekly] = await Promise.all([action("get"), classroom("study-board", { period: "week" })]);
+  const [c, weekly, topExam] = await Promise.all([action("get"), classroom("study-board", { period: "week" }), followup("podium")]);
   if (!current()) return;
   const total = s.seconds / 3600, latest = c.towns.length - 1, index = requested != null ? Math.max(0, Math.min(latest, Number(requested) || 0)) : latest, towns = c.towns.map((t2) => ({ index: t2.n, name: t2.name || townName(s.id, t2.n), plan: planFor(s.id, t2.n) })), t = towns[index], hours = Math.max(0, Math.min(240, total - index * 240)), stage = phase(hours * 36e5), opened = [1, 3, 5, 8, 11, 14][stage], plan = t.plan;
   const gifts = c.gifts.map((g, j) => {
     const style = (hash(g.exam + "/" + s.id) >>> 0) % rewards.length, sites = rewardSites(plan, style, opened);
     return { ...g, style, lot: sites.includes(g.lot) ? g.lot : sites[j % Math.max(1, sites.length)] ?? -1 };
-  }).filter((g, i) => Math.min(latest, Math.floor(i / 40)) === index);
-  const done = s.exams.find((e) => e.score != null), board = done ? await classroom("board", { exam: done.id }) : { ranks: [] };
-  if (!current()) return;
-  const top = (rows) => rows.filter((x) => x.rank <= 3).slice(0, 9).map((x) => x.rank + "등 " + x.nickname).join(" · "), ticker = ["이번 주 순공 " + (top(weekly) || "집계 중"), "테스트 " + (top(board.ranks) || "집계 중")];
-  root.innerHTML = '<div class="world-shell mapArea"><canvas id="cityView" aria-label="마이시티 전경"></canvas><div class="mapTools"><span id="worldTime"></span><button data-zoom="-1">−</button><button data-zoom="reset" id="zoomValue">2.5×</button><button data-zoom="1">＋</button></div><div id="worldNote" class="mapNote" hidden></div><div id="rewardPlace" class="float" hidden></div></div><details><summary>' + esc(t.name) + '</summary><form id="townName"><input aria-label="도시 이름" name="name" maxlength="16" required value="' + esc(t.name) + '"><button>이름 저장</button></form><div class="actions">' + towns.map((v, i) => button(v.name, "go:city/" + i)).join("") + (index === latest && hours >= 240 ? button("다음 마을", "advance") : "") + '</div></details><dialog id="sign"><h2>학원 전광판</h2><p></p>' + button("닫기", "close") + "</dialog>";
+  }).filter((g, i) => (g.town ?? Math.min(latest, Math.floor(i / 40))) === index);
+  const top = (rows) => rows.filter((x) => x.rank <= 3).slice(0, 9).map((x) => x.rank + "등 " + x.nickname).join(" · "), ticker = ["이번 주 순공 " + (top(weekly) || "집계 중"), "테스트 " + (top(topExam) || "집계 중")];
+  root.innerHTML = '<div class="world-shell mapArea"><canvas id="cityView" aria-label="마이시티 전경"></canvas><div class="mapTools"><span id="worldTime"></span><button data-zoom="-1">−</button><button data-zoom="reset" id="zoomValue">2.5×</button><button data-zoom="1">＋</button></div><div id="worldNote" class="mapNote" hidden></div><div id="rewardPlace" class="float" hidden></div></div><details><summary>' + esc2(t.name) + '</summary><form id="townName"><input aria-label="도시 이름" name="name" maxlength="16" required value="' + esc2(t.name) + '"><button>이름 저장</button></form><div class="actions">' + towns.map((v, i) => button2(v.name, "go:city/" + i)).join("") + (index === latest && hours >= 240 ? button2("다음 마을", "advance") : "") + '</div></details><dialog id="sign"><h2>학원 전광판</h2><p></p>' + button2("닫기", "close") + "</dialog>";
   const opts = { root: s.id, index, count: towns.length, currentStage: stage, seed: s.id + "-" + index, kind: plan.kind, stage, actual: stage, goal: false, country: false, mini: false, hours, opened, gifts, plan, towns, light: "auto", event: "auto", ticker: () => ticker, showPodium() {
     const d = root.querySelector("#sign");
     d.querySelector("p").textContent = ticker.join(" · ");
@@ -4003,20 +4009,20 @@ async function city(root, s, current, requested) {
   }, async moveGift(g, lot) {
     if (!rewardSites(plan, g.style, opened).includes(lot)) throw Error("옮길 위치를 확인하세요.");
     await action("move", { exam: g.exam, lot });
-    go("city/" + index);
+    go2("city/" + index);
   } };
   mountMap(root.querySelector("canvas"), opts);
-  events(root, { go, close: () => root.querySelector("dialog").close(), advance: async () => {
+  events2(root, { go: go2, close: () => root.querySelector("dialog").close(), advance: async () => {
     await action("advance", { current: latest });
-    go("city");
+    go2("city");
   } });
   root.querySelector("form").onsubmit = async (e) => {
     e.preventDefault();
     try {
       await action("name", { n: index, name: e.target.elements.namedItem("name").value });
-      go("city/" + index);
+      go2("city/" + index);
     } catch (err) {
-      say(err.message);
+      say2(err.message);
     }
   };
   return stopMap;
